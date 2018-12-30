@@ -1,0 +1,42 @@
+#page {
+    position: static;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #484848;
+}
+
+#page > #header {
+    position: relative;
+    width: 100%;
+    height: 36px;
+    margin-bottom: 4px;
+    background-color: #8a8a8a;
+}
+
+#page > #left {
+    position: static;
+    float: left;
+    height: calc(100% - 40px - 28px); /* page.height - headerSize - footerSize */
+    min-height: 582px;
+    margin-bottom: 4px;
+}
+
+#page > #right {
+    position: static;
+    float: left;
+    /* width -> controller/page.js */
+    min-width: calc(640px + 17px); /* 17px -> Scrollbar Size */
+    height: calc(100% - 40px - 28px);
+    min-height: 582px;
+    margin-bottom: 4px;
+}
+
+#page > #footer {
+    position: relative;
+    clear: both;
+    width: 100%;
+    height: 24px;
+    background-color: #aaaaaa;
+}

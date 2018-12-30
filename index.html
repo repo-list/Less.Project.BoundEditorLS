@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bound Editor LS</title>
+    <meta charset="utf-8" />
+
+    <!-- Dependencies -->
+    <script src="lib/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="lib/reset.css">
+
+    <!-- Application -->
+    <script src="app.js"></script>
+    <script src="patch_note.js"></script>
+
+    <!-- View -->
+    <link rel="stylesheet" href="src/view/html.css">
+    <link rel="stylesheet" href="src/view/page.css">
+    <link rel="stylesheet" href="src/view/header_elements.css">
+    <link rel="stylesheet" href="src/view/left_nav.css">
+    <link rel="stylesheet" href="src/view/left_section.css">
+    <link rel="stylesheet" href="src/view/right_nav.css">
+    <link rel="stylesheet" href="src/view/right_article.css">
+    <link rel="stylesheet" href="src/view/right_section.css">
+    <link rel="stylesheet" href="src/view/footer_elements.css">
+
+    <!-- Model -->
+    <script src="src/model/page.js"></script>
+    <script src="src/model/header_elements.js"></script>
+    <script src="src/model/left_nav.js"></script>
+    <script src="src/model/left_section.js"></script>
+    <script src="src/model/right_nav.js"></script>
+    <script src="src/model/right_article.js"></script>
+    <script src="src/model/right_section.js"></script>
+    <script src="src/model/footer_elements.js"></script>
+
+    <!-- Controller -->
+    <script src="src/controller/page.js"></script>
+    <script src="src/controller/header_elements.js"></script>
+    <script src="src/controller/left_nav.js"></script>
+    <script src="src/controller/left_section.js"></script>
+    <script src="src/controller/right_nav.js"></script>
+    <script src="src/controller/right_article.js"></script>
+    <script src="src/controller/right_section.js"></script>
+    <script src="src/controller/footer_elements.js"></script>
+</head>
+<body>
+    <div id="page">
+        <header id="header">
+            <button id="patchNote">패치 노트</button>
+            <button id="appInfo">앱 정보</button>
+        </header>
+        <aside id="left">
+            <nav>
+                <ul>
+                    <li id="patternInfo" class="selected">
+                        <img src="res/image/icon/pattern.png" draggable="false">
+                    </li>
+                    <li id="waitInfo">
+                        <img src="res/image/icon/figure.png" draggable="false">
+                    </li>
+                </ul>
+            </nav>
+            <section class="open"></section>
+        </aside>
+        <main id="right">
+            <nav>
+                <ul>
+                    <li id="createPatternTab" class="selected">
+                        <span>패턴 생성</span>
+                    </li>
+                    <li id="modifyMapTab">
+                        <span>맵 수정</span>
+                    </li>
+                </ul>
+            </nav>
+            <article class="zoomable">
+                <canvas id="terrain"></canvas>
+                <canvas id="location"></canvas>
+                <canvas id="bomb"></canvas>
+            </article>
+            <section></section>
+        </main>
+        <footer id="footer">
+            <div class="divider"></div>
+            <span id="wndSize"></span>
+        </footer>
+    </div>
+</body>
+</html>

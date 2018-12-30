@@ -1,0 +1,16 @@
+/* reference : https://meyerweb.com/eric/tools/css/reset */
+
+html,body,div,header,aside,nav,main,article,section,footer,ul,li,span {
+    margin:0;
+    padding:0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+article,aside,footer,header,nav,menu,section { display: block; }
+
+body { line-height: 1; }
+ul { list-style: none; }
+button { outline: none; }

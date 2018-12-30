@@ -1,0 +1,19 @@
+#footer > div.divider {
+    display: inline-block;
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    margin-top: 2px;
+    background-color: #9890a0;
+    right: 100px;
+}
+
+#footer > span {
+    display: inline-block;
+    position: absolute;
+    font-size: 12px;
+    line-height: 24px;
+    vertical-align: middle;
+    color: #353535;
+}
+#footer > span#wndSize { right: 20px; }

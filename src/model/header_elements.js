@@ -1,0 +1,3 @@
+var HeaderElements = {
+    onButtonClick : function() {}
+};

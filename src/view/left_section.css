@@ -1,0 +1,11 @@
+#left > section {
+    position: static;
+    float: left;
+    width: 206px;
+    height: 100%;
+    margin-right: 4px;
+    background-color: #797979;
+}
+
+#left > section { display: none; }
+#left > section.open { display: block; }

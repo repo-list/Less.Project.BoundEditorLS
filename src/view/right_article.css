@@ -1,0 +1,11 @@
+#right > article {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 24px - 221px);
+    min-height: calc(320px + 17px); /* 17px -> Scrollbar Size */
+    margin-bottom: 4px;
+    background-color: #909090;
+    overflow: scroll;
+}
+
+#right > article > canvas { position: absolute; }
