@@ -7,6 +7,7 @@
     <!-- Dependencies -->
     <script src="lib/jquery-3.3.1.min.js"></script>
     <link rel="stylesheet" href="lib/reset.css">
+    <script src="lib/scmap_api/scmap_api.js"></script>
 
     <!-- Application -->
     <script src="app.js"></script>
@@ -19,6 +20,7 @@
     <link rel="stylesheet" href="src/view/left_nav.css">
     <link rel="stylesheet" href="src/view/left_section.css">
     <link rel="stylesheet" href="src/view/right_nav.css">
+    <link rel="stylesheet" href="src/view/right_header.css">
     <link rel="stylesheet" href="src/view/right_article.css">
     <link rel="stylesheet" href="src/view/right_section.css">
     <link rel="stylesheet" href="src/view/footer_elements.css">
@@ -29,6 +31,7 @@
     <script src="src/model/left_nav.js"></script>
     <script src="src/model/left_section.js"></script>
     <script src="src/model/right_nav.js"></script>
+    <script src="src/model/right_header.js"></script>
     <script src="src/model/right_article.js"></script>
     <script src="src/model/right_section.js"></script>
     <script src="src/model/footer_elements.js"></script>
@@ -39,9 +42,63 @@
     <script src="src/controller/left_nav.js"></script>
     <script src="src/controller/left_section.js"></script>
     <script src="src/controller/right_nav.js"></script>
+    <script src="src/controller/right_header.js"></script>
     <script src="src/controller/right_article.js"></script>
     <script src="src/controller/right_section.js"></script>
     <script src="src/controller/footer_elements.js"></script>
+
+    <!-- Sample Test Script -->
+    <script>
+        $(document).ready(function() {
+            var canvasHolder = document.getElementById("articleTab1");
+            var canvas1 = canvasHolder.querySelector("#terrain");
+            var canvas2 = canvasHolder.querySelector("#location");
+            var canvas3 = canvasHolder.querySelector("#grid");
+            var context1 = canvas1.getContext("2d");
+            var context2 = canvas2.getContext("2d");
+            var context3 = canvas3.getContext("2d");
+            var tilesetImageLoadInterval = 500;
+
+            setTimeout(function() {
+                var gridWidth = gridHeight = RightArticle.canvas.pixelsPerTile;
+
+                var nullTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Null);
+                var dirtTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Dirt);
+                var creepTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Creep);
+                var mudTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Mud);
+                var basilicaTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Basilica);
+
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, nullTile, 0, 0, 8, 8);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, dirtTile, 1, 1, 6, 6);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, creepTile, 7, 3, 1, 2);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, nullTile, 8, 2, 8, 4);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, mudTile, 8, 3, 2, 2);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, basilicaTile, 10, 3, 2, 2);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, mudTile, 12, 3, 2, 2);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, basilicaTile, 14, 3, 2, 2);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, nullTile, 16, 0, 8, 8);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, creepTile, 16, 3, 1, 2);
+                SCMapAPI.drawTile(context1, gridWidth, gridHeight, dirtTile, 17, 1, 6, 6);
+
+                var locationA1 = new SCLocation("Location A1", 8, 3, 2, 2);
+                var locationA2 = new SCLocation("Location A2", 10, 3, 2, 2);
+                var locationA3 = new SCLocation("Location A3", 12, 3, 2, 2);
+                var locationA4 = new SCLocation("Location A4", 14, 3, 2, 2);
+
+                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA1);
+                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA2);
+                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA3);
+
+                var bombColor = "#c03040";
+                var bombAlpha = 0.8;
+                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA4, bombColor, bombAlpha);
+
+                var gridLenX = RightArticle.canvas.bomb.columns;
+                var gridLenY = RightArticle.canvas.bomb.rows;
+                SCMapAPI.drawGridLines(context3, gridWidth, gridHeight, 0, 0, gridLenX, gridLenY);
+            }, tilesetImageLoadInterval);
+        });
+    </script>
 </head>
 <body>
     <div id="page">
@@ -65,20 +122,40 @@
         <main id="right">
             <nav>
                 <ul>
-                    <li id="createPatternTab" class="selected">
+                    <li id="listTab1" class="selected">
                         <span>패턴 생성</span>
                     </li>
-                    <li id="modifyMapTab">
+                    <li id="listTab2">
                         <span>맵 수정</span>
                     </li>
                 </ul>
             </nav>
-            <article class="zoomable">
-                <canvas id="terrain"></canvas>
-                <canvas id="location"></canvas>
-                <canvas id="bomb"></canvas>
+            <header>
+                <div id="headerTab1">
+                    <button id="newPattern">새 패턴</button>
+                    <button id="loadPattern">불러오기</button>
+                    <button id="savePattern">저장</button>
+                </div>
+                <div id="headerTab2">
+                    <button id="working">작업 중</button>
+                </div>
+            </header>
+            <article>
+                <div id="articleTab1">
+                    <canvas id="terrain"></canvas>
+                    <canvas id="location"></canvas>
+                    <canvas id="grid"></canvas>
+                </div>
+                <div id="articleTab2"></div>
             </article>
-            <section></section>
+            <section>
+                <div id="sectionTab1">
+                    <span>패턴 생성 영역</span>
+                </div>
+                <div id="sectionTab2">
+                    <span>맵 수정 영역</span>
+                </div>
+            </section>
         </main>
         <footer id="footer">
             <div class="divider"></div>

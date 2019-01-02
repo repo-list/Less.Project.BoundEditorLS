@@ -4,9 +4,9 @@
     height: 24px;
 }
 
-#right > nav ul {
+#right > nav > ul {
     width: 100%;
-    height: 100%;
+    height: 24px;
 }
 
 #right > nav li {
@@ -21,7 +21,7 @@
     cursor: default;
 }
 
-#right > nav span {
+#right > nav li > span {
     font-size: 0.8em;
     line-height: 170%;
     vertical-align: middle;

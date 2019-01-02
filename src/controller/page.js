@@ -1,10 +1,7 @@
 $(document).ready(function() {
     Page.refreshLayout();
 
-    $(window).on("resize", function() {
-        Page.refreshLayout();
-        FooterElements.refreshWndSize();
-    });
+    $(window).on("resize", onWndResize);
 });
 
 Page.refreshLayout = function() {
@@ -20,5 +17,10 @@ Page.refreshLayout = function() {
         $htmlBody.css("min-width", newMinWidth);
     }
     $rightArea.css("width", "");
-    $rightArea.css("width", ($("#page").width() - $("#left").width() - 1) + "px");
+    $rightArea.css("width", ($("#page").width() - $("#left").width()) + "px");
 };
+
+function onWndResize() {
+    Page.refreshLayout();
+    FooterElements.refreshWndSize();
+}

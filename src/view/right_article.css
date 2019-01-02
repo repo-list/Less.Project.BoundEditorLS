@@ -4,8 +4,9 @@
     height: calc(100% - 24px - 221px);
     min-height: calc(320px + 17px); /* 17px -> Scrollbar Size */
     margin-bottom: 4px;
-    background-color: #909090;
+    background-color: #a8a8a8;
     overflow: scroll;
 }
 
-#right > article > canvas { position: absolute; }
+#right > article > div { position: absolute; }
+#right > article canvas { position: absolute; }

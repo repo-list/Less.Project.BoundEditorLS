@@ -1,6 +1,12 @@
 #right > section {
     position: relative;
     width: 100%;
-    height: 217px;
+    height: 185px;
     background-color: #909090;
+}
+
+#right > section span { /* temporary code */
+    margin-left: 10px;
+    line-height: 200%;
+    color: white;
 }
