@@ -5,8 +5,427 @@
     background-color: #909090;
 }
 
-#right > section span { /* temporary code */
-    margin-left: 10px;
+#right > section > #sectionTab1 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#right > section > #sectionTab1 > div#mode {
+    position: absolute;
+    width: calc(170px - 2px); /* 2px for border-right */
+    height: 100%;
+    border-right: 2px solid #484848;
+}
+
+#right > section > #sectionTab1 > div:not(#mode) {
+    position: absolute;
+    left: 170px;
+    width: calc(100% - 170px);
+    height: 100%;
+}
+
+/* span, button default css */
+#right > section span {
+    position: absolute;
+    display: block;
+    font-size: 14px;
     line-height: 200%;
+}
+
+#right > section button.mode {
+    position: absolute;
+    
+	box-shadow: inset 0px 1px 3px 0px #91b8b3;
+	background: linear-gradient(to bottom, #7fb3a5 5%, #799c91 100%);
+	background-color: #7fb3a5;
+	border-radius: 5px;
+	border: 1px solid #799c91;
+	cursor: pointer;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 11px 23px;
+	text-decoration: none;
+	text-shadow: 0px -1px 0px #2b665e;
+}
+#right > section button.mode:hover {
+	background: linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+	background-color: #6c7c7c;
+}
+#right > section button.mode.selected {
+	box-shadow: inset 0px 1px 3px 0px #9da3a2;
+	background: linear-gradient(to bottom, #78676b 5%, #827876 100%);
+	background-color: #78676b;
+	border: 1px solid #827876;
+	text-shadow: 0px -1px 0px #37514d;
+}
+#right > section button.mode.selected:hover {
+	background: linear-gradient(to bottom, #84525a 5%, #8e6365 100%);
+	background-color: #84525a;
+}
+
+/* Tab 1 */
+
+/** 모드 선택 **/
+#right > section > #sectionTab1 > #mode > span#creationMode {
+    left: 24px;
+    color: white;
+}
+
+#right > section > #sectionTab1 > #mode > button#terrainMode {
+    left: 24px;
+    top: 30px;
+    width: 120px;
+    height: 40px;
+}
+
+#right > section > #sectionTab1 > #mode > button#locationMode {
+    left: 24px;
+    top: 80px;
+    width: 120px;
+    height: 40px;
+}
+
+#right > section > #sectionTab1 > #mode > button#bombMode {
+    left: 24px;
+    top: 130px;
+    width: 120px;
+    height: 40px;
+}
+
+/** 지형 모드 **/
+#right > section > #sectionTab1 > #terrain > span#tileset {
+    left: 24px;
+    color: white;
+}
+
+#right > section > #sectionTab1 > #terrain > select#tilesets {
+    position: absolute;
+    left: 24px;
+    top: 34px;
+    width: 150px;
+    height: 30px;
+}
+
+#right > section > #sectionTab1 > #terrain > span#tile {
+    left: 224px;
+    color: white;
+}
+#right > section > #sectionTab1 > #terrain > div.tiles {
+    position: absolute;
+    left: 224px;
+    top: 30px;
+    border: 1px solid black;
+}
+#right > section > #sectionTab1 > #terrain > div.tiles > canvas.image { position: absolute; }
+#right > section > #sectionTab1 > #terrain > div.tiles > div.tile {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#right > section > #sectionTab1 > #terrain > span#tileSize {
+    left: 500px;
+    color: white;
+}
+
+#right > section > #sectionTab1 > #terrain > input {
+    position: absolute;
+    top: 30px;
+    width: 40px;
+}
+#right > section > #sectionTab1 > #terrain > input#tileWidth { 
+    left: 500px;
+    height: 20px;
+    font-size: 16px;
+    text-align: center;
+}
+#right > section > #sectionTab1 > #terrain > span#multiply {
+    left: 550px;
+    top: 30px;
+    color: white;
+}
+#right > section > #sectionTab1 > #terrain > input#tileHeight {
+    left: 563px;
+    height: 20px;
+    font-size: 16px;
+    text-align: center;
+}
+
+/** 로케이션 모드 **/
+#right > section > #sectionTab1 > #location > span#labelHeader {
+    left: 24px;
+    color: white;
+}
+#right > section > #sectionTab1 > #location > input#labelHeaderText {
+    position: absolute;
+    left: 24px;
+    top: 34px;
+    width: 150px;
+    height: 30px;
+    text-align: center;
+}
+#right > section > #sectionTab1 > #location > input#zeroPadCheckBox {
+    position: absolute;
+    left: 20px;
+    top: 95px;
+}
+#right > section > #sectionTab1 > #location > label#zeroPadText {
+    position: absolute;
+    left: 40px;
+    top: 97px;
+    font-size: 14px;
+    color: #fafafa;
+}
+#right > section > #sectionTab1 > #location > span#example {
+    left: 324px;
+    color: white;
+}
+#right > section > #sectionTab1 > #location > canvas#exampleCanvas {
+    position: absolute;
+    top: 34px;
+    left: 324px;
+}
+
+/** 폭탄 모드 **/
+#right > section > #sectionTab1 > #bomb > span#bombUnit {
+    left: 24px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > select#bombUnits {
+    position: absolute;
+    left: 24px;
+    top: 29px;
+    width: 230px;
+    height: 30px;
+}
+
+#right > section > #sectionTab1 > #bomb > span#blockUnit {
+    left: 24px;
+    top: 65px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > select#blockUnits {
+    position: absolute;
+    left: 24px;
+    top: 94px;
+    width: 230px;
+    height: 30px;
+}
+
+#right > section > #sectionTab1 > #bomb > input[type=radio] {
+    position: absolute;
+}
+#right > section > #sectionTab1 > #bomb > label {
+    position: absolute;
+}
+
+#right > section > #sectionTab1 > #bomb > span#blockUnitCreateProcess {
+    left: 24px;
+    top: 130px;
+    color: white;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > input#blockOption1Kill {
+    left: 117px;
+    top: 134px;
+}
+#right > section > #sectionTab1 > #bomb > label#blockOption1KillLabel {
+    left: 137px;
+    top: 136px;
+    color: white;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > input#blockOption1Remove {
+    left: 155px;
+    top: 134px;
+}
+#right > section > #sectionTab1 > #bomb > label#blockOption1RemoveLabel {
+    left: 175px;
+    top: 136px;
+    color: white;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > input#blockOption1Live {
+    left: 205px;
+    top: 134px;
+}
+#right > section > #sectionTab1 > #bomb > label#blockOption1LiveLabel {
+    left: 225px;
+    top: 136px;
+    color: white;
+    font-size: 13px;
+}
+
+#right > section > #sectionTab1 > #bomb > span#blockUnitDeleteProcess {
+    left: 24px;
+    top: 150px;
+    color: white;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > input#blockOption2Kill {
+    left: 130px;
+    top: 154px;
+}
+#right > section > #sectionTab1 > #bomb > label#blockOption2KillLabel {
+    left: 150px;
+    top: 156px;
+    color: white;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > input#blockOption2Remove {
+    left: 168px;
+    top: 154px;
+}
+#right > section > #sectionTab1 > #bomb > label#blockOption2RemoveLabel {
+    left: 188px;
+    top: 156px;
+    color: white;
+    font-size: 13px;
+}
+
+#right > section > #sectionTab1 > #bomb > button.control {
+    position: absolute;
+	box-shadow: inset 0px 1px 3px 0px #91b8b3;
+	background: linear-gradient(to bottom, #7fb3a5 5%, #799c91 100%);
+	background-color: #7fb3a5;
+	border-radius: 5px;
+	border: 1px solid #799c91;
+	cursor: pointer;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: bold;
+	text-decoration: none;
+	text-shadow: 0px -1px 0px #2b665e;
+}
+#right > section > #sectionTab1 > #bomb > button.control:hover {
+	background: linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+	background-color: #6c7c7c;
+}
+
+#right > section > #sectionTab1 > #bomb > span#turnControl {
+    left: 304px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > span#showTurns {
+    left: 384px;
+    font-size: 15px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > button#addTurn {
+    left: 454px;
+    top: 3px;
+    width: 40px;
+    height: 24px;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > button#insertTurn {
+    left: 504px;
+    top: 3px;
+    width: 40px;
+    height: 24px;
+    font-size: 13px;
+}
+
+#right > section > #sectionTab1 > #bomb > button#toFirst {
+    left: 304px;
+    top: 34px;
+    width: 40px;
+    height: 30px;
+}
+#right > section > #sectionTab1 > #bomb > button#toPrev {
+    left: 354px;
+    top: 34px;
+    width: 40px;
+    height: 30px;
+}
+#right > section > #sectionTab1 > #bomb > input#currentTurn {
+    position: absolute;
+    left: 404px;
+    top: 34px;
+    width: 40px;
+    height: 25px;
+    font-size: 18px;
+    text-align: center;
+}
+#right > section > #sectionTab1 > #bomb > button#toNext {
+    left: 454px;
+    top: 34px;
+    width: 40px;
+    height: 30px;
+}
+#right > section > #sectionTab1 > #bomb > button#toLast {
+    left: 504px;
+    top: 34px;
+    width: 40px;
+    height: 30px;
+}
+
+#right > section > #sectionTab1 > #bomb > span#setWait {
+    left: 304px;
+    top: 86px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > input#wait {
+    position: absolute;
+    left: 394px;
+    top: 86px;
+    width: 64px;
+    height: 20px;
+    font-size: 15px;
+    text-align: center;
+}
+#right > section > #sectionTab1 > #bomb > button#play {
+    left: 480px;
+    top: 84px;
+    width: 66px;
+    height: 29px;
+    font-size: 18px;
+    line-height: 18px;
+    vertical-align: middle;
+}
+
+#right > section > #sectionTab1 > #bomb > span#waitRange {
+    left: 304px;
+    top: 118px;
+    color: white;
+    font-size: 12px;
+}
+#right > section > #sectionTab1 > #bomb > span#waitRangeResult {
+    left: 428px;
+    top: 118px;
+    color: white;
+    font-size: 12px;
+}
+#right > section > #sectionTab1 > #bomb > span#actualTime {
+    left: 304px;
+    top: 138px;
+    color: white;
+    font-size: 12px;
+}
+#right > section > #sectionTab1 > #bomb > span#actualTimeResult {
+    left: 407px;
+    top: 138px;
+    color: white;
+    font-size: 12px;
+}
+#right > section > #sectionTab1 > #bomb > span#deathValue {
+    left: 304px;
+    top: 158px;
+    color: white;
+    font-size: 12px;
+}
+
+#right > section > #sectionTab1 > #bomb > span#deathValueResult {
+    left: 366px;
+    top: 158px;
+    color: white;
+    font-size: 12px;
+}
+
+/* Tab 2 */
+#right > section > #sectionTab2 span#temp { /* temporary code */
+    left: 10px;
     color: white;
 }

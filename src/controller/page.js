@@ -1,10 +1,9 @@
-$(document).ready(function() {
-    Page.refreshLayout();
+Page.onWndResize = function() {
+    Page.refreshLayout(false);
+    FooterElements.onWndResize();
+};
 
-    $(window).on("resize", onWndResize);
-});
-
-Page.refreshLayout = function() {
+Page.refreshLayout = function(shouldRefreshInfoTabs) {
     var $leftSection = $("#left > section");
     var $htmlBody = $("html,body");
     var $rightArea = $("#right");
@@ -13,14 +12,17 @@ Page.refreshLayout = function() {
         $htmlBody.css("min-width", "");
     }
     else {
-        var newMinWidth = Page.minWidth - LeftSection.totalWidth;
+        var newMinWidth = Page.minWidth - LeftSection.totalWidth();
         $htmlBody.css("min-width", newMinWidth);
     }
     $rightArea.css("width", "");
     $rightArea.css("width", ($("#page").width() - $("#left").width()) + "px");
+    
+    if (shouldRefreshInfoTabs) {
+        var $infoTabs = $("#left > section > .infoTab");
+        for (var i = 0; i < $infoTabs.length; i++) {
+            $infoTabs.eq(i).width($leftSection.width());
+            $infoTabs.eq(i).height($leftSection.height());
+        }
+    }
 };
-
-function onWndResize() {
-    Page.refreshLayout();
-    FooterElements.refreshWndSize();
-}

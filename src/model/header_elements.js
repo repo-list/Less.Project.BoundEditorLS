@@ -1,3 +1,4 @@
 var HeaderElements = {
-    onButtonClick : function() {}
+    onButtonClick : function() {},
+    showDialog : function(title, message) {}
 };

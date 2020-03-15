@@ -13,6 +13,9 @@
     <script src="app.js"></script>
     <script src="patch_note.js"></script>
 
+    <!-- Project -->
+    <script src="src/project.js"></script>
+
     <!-- View -->
     <link rel="stylesheet" href="src/view/html.css">
     <link rel="stylesheet" href="src/view/page.css">
@@ -47,56 +50,90 @@
     <script src="src/controller/right_section.js"></script>
     <script src="src/controller/footer_elements.js"></script>
 
-    <!-- Sample Test Script -->
     <script>
         $(document).ready(function() {
-            var canvasHolder = document.getElementById("articleTab1");
-            var canvas1 = canvasHolder.querySelector("#terrain");
-            var canvas2 = canvasHolder.querySelector("#location");
-            var canvas3 = canvasHolder.querySelector("#grid");
-            var context1 = canvas1.getContext("2d");
-            var context2 = canvas2.getContext("2d");
-            var context3 = canvas3.getContext("2d");
-            var tilesetImageLoadInterval = 500;
+            /*** Global Variables Init ***/
+            $tileWidthDiv = $("#sectionTab1 > #terrain > input#tileWidth");
+            $tileHeightDiv = $("#sectionTab1 > #terrain > input#tileHeight");
 
-            setTimeout(function() {
-                var gridWidth = gridHeight = RightArticle.canvas.pixelsPerTile;
+            /*** Controls ***/
+            $tileWidthDiv.attr("min", RightArticle.MIN_TILE_LENX_VALUE);
+            $tileWidthDiv.attr("max", RightArticle.MAX_TILE_LENX_VALUE);
+            $tileHeightDiv.attr("min", RightArticle.MIN_TILE_LENY_VALUE);
+            $tileHeightDiv.attr("max", RightArticle.MAX_TILE_LENY_VALUE);
 
-                var nullTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Null);
-                var dirtTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Dirt);
-                var creepTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Creep);
-                var mudTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Mud);
-                var basilicaTile = new SCTile(SCTerrainList.TwilightWorld, SCTileList.TwilightWorld.Basilica);
+            /*** Canvases ***/
+            RightArticle.initCanvases();
+            var gridWidth = RightArticle.canvasTileWidth;
+            var gridHeight = RightArticle.canvasTileHeight;
+            var gridLenX = RightArticle.canvasColumns;
+            var gridLenY = RightArticle.canvasRows;
+            SCMapAPI.drawGridLines(gridContext, gridWidth, gridHeight, 0, 0, gridLenX, gridLenY);
 
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, nullTile, 0, 0, 8, 8);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, dirtTile, 1, 1, 6, 6);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, creepTile, 7, 3, 1, 2);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, nullTile, 8, 2, 8, 4);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, mudTile, 8, 3, 2, 2);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, basilicaTile, 10, 3, 2, 2);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, mudTile, 12, 3, 2, 2);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, basilicaTile, 14, 3, 2, 2);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, nullTile, 16, 0, 8, 8);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, creepTile, 16, 3, 1, 2);
-                SCMapAPI.drawTile(context1, gridWidth, gridHeight, dirtTile, 17, 1, 6, 6);
+            /*** Event Listeners ***/
+            $(window).on("resize", Page.onWndResize);
+            $(document).on("keydown", RightArticle.onKeyDown);
+            $(document).on("keyup", RightArticle.onKeyUp);
+            $(document).on("contextmenu", function() { event.preventDefault(); });
+            $(document).on("scmapapiload", RightSection.onSCMapAPILoad);
+            $("#header > button").on("click", HeaderElements.onButtonClick);
+            $("#left > nav li").on("click", LeftNav.changeOrClosePanel);
+            $("#right > nav li").on("click", RightNav.changeTab);
+            $("#right > header button").on("click", RightHeader.onButtonClick);
+            $("#right #articleTab1").on("mousemove", function() { RightArticle.onTab1MouseMove(); FooterElements.onRightArticleTab1MouseMove(); });
+            $("#right #articleTab1").on("mouseout", function() { RightArticle.onTab1MouseOut(); FooterElements.onRightArticleTab1MouseOut(); });
+            $("#right #articleTab1").on("mousedown", RightArticle.onTab1MouseDown);
+            $("#right #articleTab1").on("mouseup", RightArticle.onTab1MouseUp);
+            $("#right > section button").on("click", RightSection.onButtonClick);
+            $("#right #sectionTab1 > #terrain > select#tilesets").on("change", RightSection.onTilesetChange);
+            $("#right #sectionTab1 input#wait").on("change", RightSection.onWaitValueChange);
+            $("#right #sectionTab1 button#play").on("click", RightSection.onPlayButtonClick);
+            $("#sectionTab1 > #bomb > input#currentTurn").on("change", RightSection.onCurrentTurnTextChange);
+            $("#sectionTab1 > #bomb > button#addTurn").on("click", RightSection.addTurn);
+            $("#sectionTab1 > #bomb > button#insertTurn").on("click", RightSection.insertTurn);
+            $("#sectionTab1 > #bomb > button#toPrev").on("click", RightSection.onToPrevClick);
+            $("#sectionTab1 > #bomb > button#toNext").on("click", RightSection.onToNextClick);
+            $("#sectionTab1 > #bomb > button#toFirst").on("click", RightSection.onToFirstClick);
+            $("#sectionTab1 > #bomb > button#toLast").on("click", RightSection.onToLastClick);
+            $("#sectionTab1 > #bomb > input[name=option1]").on("click", RightSection.onOption1RadioClick);
+            $("#sectionTab1 > #bomb > input[name=option2]").on("click", RightSection.onOption2RadioClick);
 
-                var locationA1 = new SCLocation("Location A1", 8, 3, 2, 2);
-                var locationA2 = new SCLocation("Location A2", 10, 3, 2, 2);
-                var locationA3 = new SCLocation("Location A3", 12, 3, 2, 2);
-                var locationA4 = new SCLocation("Location A4", 14, 3, 2, 2);
+            /*** Project Init ***/
+            Project.name = DEFAULT_PROJECT_NAME;
+            document.title = SHORT_APP_NAME + " - " + Project.name;
+            var patternIndex = 0;
+            var patternLabel = DEFAULT_PATTERN_LABEL;
+            var patternDescription = DEFAULT_PATTERN_DESCRIPTION;
+            var tileset = DEFAULT_TILESET;
+            var pattern = new BoundPattern(patternIndex, patternLabel, patternDescription, tileset);
+            pattern.locationLabelHeader = DEFAULT_LOCATION_LABEL_HEADER;
+            pattern.isLocationZeroPadOn = DEFAULT_IS_LOCATION_ZERO_PAD_ON;
+            pattern.blockOption1 = DEFAULT_BLOCKOPTION1;
+            pattern.blockOption2 = DEFAULT_BLOCKOPTION2;
+            pattern.currentTurn = 1;
+            var boundTurn = new BoundTurn();
+            boundTurn.wait = DEFAULT_TURN_WAIT;
+            pattern.turnList.push(boundTurn);
+            LeftSection.addPatternItem(pattern);
 
-                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA1);
-                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA2);
-                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA3);
+            /*** Mode ***/
+            RightSection.selectMode("terrainMode");
 
-                var bombColor = "#c03040";
-                var bombAlpha = 0.8;
-                SCMapAPI.drawLocation(context2, gridWidth, gridHeight, locationA4, bombColor, bombAlpha);
-
-                var gridLenX = RightArticle.canvas.bomb.columns;
-                var gridLenY = RightArticle.canvas.bomb.rows;
-                SCMapAPI.drawGridLines(context3, gridWidth, gridHeight, 0, 0, gridLenX, gridLenY);
-            }, tilesetImageLoadInterval);
+            /*** Layout ***/
+            $("#left > section").css("width", LeftSection.width + "px");
+            $("#left > section").css("margin-right", LeftSection.marginRight + "px");
+            LeftSection.changeTabTo(0);
+            if ($("#right > nav #listTab1").hasClass("selected")) RightHeader.switchTo("headerTab1");
+            else RightHeader.switchTo("headerTab2");
+            if ($("#right > nav #listTab1").hasClass("selected")) RightArticle.switchTo("articleTab1");
+            else RightArticle.switchTo("articleTab2");
+            if ($("#right > nav #listTab1").hasClass("selected")) RightSection.switchTo("sectionTab1");
+            else RightSection.switchTo("sectionTab2");
+            $terrainTilesDivs = $("#right > section > #sectionTab1 > #terrain > div.tiles");
+            $terrainTilesDivs.css("width", (RightSection.canvasTileWidth * 5) + "px");
+            $terrainTilesDivs.css("height", (RightSection.canvasTileHeight * 3) + "px");
+            FooterElements.refreshWndSize();
+            Page.refreshLayout(true);
         });
     </script>
 </head>
@@ -117,7 +154,10 @@
                     </li>
                 </ul>
             </nav>
-            <section class="open"></section>
+            <section class="open">
+                <div id="infoTab1" class="infoTab"></div>
+                <div id="infoTab2" class="infoTab"></div>
+            </section>
         </aside>
         <main id="right">
             <nav>
@@ -133,8 +173,9 @@
             <header>
                 <div id="headerTab1">
                     <button id="newPattern">새 패턴</button>
-                    <button id="loadPattern">불러오기</button>
-                    <button id="savePattern">저장</button>
+                    <button id="loadPattern">패턴 불러오기</button>
+                    <button id="savePattern">패턴 저장</button>
+                    <button id="sharePattern">패턴 공유</button>
                 </div>
                 <div id="headerTab2">
                     <button id="working">작업 중</button>
@@ -144,21 +185,118 @@
                 <div id="articleTab1">
                     <canvas id="terrain"></canvas>
                     <canvas id="location"></canvas>
+                    <canvas id="base"></canvas>
+                    <canvas id="block"></canvas>
+                    <canvas id="bomb"></canvas>
                     <canvas id="grid"></canvas>
+                    <canvas id="selection"></canvas>
                 </div>
                 <div id="articleTab2"></div>
             </article>
             <section>
                 <div id="sectionTab1">
-                    <span>패턴 생성 영역</span>
+                    <div id="mode">
+                        <span id="creationMode">* 모드 선택 :</span>
+                        <button id="terrainMode" class="mode">지형</button>
+                        <button id="locationMode"class="mode">로케이션</button>
+                        <button id="bombMode"class="mode">폭탄</button>
+                    </div>
+
+                    <div id="terrain">
+                        <span id="tileset">* 타일셋 선택 :</span>
+                        <select id="tilesets">
+                            <option value="Badlands">Badlands (배드랜드)</option>
+                            <option value="Space Platform">Space Platform (우주)</option>
+                            <option value="Installation">Installation (기지)</option>
+                            <option value="Ash World">Ash World (화산)</option>
+                            <option value="Jungle World">Jungle World (정글)</option>
+                            <option value="Desert World">Desert World (사막)</option>
+                            <option value="Ice World">Ice World (아이스)</option>
+                            <option value="Twilight World">Twilight World (황혼)</option>
+                        </select>
+
+                        <span id="tile">* 타일 선택 :</span>
+                        <div id="badlandsTiles" class="tiles" data-tileset="Badlands"></div>
+                        <div id="spacePlatformTiles" class="tiles" data-tileset="Space Platform"></div>
+                        <div id="installationTiles" class="tiles" data-tileset="Installation"></div>
+                        <div id="ashWorldTiles" class="tiles" data-tileset="Ash World"></div>
+                        <div id="jungleWorldTiles" class="tiles" data-tileset="Jungle World"></div>
+                        <div id="desertWorldTiles" class="tiles" data-tileset="Desert World"></div>
+                        <div id="iceWorldTiles" class="tiles" data-tileset="Ice World"></div>
+                        <div id="twilightWorldTiles" class="tiles" data-tileset="Twilight World"></div>
+                        
+                        <span id="tileSize">* 타일 크기 :</span>
+                        <input id="tileWidth" type="number" value="1" />
+                        <span id="multiply">x</span>
+                        <input id="tileHeight" type="number" value="1" />
+                    </div>
+                    <div id="location">
+                        <span id="labelHeader">* 레이블 헤더 :</span>
+                        <input id="labelHeaderText" type="text" maxlength="10" />
+
+                        <input id="zeroPadCheckBox" type="checkbox" />
+                        <label for="zeroPadCheckBox" id="zeroPadText">로케이션 최대 개수에 맞춰 0 붙이기</label>
+
+                        <span id="example">* 예시 :</span>
+                        <canvas id="exampleCanvas"></canvas>
+                    </div>
+                    <div id="bomb">
+                        <span id="bombUnit">* 폭탄 유닛 선택 :</span>
+                        <select id="bombUnits">
+                            <option value="Zerg Overlord">Zerg Overlord (오버로드)</option>
+                            <option value="Zerg Scourge">Zerg Scourge (스커지)</option>
+                        </select>
+
+                        <span id="blockUnit">* 장애물 유닛 선택 :</span>
+                        <select id="blockUnits">
+                            <option value="Terran Machine Shop">Terran Machine Shop (머신샵)</option>
+                            <option value="Uraj Crystal">Uraj Crystal (우라즈 크리스탈)</option>
+                        </select>
+
+                        <span id="blockUnitCreateProcess">- 생성 시 유닛 :</span>
+                        <input id="blockOption1Kill" type="radio" name="option1" value="kill" />
+                        <label for="blockOption1Kill" id="blockOption1KillLabel">킬</label>
+                        <input id="blockOption1Remove" type="radio" name="option1" value="remove" />
+                        <label for="blockOption1Remove" id="blockOption1RemoveLabel">제거</label>
+                        <input id="blockOption1Live" type="radio" name="option1" value="live" />
+                        <label for="blockOption1Live" id="blockOption1LiveLabel">생존</label>
+                        
+                        <span id="blockUnitDeleteProcess">- 삭제 시 장애물 :</span>
+                        <input id="blockOption2Kill" type="radio" name="option2" value="kill" />
+                        <label for="blockOption2Kill" id="blockOption2KillLabel">킬</label>
+                        <input id="blockOption2Remove" type="radio" name="option2" value="remove" />
+                        <label for="blockOption2Remove" id="blockOption2RemoveLabel">제거</label>
+
+                        <span id="turnControl">* 턴 제어 :</span>
+                        <span id="showTurns"></span>
+                        <button id="addTurn" class="control">추가</button>
+                        <button id="insertTurn" class="control">삽입</button>
+                        <button id="toFirst" class="control">&lt;&lt;</button>
+                        <button id="toPrev" class="control">&lt;</button>
+                        <input id="currentTurn" type="text" value="1" />
+                        <button id="toNext" class="control">&gt;</button>
+                        <button id="toLast" class="control">&gt;&gt;</button>
+                        
+                        <span id="setWait">* 웨잇 설정 :</span>
+                        <input id="wait" type="number" min="0" max="99960" step="42" />
+                        <button id="play" class="control">▶</button>
+                        <span id="waitRange">- 동일 웨잇 구간 (w) :</span>
+                        <span id="waitRangeResult"></span>
+                        <span id="actualTime">- 실제 시간 (ms) :</span>
+                        <span id="actualTimeResult"></span>
+                        <span id="deathValue">- 데스 값 :</span>
+                        <span id="deathValueResult"></span>
+                    </div>
                 </div>
                 <div id="sectionTab2">
-                    <span>맵 수정 영역</span>
+                    <span id="temp">맵 수정 영역</span>
                 </div>
             </section>
         </main>
         <footer id="footer">
-            <div class="divider"></div>
+            <div id="line01" class="divider"></div>
+            <span id="articleAreaCoords"></span>
+            <div id="line02" class="divider"></div>
             <span id="wndSize"></span>
         </footer>
     </div>

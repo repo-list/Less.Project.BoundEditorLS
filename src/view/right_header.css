@@ -13,7 +13,7 @@
 
 #right > header button {
     position: absolute;
-    width: 72px;
+    width: 102px;
     height: 20px;
     margin-top: 5px;
     background-color: #868686;
@@ -26,6 +26,7 @@
 
 #right > header button:hover { opacity: 0.75; }
 #right > header button#newPattern { left: 10px; }
-#right > header button#loadPattern { left: 97px; }
-#right > header button#savePattern { left: 184px; }
+#right > header button#loadPattern { left: 127px; }
+#right > header button#savePattern { left: 244px; }
+#right > header button#sharePattern { left: 361px; }
 #right > header button#working { left: 10px; }

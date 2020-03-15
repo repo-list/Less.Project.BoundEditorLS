@@ -5,8 +5,9 @@
     height: 20px;
     margin-top: 2px;
     background-color: #9890a0;
-    right: 100px;
 }
+#footer > div#line01 { right: 183px; }
+#footer > div#line02 { right: 100px; }
 
 #footer > span {
     display: inline-block;
@@ -17,3 +18,4 @@
     color: #353535;
 }
 #footer > span#wndSize { right: 20px; }
+#footer > span#articleAreaCoords { right: 125px; }

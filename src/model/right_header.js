@@ -1,3 +1,4 @@
 var RightHeader = {
-    switch : function() {}
+    switchTo : function(elementID) {},
+    onButtonClick : function() {}
 };

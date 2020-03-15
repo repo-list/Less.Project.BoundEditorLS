@@ -1,29 +1,30 @@
-$(document).ready(function() {
-    if ($("#listTab1").hasClass("selected")) RightHeader.switchTo("headerTab2");
-    else RightHeader.switchTo("headerTab1");
-
-    $("#right > header button").on("click", RightHeader.onButtonClick);
-});
-
-RightHeader.switchTo = function(elementId) {
-    $("#headerTab1").css("display", "");
-    $("#headerTab2").css("display", "");
-    $("#"+elementId).css("display", "none");
+RightHeader.switchTo = function(elementID) {
+    $("#headerTab1").css("display", "none");
+    $("#headerTab2").css("display", "none");
+    $("#"+elementID).css("display", "");
 };
 
 RightHeader.onButtonClick = function() {
     switch ($(this).prop("id")) {
         case "newPattern":
-            alert("새 패턴");
+            alert("새 패턴 - 준비 중입니다.");
+            console.log("Button Clicked - New Pattern");
             break;
         case "loadPattern":
-            alert("불러오기");
+            alert("패턴 불러오기 - 준비 중입니다.");
+            console.log("Button Clicked - Load Pattern");
             break;
         case "savePattern":
-            alert("저장");
+            alert("패턴 저장 - 준비 중입니다.");
+            console.log("Button Clicked - Save Pattern");
             break;
+        case "sharePattern":
+            alert("패턴 공유 - 준비 중입니다.");
+            console.log("Button Clicked - Share Pattern");
+            break
         case "working":
             alert("작업 중");
+            console.log("Button Clicked - Working");
             break;
     }
 };

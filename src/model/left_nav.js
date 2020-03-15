@@ -1,3 +1,3 @@
 var LeftNav = {
-    
+    changeOrClosePanel : function() {}
 };

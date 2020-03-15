@@ -1,8 +1,4 @@
-$(document).ready(function() {
-    $("#right > nav li").on("click", changeTab);
-});
-
-function changeTab() {
+RightNav.changeTab = function() {
     var $tabList = $("#right > nav li");
     var $tab;
     if ($(this).hasClass("selected")) return;
@@ -17,13 +13,13 @@ function changeTab() {
     $(this).toggleClass("selected");
     
     if ($("#listTab1").hasClass("selected")) {
-        RightHeader.switchTo("headerTab2");
-        RightArticle.switchTo("articleTab2");
-        RightSection.switchTo("sectionTab2");
-    }
-    else {
         RightHeader.switchTo("headerTab1");
         RightArticle.switchTo("articleTab1");
         RightSection.switchTo("sectionTab1");
     }
-}
+    else {
+        RightHeader.switchTo("headerTab2");
+        RightArticle.switchTo("articleTab2");
+        RightSection.switchTo("sectionTab2");
+    }
+};

@@ -1,7 +1,3 @@
-$(document).ready(function() {
-    $("#header > button").on("click", HeaderElements.onButtonClick);
-});
-
 HeaderElements.onButtonClick = function() {
     var title = "", message = "";
     
@@ -23,9 +19,9 @@ HeaderElements.onButtonClick = function() {
             break;
     }
 
-    showDialog(title, message);
+    HeaderElements.showDialog(title, message);
 };
 
-function showDialog(title, message) {
+HeaderElements.showDialog = function(title, message) {
     alert("[" + title + "]\n" + message);
 }

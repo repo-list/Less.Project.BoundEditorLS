@@ -1,3 +1,3 @@
 var RightNav = {
-    
+    changeTab : function() {}
 };

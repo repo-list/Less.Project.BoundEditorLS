@@ -1,3 +1,8 @@
 var LeftSection = {
-    totalWidth : 210 // width 206px + margin-right 4px
+    width: 206,
+    marginRight: 4,
+    totalWidth : function() {},
+    addPatternItem : function(pattern) {},
+    changeTabTo : function(tabIndex) {},
+    selectPattern : function(patternIndex) {}
 };
