@@ -15,6 +15,7 @@ HeaderElements.onButtonClick = function() {
             message += "제작자 : " + App.author + "\n";
             message += "이메일 : " + App.authorEmail + "\n";
             message += "버전 : " + App.version + "\n";
+            message += "소스 링크 : " + App.sourceLink + "\n";
             message += "설명 : " + App.description;
             break;
     }
