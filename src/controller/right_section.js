@@ -153,6 +153,20 @@ RightSection.selectMode = function(modeName) {
             break;
     }
     RightArticle.clearContext(selectionCanvas, selectionContext);
+    if (modeName === "locationMode" && RightArticle.selectedLocation !== null) {
+        let gridWidth = RightArticle.canvasTileWidth;
+        let gridHeight = RightArticle.canvasTileHeight;
+        let left = RightArticle.selectedLocation.getLeft(gridWidth);
+        let right = RightArticle.selectedLocation.getRight(gridWidth);
+        let top = RightArticle.selectedLocation.getTop(gridHeight);
+        let bottom = RightArticle.selectedLocation.getBottom(gridHeight);
+        let posX = parseInt(left / gridWidth);
+        let posY = parseInt(top / gridHeight);
+        let lenX = parseInt((right - left) / gridWidth);
+        let lenY = parseInt((bottom - top) / gridHeight);
+        let borderWidth = 2;
+        RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
+    }
     RightSection.currentMode = modeName;
     
     console.log("Selected Mode : " + RightSection.currentMode);
@@ -496,8 +510,7 @@ RightSection.changeTurn = function(turnNumber) {
     $("#sectionTab1 > #bomb > input#currentTurn").val(currentTurn);
     $("#sectionTab1 > #bomb > span#showTurns").text(currentTurn + " / " + turnList.length);
 
-    console.log("TEMP :: Current Turn - " + currentTurn);
-    console.log("TEMP :: Turn List Length - " + turnList.length);
+    console.log("BoundTurn Changed to : " + currentTurn + "/" + turnList.length);
     var boundTurn = turnList[currentTurn - 1];
     $("#sectionTab1 > #bomb > input#wait").val(boundTurn.wait);
 

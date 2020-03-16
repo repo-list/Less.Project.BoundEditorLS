@@ -57,9 +57,13 @@ RightArticle.onTab1MouseDown = function() {
                 let locationLenX, locationLenY;
 
                 for (var i = 0; i < locationList.length; i++) {
+                    // 현재 레이어가 아니면, 검사 자체를 스킵
+                    if (locationList[i].layer !== RightArticle.currentLocationLayer) continue;
+
                     if ((event.offsetX >= locationList[i].getLeft(gridWidth) && event.offsetX <= locationList[i].getRight(gridWidth)) &&
                          event.offsetY >= locationList[i].getTop(gridHeight) && event.offsetY <= locationList[i].getBottom(gridHeight)) {
                         // 로케이션 영역에 마우스 이벤트가 발생했으면
+
                         if (mouseButton === MOUSEBUTTON_LEFT) {
                             // 폭탄 설정의 입력이 발생한 경우 (왼쪽 클릭)
                             for (var j = cellList.length - 1; j >= 0; j--) {
@@ -129,12 +133,39 @@ RightArticle.onTab1MouseDown = function() {
                                             if (tempCellList[l].location === locationList[i]) {
                                                 if (tempCellList[l].type === TURNCELLTYPE_BOMB) continue;
                                                 else if (tempCellList[l].type === TURNCELLTYPE_BLOCKCREATE) {
-                                                    // 이전 패턴에 장애물 설정이 있는데 BLOCKCREATE이므로, BLOCKDELETE를 수행
-                                                    cellType = TURNCELLTYPE_BLOCKDELETE;
-                                                    cellUnit = tempCellList[l].unit; // 기존에 설정했던 장애물 유닛
-                                                    if (Project.currentPattern.blockOption2 === BLOCKOPTION2_BLOCKKILL) cellOption = TURNCELLOPTION_BLOCKKILL;
-                                                    else if (Project.currentPattern.blockOption2 === BLOCKOPTION2_BLOCKREMOVE) cellOption = TURNCELLOPTION_BLOCKREMOVE;
-                                                    cellList.push(new BoundTurnCell(locationList[i], cellType, cellUnit, cellOption));
+                                                    // 이전 패턴에 장애물 설정이 있는데 BLOCKCREATE이므로, BLOCKDELETE를 수행해야 함.
+                                                    // 그런데 이후 패턴에 이미 BLOCKDELETE가 있을 수 있으므로 그 여부를 확인하고, 있으면 continue;
+                                                    let isBlockDeleteFound = false;
+                                                    for (var m = currentTurn; ; m++) {
+                                                        if (m === turnList.length) m = 0;
+
+                                                        let tempCellList2 = turnList[m].cellList;
+                                                        for (var n = 0; n < tempCellList2.length; n++) {
+                                                            if (tempCellList2[n].location === locationList[i]) {
+                                                                if (tempCellList2[n].type === TURNCELLTYPE_BLOCKCREATE) {
+                                                                    // 가능
+                                                                    isSearchFinished = true;
+                                                                    break;
+                                                                }
+                                                                else if (tempCellList2[n].type === TURNCELLTYPE_BLOCKDELETE) {
+                                                                    // 불가능
+                                                                    isSearchFinished = true;
+                                                                    isBlockDeleteFound = true;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        if (m === k || isSearchFinished) break;
+                                                    }
+                                                    if (!isBlockDeleteFound) {
+                                                        // 모든 턴을 다 검사했으나, BLOCKDELETE가 확실히 존재하지 않으므로, BLOCKDELETE
+                                                        cellType = TURNCELLTYPE_BLOCKDELETE;
+                                                        cellUnit = tempCellList[l].unit; // 기존에 설정했던 장애물 유닛
+                                                        if (Project.currentPattern.blockOption2 === BLOCKOPTION2_BLOCKKILL) cellOption = TURNCELLOPTION_BLOCKKILL;
+                                                        else if (Project.currentPattern.blockOption2 === BLOCKOPTION2_BLOCKREMOVE) cellOption = TURNCELLOPTION_BLOCKREMOVE;
+                                                        cellList.push(new BoundTurnCell(locationList[i], cellType, cellUnit, cellOption));
+                                                    }
 
                                                     isSearchFinished = true;
                                                     break;
@@ -233,6 +264,12 @@ RightArticle.onTab1MouseUp = function() {
                         
                         RightArticle.selectedLocation.setPosition(posX, posY);
                         RightArticle.isSelectedLocationMoving = false;
+                        
+                        // 로케이션 리스트의 레이어 갱신 및 maxLayer 계산
+                        var gridWidth = RightArticle.canvasTileWidth;
+                        var gridHeight = RightArticle.canvasTileHeight;
+                        RightArticle.refreshLocationListLayers(gridWidth, gridHeight);
+
                         RightArticle.redrawLocationList();
                         RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
                     }
@@ -258,6 +295,7 @@ RightArticle.onTab1MouseUp = function() {
                                         RightArticle.selectedLocation = locationList[j];
                                         RightArticle.clearContext(selectionCanvas, selectionContext);
                                         RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
+                                        console.log("Location Selected (Label : " + locationList[j].label + ", PosX : " + posX + ", PosY : " + posY + ", lenX : " + lenX + ", lenY : " + lenY + ", Layer : " + locationList[j].layer + ")");
                                         break;
                                     }
                                 }
@@ -269,8 +307,6 @@ RightArticle.onTab1MouseUp = function() {
                 else {
                     if (RightArticle.isDragging) {
                         // 로케이션 생성 1
-                        RightArticle.clearContext(selectionCanvas, selectionContext);
-    
                         if (event.offsetX > RightArticle.initialDragPosX) posX = parseInt(RightArticle.initialDragPosX / gridWidth);
                         else posX = parseInt(event.offsetX / gridWidth);
                         if (event.offsetY > RightArticle.initialDragPosY) posY = parseInt(RightArticle.initialDragPosY / gridHeight);
@@ -279,30 +315,8 @@ RightArticle.onTab1MouseUp = function() {
                         else lenX = parseInt((RightArticle.initialDragPosX / gridWidth) + 1) - parseInt(event.offsetX / gridWidth);
                         if (event.offsetY > RightArticle.initialDragPosY) lenY = parseInt((event.offsetY / gridHeight) + 1) - parseInt(RightArticle.initialDragPosY / gridHeight);
                         else lenY = parseInt((RightArticle.initialDragPosY / gridHeight) + 1) - parseInt(event.offsetY / gridHeight);
-    
-                        let labelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
-                        let newLabelNumber = Project.currentPattern.locationList.length + 1;
-                        let isZeroPadChecked = $("#sectionTab1 > #location > input#zeroPadCheckBox").is(":checked");
-                        let newLabel = labelHeader + newLabelNumber;
-                        let newLocation = new SCLocation(newLabel, posX, posY, lenX, lenY);
-                        let modCount = 0;
-                        
-                        if (isZeroPadChecked) {
-                            for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
-                                let label = Project.currentPattern.locationList[i].label;
-                                let numberStr = label.substr(labelHeader.length);
-                                let newLabelNumberLen = (newLabelNumber + "").length;
-    
-                                if (numberStr.length < newLabelNumberLen) {
-                                    Project.currentPattern.locationList[i].label = labelHeader + "0" + numberStr;
-                                    modCount++;
-                                }
-                            }
-                            if (modCount > 0) RightArticle.redrawLocationList();
-                        }
-    
-                        SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, newLocation);
-                        Project.currentPattern.locationList.push(newLocation);
+
+                        RightArticle.createLocation(gridWidth, gridHeight, posX, posY, lenX, lenY);
                         
                         RightArticle.initialDragPosX = UNDEFINED_INT;
                         RightArticle.initialDragPosY = UNDEFINED_INT;
@@ -323,6 +337,8 @@ RightArticle.onTab1MouseUp = function() {
     
                                 RightArticle.clearContext(selectionCanvas, selectionContext);
                                 RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
+
+                                console.log("Location Selected (Label : " + location.label + ", PosX : " + posX + ", PosY : " + posY + ", lenX : " + lenX + ", lenY : " + lenY + ", Layer : " + location.layer + ")");
     
                                 RightArticle.selectedLocation = location;
                                 isLocationSelected = true;
@@ -331,36 +347,12 @@ RightArticle.onTab1MouseUp = function() {
                         }
                         if (!isLocationSelected) {
                             // 로케이션 생성 2
-                            RightArticle.clearContext(selectionCanvas, selectionContext);
-    
                             posX = parseInt(event.offsetX / gridWidth);
                             posY = parseInt(event.offsetY / gridHeight);
                             lenX = 1;
                             lenY = 1;
-        
-                            let labelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
-                            let newLabelNumber = Project.currentPattern.locationList.length + 1;
-                            let isZeroPadChecked = $("#sectionTab1 > #location > input#zeroPadCheckBox").is(":checked");
-                            let newLabel = labelHeader + newLabelNumber;
-                            let newLocation = new SCLocation(newLabel, posX, posY, lenX, lenY);
-                            let modCount = 0;
-                            
-                            if (isZeroPadChecked) {
-                                for (var j = 0; j < Project.currentPattern.locationList.length; j++) {
-                                    let label = Project.currentPattern.locationList[j].label;
-                                    let numberStr = label.substr(labelHeader.length);
-                                    let newLabelNumberLen = (newLabelNumber + "").length;
-        
-                                    if (numberStr.length < newLabelNumberLen) {
-                                        Project.currentPattern.locationList[j].label = labelHeader + "0" + numberStr;
-                                        modCount++;
-                                    }
-                                }
-                                if (modCount > 0) RightArticle.redrawLocationList();
-                            }
-        
-                            SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, newLocation);
-                            Project.currentPattern.locationList.push(newLocation);
+
+                            RightArticle.createLocation(gridWidth, gridHeight, posX, posY, lenX, lenY);
                         }
                     }
                 }
@@ -469,7 +461,11 @@ RightArticle.onTab1MouseMove = function() {
 
 RightArticle.onTab1MouseOut = function() {};
 
-RightArticle.onKeyDown = function() {};
+RightArticle.onKeyDown = function() {
+    if (event.keyCode === 9) { // TAB KEY
+        event.preventDefault(); // 탭 키 눌렀을 때 기본 이벤트 취소
+    }
+};
 
 RightArticle.onKeyUp = function() {
     console.log("Keyup : " + event.keyCode);
@@ -513,11 +509,27 @@ RightArticle.onKeyUp = function() {
                             Project.currentPattern.locationList.splice(i, 1);
                             RightArticle.clearContext(selectionCanvas, selectionContext);
                             RightArticle.selectedLocation = null;
+                            
+                            // 기존 로케이션들 레이어 카운트 갱신
+                            let gridWidth = RightArticle.canvasTileWidth;
+                            let gridHeight = RightArticle.canvasTileHeight;
+                            RightArticle.refreshLocationListLayers(gridWidth, gridHeight);
+
                             RightArticle.redrawLocationList();
                             break;
                         }
                     }
                 }
+                break;
+        }
+    }
+    else if (event.keyCode === 9) { // TAB KEY
+        switch (RightSection.currentMode) {
+            case "bombMode":
+                // 현재 로케이션 레이어 전환 (+1) 후 redraw
+                if (++RightArticle.currentLocationLayer > RightArticle.maxLocationLayer) RightArticle.currentLocationLayer = 1;
+                console.log("bombMode - Location Layer Changed to : " + RightArticle.currentLocationLayer);
+                RightArticle.redrawBombSettings();
                 break;
         }
     }
@@ -725,74 +737,119 @@ RightArticle.redrawBombSettings = function() {
     var selectedTurn = Project.currentPattern.turnList[Project.currentPattern.currentTurn - 1];
     var gridWidth = RightArticle.canvasTileWidth;
     var gridHeight = RightArticle.canvasTileHeight;
-    var fillColorStr = "#ffffff";
-    var alphaVal = DEFAULT_LOCATION_ALPHA;
-    var borderWidth = 0.5;
-    var borderColorStr = "#343434";
-    var fontColorStr = "#000000";
     var location, unit, isInvalid;
+
+    var funcDefaultFillColorStr = "#ffffff";
+    var funcDefaultFillColorAlpha = 0.6;
+    var funcDefaultBorderWidth = 0.5;
+    var funcDefaultBorderColorStr = "#343434";
+    var funcDefaultFontColorStr = "#000000";
+    var funcDefaultFontColorAlpha = DEFAULT_LOCATIONFONT_ALPHA;
+    var fillColorStr, fillColorAlpha, borderWidth, borderColorStr, fontColorStr, fontColorAlpha;
 
     RightArticle.clearContext(bombCanvas, baseContext);
     RightArticle.clearContext(bombCanvas, blockContext);
     RightArticle.clearContext(bombCanvas, bombContext);
+    
+    fillColorStr = funcDefaultFillColorStr;
+    fillColorAlpha = funcDefaultFillColorAlpha;
+    borderWidth = funcDefaultBorderWidth;
+    borderColorStr = funcDefaultBorderColorStr;
+    fontColorStr = funcDefaultFontColorStr;
+    fontColorAlpha = funcDefaultFontColorAlpha;
 
-    for (var i = 0; i < locationList.length; i++) {
-        location = locationList[i];
-        SCMapAPI.drawLocation(baseContext, gridWidth, gridHeight, location, fillColorStr, alphaVal, borderWidth, borderColorStr, fontColorStr);
+    // 기반 로케이션 영역 표시
+    for (var i = RightArticle.currentLocationLayer - 1;; i--) {
+        if (i < 0) i = RightArticle.maxLocationLayer;
+
+        for (var j = 0; j < locationList.length; j++) {
+            location = locationList[j];
+            if (location.layer === i) {
+                if (location.layer === RightArticle.currentLocationLayer) {
+                    fillColorStr = funcDefaultFillColorStr;
+                    fillColorAlpha = funcDefaultFillColorAlpha;
+                    fontColorAlpha = funcDefaultFontColorAlpha;
+                    SCMapAPI.drawLocation(baseContext, gridWidth, gridHeight, location, fillColorStr, fillColorAlpha, borderWidth, borderColorStr, fontColorStr);
+                }
+                else {
+                    fillColorStr = "#cccccc";
+                    fillColorAlpha = 0.45;
+                    fontColorAlpha = 0.7;
+                    SCMapAPI.drawLocation(baseContext, gridWidth, gridHeight, location, fillColorStr, fillColorAlpha, borderWidth, borderColorStr, fontColorStr, fontColorAlpha);
+                }
+            }
+        }
+
+        if (i === RightArticle.currentLocationLayer) break;
     }
-    for (var i = 0; i < selectedTurn.cellList.length; i++) {
-        let cell = selectedTurn.cellList[i];
-        if (cell.type === TURNCELLTYPE_BOMB) {
-            location = selectedTurn.cellList[i].location;
-            isInvalid = false;
-            for (var j = 0; j < Units.length; j++) {
-                if (Units[j].name === selectedTurn.cellList[i].unit) {
-                    switch (Units[j].race) {
-                        case RACE_ZERG: fillColorStr = "#c03040"; break;
-                        case RACE_TERRAN: fillColorStr = "#c08040"; break;
-                        case RACE_PROTOSS: fillColorStr = "#3040c0"; break;
-                        default:
-                            console.log("Units 배열에 해당 폭탄 유닛의 종족 값이 잘못되었습니다. (" + selectedTurn.cellList[i].unit + ")");
-                            isInvalid = true;
-                            break;
+
+    fillColorStr = funcDefaultFillColorStr;
+    fillColorAlpha = funcDefaultFillColorAlpha;
+    borderWidth = funcDefaultBorderWidth;
+    borderColorStr = funcDefaultBorderColorStr;
+    fontColorStr = DEFAULT_LOCATIONFONT_COLOR;
+    fontColorAlpha = funcDefaultFontColorAlpha;
+
+    // 현재 턴의 폭탄, 장애물 설정 표시
+    for (var i = RightArticle.currentLocationLayer - 1;; i--) {
+        if (i < 0) i = RightArticle.maxLocationLayer;
+        
+        for (var j = 0; j < selectedTurn.cellList.length; j++) {
+            let cell = selectedTurn.cellList[j];
+            location = selectedTurn.cellList[j].location;
+
+            if (cell.type === TURNCELLTYPE_BOMB) {
+                isInvalid = false;
+                for (var k = 0; k < Units.length; k++) {
+                    if (Units[k].name === selectedTurn.cellList[j].unit) {
+                        switch (Units[k].race) {
+                            case RACE_ZERG: fillColorStr = "#c03040"; break;
+                            case RACE_TERRAN: fillColorStr = "#c08040"; break;
+                            case RACE_PROTOSS: fillColorStr = "#3040c0"; break;
+                            default:
+                                console.log("Units 배열에 해당 폭탄 유닛의 종족 값이 잘못되었습니다. (" + selectedTurn.cellList[j].unit + ")");
+                                isInvalid = true;
+                                break;
+                        }
+                        break;
                     }
-                    break;
+                    else if (k === Units.length - 1) {
+                        console.log("Units 배열에 해당 폭탄 유닛의 종족 데이터가 누락 되었습니다. (" + selectedTurn.cellList[j].unit + ")");
+                        isInvalid = true;
+                    }
                 }
-                else if (j === Units.length - 1) {
-                    console.log("Units 배열에 해당 폭탄 유닛의 종족 데이터가 누락 되었습니다. (" + selectedTurn.cellList[i].unit + ")");
-                    isInvalid = true;
-                }
-            }
-            if (!isInvalid) {
-                alphaVal = 0.6;
-                SCMapAPI.drawLocation(bombContext, gridWidth, gridHeight, location, fillColorStr, alphaVal, borderWidth, borderColorStr);
-            }
-        }
-        else if (cell.type === TURNCELLTYPE_BLOCKCREATE) {
-            location = selectedTurn.cellList[i].location;
-            unit = selectedTurn.cellList[i].unit;
-            isCenterAligned = true;
-            RightArticle.drawBlockUnit(blockContext, gridWidth, gridHeight, location, unit, isCenterAligned);
-        }
-        else if (cell.type === TURNCELLTYPE_BLOCKDELETE) {
-            location = selectedTurn.cellList[i].location;
-            isInvalid = false;
-            for (var j = 0; j < Units.length; j++) {
-                if (Units[j].name === selectedTurn.cellList[i].unit) {
-                    if (Units[j].size === 1) unit = UNIT_OTHER_BLOCKEXPLOSION1;
-                    else unit = UNIT_OTHER_BLOCKEXPLOSION2;
-                    break;
-                }
-                else if (j === Units.length - 1) {
-                    console.log("Units 배열에 해당 장애물 유닛의 사이즈 데이터가 누락 되었습니다. (" + selectedTurn.cellList[i].unit + ")");
-                    isInvalid = true;
+                if (!isInvalid) {
+                    fillColorAlpha = (location.layer === RightArticle.currentLocationLayer) ? 0.4 : 0.2;
+                    fontColorAlpha = (location.layer === RightArticle.currentLocationLayer) ? DEFAULT_LOCATIONFONT_ALPHA : 0.2;
+                    SCMapAPI.drawLocation(bombContext, gridWidth, gridHeight, location, fillColorStr, fillColorAlpha, borderWidth, borderColorStr, fontColorStr, fontColorAlpha);
                 }
             }
-            if (!isInvalid) {
+            else if (cell.type === TURNCELLTYPE_BLOCKCREATE) {
+                unit = selectedTurn.cellList[j].unit;
                 isCenterAligned = true;
                 RightArticle.drawBlockUnit(blockContext, gridWidth, gridHeight, location, unit, isCenterAligned);
             }
+            else if (cell.type === TURNCELLTYPE_BLOCKDELETE) {
+                isInvalid = false;
+                for (var k = 0; k < Units.length; k++) {
+                    if (Units[k].name === selectedTurn.cellList[j].unit) {
+                        if (Units[k].size === 1) unit = UNIT_OTHER_BLOCKEXPLOSION1;
+                        else unit = UNIT_OTHER_BLOCKEXPLOSION2;
+                        break;
+                    }
+                    else if (k === Units.length - 1) {
+                        console.log("Units 배열에 해당 장애물 유닛의 사이즈 데이터가 누락 되었습니다. (" + selectedTurn.cellList[j].unit + ")");
+                        isInvalid = true;
+                    }
+                }
+                if (!isInvalid) {
+                    isCenterAligned = true;
+                    RightArticle.drawBlockUnit(blockContext, gridWidth, gridHeight, location, unit, isCenterAligned);
+                }
+            }
         }
+
+        if (i === RightArticle.currentLocationLayer) break;
     }
     
     console.log("Bomb Settings Redrawn");
@@ -827,4 +884,76 @@ RightArticle.drawBlockUnit = function(canvasContext, gridWidth, gridHeight, loca
             }
         }
     }
+};
+
+RightArticle.createLocation = function(gridWidth, gridHeight, posX, posY, lenX, lenY) {
+    RightArticle.clearContext(selectionCanvas, selectionContext);
+    RightArticle.selectedLocation = null;
+
+    var locationList = Project.currentPattern.locationList;
+    var labelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
+    var newLabelNumber = locationList.length + 1;
+    var isZeroPadChecked = $("#sectionTab1 > #location > input#zeroPadCheckBox").is(":checked");
+    var newLabel = labelHeader + newLabelNumber;
+
+    // 새로 만드는 로케이션의 레이어 카운트 계산
+    var newLocation = new SCLocation(newLabel, posX, posY, lenX, lenY);
+    locationList.push(newLocation);
+
+    // 기존 로케이션들 레이어 카운트 갱신
+    RightArticle.refreshLocationListLayers(gridWidth, gridHeight);
+
+    // 레이블 - ZeroPad 시 0 개수 계산
+    var modCount = 0;
+    if (isZeroPadChecked) {
+        for (var i = 0; i < locationList.length - 1; i++) {
+            let label = locationList[i].label;
+            let numberStr = label.substr(labelHeader.length);
+            let newLabelNumberLen = (newLabelNumber + "").length;
+
+            if (numberStr.length < newLabelNumberLen) {
+                locationList[i].label = labelHeader + "0" + numberStr;
+                modCount++;
+            }
+        }
+        if (modCount > 0) RightArticle.redrawLocationList();
+    }
+
+    SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, newLocation);
+};
+
+RightArticle.refreshLocationListLayers = function(gridWidth, gridHeight) {
+    var locationList = Project.currentPattern.locationList;
+    var maxLayer = 1;
+
+    // 로케이션 레이어 초기화
+    for ( var i = 0; i < locationList.length; i++) locationList[i].layer = 1;
+
+    // 로케이션 레이어 새로 계산
+    for (var i = locationList.length - 2; i >= 0; i--) {
+        let targetLeft = locationList[i].getLeft(gridWidth);
+        let targetRight = locationList[i].getRight(gridWidth);
+        let targetTop = locationList[i].getTop(gridHeight);
+        let targetBottom = locationList[i].getBottom(gridHeight);
+
+        for (var j = locationList.length - 1; j >= i + 1; j--) {
+            let higherLayerLeft = locationList[j].getLeft(gridWidth);
+            let higherLayerRight = locationList[j].getRight(gridWidth);
+            let higherLayerTop = locationList[j].getTop(gridHeight);
+            let higherLayerBottom = locationList[j].getBottom(gridHeight);
+
+            // 충돌 체크
+            if (targetLeft < higherLayerRight &&
+                targetTop < higherLayerBottom &&
+                targetRight > higherLayerLeft &&
+                targetBottom > higherLayerTop) {
+                // 더 상단 레이어에 있는 로케이션과 충돌하므로, 레이어 값을 "해당 상단 로케이션의 레이어 값 + 1"로 설정
+                locationList[i].layer = locationList[j].layer + 1;
+                if (locationList[i].layer > maxLayer) maxLayer = locationList[i].layer;
+            }
+        }
+    }
+
+    // maxLayer 값 변경
+    RightArticle.maxLocationLayer = maxLayer;
 };

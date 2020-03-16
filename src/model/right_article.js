@@ -34,6 +34,8 @@ var RightArticle = {
     selectedLocation : null, // SCLocation
     isLocationControlModeOn : false,
     isSelectedLocationMoving : false,
+    currentLocationLayer : 1,
+    maxLocationLayer : 1,
 
     // bombMode 관련
 
@@ -60,5 +62,7 @@ var RightArticle = {
     getSafeLenYValue : function(originalLenY) {},
     deleteSelectedTiles : function() {},
     redrawBombSettings : function() {},
-    drawBlockUnit : function(canvasContext, gridWidth, gridHeight, location) {}
+    drawBlockUnit : function(canvasContext, gridWidth, gridHeight, location) {},
+    createLocation : function(gridWidth, gridHeight, posX, posY, lenX, lenY) {},
+    refreshLocationListLayers : function(gridWidth, gridHeight) {}
 };

@@ -54,14 +54,17 @@ LeftSection.selectPattern = function(pattern) {
     $("#sectionTab1 > #bomb > input#wait").val(pattern.turnList[pattern.currentTurn - 1].wait);
     RightSection.refreshWaitRefData();
 
+    // 로케이션 리스트의 레이어 갱신 및 maxLayer 계산
+    var gridWidth = RightArticle.canvasTileWidth;
+    var gridHeight = RightArticle.canvasTileHeight;
+    RightArticle.refreshLocationListLayers(gridWidth, gridHeight);
+
+    // 화면 갱신
     RightArticle.clearContext(terrainCanvas, terrainContext);
     RightArticle.clearContext(locationCanvas, locationContext);
     RightArticle.clearContext(bombCanvas, bombContext);
     RightArticle.clearContext(selectionCanvas, selectionContext);
 
-    // TODO : 여기부터 잘 작동하는지 검증이 필요 (패턴 여러 개 제작 후, 스위칭 시 버그가 없음을 확인할 것)
-    var gridWidth = RightArticle.canvasTileWidth;
-    var gridHeight = RightArticle.canvasTileHeight;
     for (var i = 0; i < pattern.tileDataList.length; i++) {
         let tileData = pattern.tileDataList[i];
         SCMapAPI.drawTile(terrainContext, gridWidth, gridHeight, tileData.tile, tileData.posX, tileData.posY, 1, 1);
@@ -71,4 +74,6 @@ LeftSection.selectPattern = function(pattern) {
         SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, pattern.locationList[i]);
     }
     console.log("Redraw : Pattern Locations");
+
+    // bombMode는 들어갈 때 다시 그리므로, 여기서 처리할 필요가 없음.
 };

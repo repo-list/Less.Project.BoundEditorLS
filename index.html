@@ -73,6 +73,7 @@
             var gridLenX = RightArticle.canvasColumns;
             var gridLenY = RightArticle.canvasRows;
             SCMapAPI.drawGridLines(gridContext, gridWidth, gridHeight, 0, 0, gridLenX, gridLenY);
+            blockContext.globalAlpha = DEFAULT_BLOCKCONTEXT_ALPHA;
 
             /*** Event Listeners ***/
             $(window).on("resize", Page.onWndResize);
@@ -287,6 +288,9 @@
                             <option value="Uraj Crystal">Uraj Crystal (우라즈 크리스탈)</option>
                             <option value="Khaydarin Crystal">Khaydarin Crystal (케이다린 크리스탈)</option>
                         </select>
+                        
+                        <span id="tabKeyNotice1">※ 도움말 : 로케이션이 겹쳐 있는 경우,</span>
+                        <span id="tabKeyNotice2">탭 키를 눌러 레이어 전환 후 클릭하세요.</span>
 
                         <span id="blockUnitCreateProcess">- 생성 시 유닛 :</span>
                         <input id="blockOption1Kill" type="radio" name="option1" value="kill" />

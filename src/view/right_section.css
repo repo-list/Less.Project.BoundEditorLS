@@ -308,6 +308,17 @@
     font-size: 13px;
 }
 
+#right > section > #sectionTab1 > #bomb > span#tabKeyNotice1 {
+    left: 298px;
+    top: 127px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > span#tabKeyNotice2 {
+    left: 298px;
+    top: 149px;
+    color: white;
+}
+
 #right > section > #sectionTab1 > #bomb > button.control {
     position: absolute;
 	box-shadow: inset 0px 1px 3px 0px #91b8b3;

@@ -17,7 +17,15 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.8.0 (2018-03-16, Latest) <br/>
+@ 0.9.0 (2018-03-17, Latest) <br/>
+
+- Bomb Settings Mode - Location layer concept implemented (Use tab key to switch between locations) <br/>
+- -> 폭탄 설정 모드 - 로케이션 레이어 개념 구현 (탭 키로 레이어 전환) <br/><br/>
+
+- Minor bugs fixed <br/>
+- -> 자잘한 버그 수정 <br/><br/>
+
+@ 0.8.0 (2018-03-16) <br/>
 
 - Location drag & drop function implemented <br/>
 - -> 로케이션 드래그 이동 기능 구현 <br/><br/>

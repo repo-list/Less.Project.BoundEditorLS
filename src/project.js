@@ -1,6 +1,8 @@
 // Project Constants
 const UNDEFINED_INT = -1;
 
+const DEFAULT_BLOCKCONTEXT_ALPHA = 0.7;
+
 const MOUSEBUTTON_LEFT = "left";
 const MOUSEBUTTON_MIDDLE = "middle";
 const MOUSEBUTTON_RIGHT = "right";
