@@ -12,12 +12,20 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ Live Link : https://bound.devcos.site/BoundEditorLS/test/ <br/>
 
-@ Version : 0.7.0 <br/>
+@ Version : 0.8.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.7.0 (2018-03-16, Latest) <br/>
+@ 0.8.0 (2018-03-16, Latest) <br/>
+
+- Location drag & drop function implemented <br/>
+- -> 로케이션 드래그 이동 기능 구현 <br/><br/>
+
+- Locations are now selected in order when multiple locations are stacked in one place <br/>
+- -> 로케이션 중첩 시 순차 선택 기능 구현 <br/><br/>
+
+@ 0.7.0 (2018-03-16) <br/>
 
 - Way of selecting bomb units has been changed <br/>
 - -> 폭탄 설정 모드의 폭탄 유닛 선택 방식 변경 <br/><br/>

@@ -31,6 +31,20 @@ RightArticle.onTab1MouseDown = function() {
             }
             break;
         case "locationMode":
+            if (mouseButton === MOUSEBUTTON_LEFT) {
+                if (RightArticle.selectedLocation !== null) {
+                    let left = RightArticle.selectedLocation.getLeft(gridWidth);
+                    let right = RightArticle.selectedLocation.getRight(gridWidth);
+                    let top = RightArticle.selectedLocation.getTop(gridHeight);
+                    let bottom = RightArticle.selectedLocation.getBottom(gridHeight);
+
+                    if ((event.offsetX >= left && event.offsetX <= right) && (event.offsetY >= top && event.offsetY <= bottom)) {
+                        // 로케이션 제어 모드 ON
+                        // 이후에 mousemove 이벤트가 발생한다면 로케이션 이동, 그렇지 않다면 겹쳐져 있는 차순위 로케이션 선택
+                        RightArticle.isLocationControlModeOn = true; 
+                    }
+                }
+            }
             break;
         case "bombMode":
             if (mouseButton === MOUSEBUTTON_LEFT || mouseButton === MOUSEBUTTON_RIGHT) {
@@ -160,7 +174,7 @@ RightArticle.onTab1MouseUp = function() {
     var mouseButton = RightArticle.getMouseButtonFromEvent(event);
     var gridWidth = RightArticle.canvasTileWidth;
     var gridHeight = RightArticle.canvasTileHeight;
-    var posX, posY, lenX, lenY, borderWidth;
+    var posX, posY, lenX, lenY, borderWidth, width, height;
 
     switch (RightSection.currentMode) {
         case "terrainMode":
@@ -205,76 +219,66 @@ RightArticle.onTab1MouseUp = function() {
             break;
         case "locationMode":
             if (mouseButton === MOUSEBUTTON_LEFT) {
-                if (RightArticle.isDragging) {
-                    // 로케이션 생성 1
-                    RightArticle.clearContext(selectionCanvas, selectionContext);
-
-                    if (event.offsetX > RightArticle.initialDragPosX) posX = parseInt(RightArticle.initialDragPosX / gridWidth);
-                    else posX = parseInt(event.offsetX / gridWidth);
-                    if (event.offsetY > RightArticle.initialDragPosY) posY = parseInt(RightArticle.initialDragPosY / gridHeight);
-                    else posY = parseInt(event.offsetY / gridHeight);
-                    if (event.offsetX > RightArticle.initialDragPosX) lenX = parseInt((event.offsetX / gridWidth) + 1) - parseInt(RightArticle.initialDragPosX / gridWidth);
-                    else lenX = parseInt((RightArticle.initialDragPosX / gridWidth) + 1) - parseInt(event.offsetX / gridWidth);
-                    if (event.offsetY > RightArticle.initialDragPosY) lenY = parseInt((event.offsetY / gridHeight) + 1) - parseInt(RightArticle.initialDragPosY / gridHeight);
-                    else lenY = parseInt((RightArticle.initialDragPosY / gridHeight) + 1) - parseInt(event.offsetY / gridHeight);
-
-                    let labelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
-                    let newLabelNumber = Project.currentPattern.locationList.length + 1;
-                    let isZeroPadChecked = $("#sectionTab1 > #location > input#zeroPadCheckBox").is(":checked");
-                    let newLabel = labelHeader + newLabelNumber;
-                    let newLocation = new SCLocation(newLabel, posX, posY, lenX, lenY);
-                    let modCount = 0;
-                    
-                    if (isZeroPadChecked) {
-                        for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
-                            let label = Project.currentPattern.locationList[i].label;
-                            let numberStr = label.substr(labelHeader.length);
-                            let newLabelNumberLen = (newLabelNumber + "").length;
-
-                            if (numberStr.length < newLabelNumberLen) {
-                                Project.currentPattern.locationList[i].label = labelHeader + "0" + numberStr;
-                                modCount++;
+                if (RightArticle.selectedLocation !== null && RightArticle.isLocationControlModeOn) {
+                    if (RightArticle.isDragging) {
+                        // 로케이션 이동 시
+                        RightArticle.clearContext(selectionCanvas, selectionContext);
+                        width = RightArticle.selectedLocation.getRight(gridWidth) - RightArticle.selectedLocation.getLeft(gridWidth);
+                        height = RightArticle.selectedLocation.getBottom(gridHeight) - RightArticle.selectedLocation.getTop(gridHeight);
+                        posX = Math.round((event.offsetX - parseInt(width / 2)) / gridWidth);
+                        posY = Math.round((event.offsetY - parseInt(height / 2)) / gridHeight);
+                        lenX = parseInt(width / gridWidth);
+                        lenY = parseInt(height / gridHeight);
+                        borderWidth = 2;
+                        
+                        RightArticle.selectedLocation.setPosition(posX, posY);
+                        RightArticle.isSelectedLocationMoving = false;
+                        RightArticle.redrawLocationList();
+                        RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
+                    }
+                    else {
+                        // 한 단계 아래 로케이션 선택 시
+                        let locationList = Project.currentPattern.locationList;
+                        for (var i = 0; i < locationList.length; i++) {
+                            if (locationList[i] === RightArticle.selectedLocation) {
+                                for (var j = i + 1;; j++) {
+                                    if (j === locationList.length) j = 0;
+                                    if (locationList[j] === RightArticle.selectedLocation) break;
+                                    let left = locationList[j].getLeft(gridWidth);
+                                    let right = locationList[j].getRight(gridWidth);
+                                    let top = locationList[j].getTop(gridHeight);
+                                    let bottom = locationList[j].getBottom(gridHeight);
+                                    
+                                    if ((event.offsetX >= left && event.offsetX <= right) && (event.offsetY >= top && event.offsetY <= bottom)) {
+                                        borderWidth = 2;
+                                        posX = parseInt(left / gridWidth);
+                                        posY = parseInt(top / gridHeight);
+                                        lenX = parseInt((right - left) / gridWidth);
+                                        lenY = parseInt((bottom - top) / gridHeight);
+                                        RightArticle.selectedLocation = locationList[j];
+                                        RightArticle.clearContext(selectionCanvas, selectionContext);
+                                        RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
+                                        break;
+                                    }
+                                }
+                                break;
                             }
                         }
-                        if (modCount > 0) RightArticle.redrawLocationList();
                     }
-
-                    SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, newLocation);
-                    Project.currentPattern.locationList.push(newLocation);
-                    
-                    RightArticle.initialDragPosX = UNDEFINED_INT;
-                    RightArticle.initialDragPosY = UNDEFINED_INT;
                 }
                 else {
-                    // 로케이션이 존재할 경우 선택, 그렇지 않을 경우 생성
-                    var isLocationSelected = false;
-                    for (var i = Project.currentPattern.locationList.length - 1; i >= 0; i--) {
-                        let location = Project.currentPattern.locationList[i];
-                        if ((event.offsetX >= location.getLeft(gridWidth) && event.offsetX <= location.getRight(gridWidth)) &&
-                             (event.offsetY >= location.getTop(gridHeight) && event.offsetY <= location.getBottom(gridHeight))) {
-                            // 로케이션 선택
-                            posX = parseInt(location.getLeft(gridWidth) / gridWidth);
-                            posY = parseInt(location.getTop(gridHeight) / gridHeight);
-                            lenX = parseInt((location.getRight(gridWidth) - location.getLeft(gridWidth)) / gridWidth);
-                            lenY = parseInt((location.getBottom(gridHeight) - location.getTop(gridHeight)) / gridHeight);
-                            borderWidth = 2;
-
-                            RightArticle.clearContext(selectionCanvas, selectionContext);
-                            RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
-
-                            RightArticle.selectedLocation = location;
-                            isLocationSelected = true;
-                            break;
-                        }
-                    }
-                    if (!isLocationSelected) {
-                        // 로케이션 생성 2
+                    if (RightArticle.isDragging) {
+                        // 로케이션 생성 1
                         RightArticle.clearContext(selectionCanvas, selectionContext);
-
-                        posX = parseInt(event.offsetX / gridWidth);
-                        posY = parseInt(event.offsetY / gridHeight);
-                        lenX = 1;
-                        lenY = 1;
+    
+                        if (event.offsetX > RightArticle.initialDragPosX) posX = parseInt(RightArticle.initialDragPosX / gridWidth);
+                        else posX = parseInt(event.offsetX / gridWidth);
+                        if (event.offsetY > RightArticle.initialDragPosY) posY = parseInt(RightArticle.initialDragPosY / gridHeight);
+                        else posY = parseInt(event.offsetY / gridHeight);
+                        if (event.offsetX > RightArticle.initialDragPosX) lenX = parseInt((event.offsetX / gridWidth) + 1) - parseInt(RightArticle.initialDragPosX / gridWidth);
+                        else lenX = parseInt((RightArticle.initialDragPosX / gridWidth) + 1) - parseInt(event.offsetX / gridWidth);
+                        if (event.offsetY > RightArticle.initialDragPosY) lenY = parseInt((event.offsetY / gridHeight) + 1) - parseInt(RightArticle.initialDragPosY / gridHeight);
+                        else lenY = parseInt((RightArticle.initialDragPosY / gridHeight) + 1) - parseInt(event.offsetY / gridHeight);
     
                         let labelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
                         let newLabelNumber = Project.currentPattern.locationList.length + 1;
@@ -284,13 +288,13 @@ RightArticle.onTab1MouseUp = function() {
                         let modCount = 0;
                         
                         if (isZeroPadChecked) {
-                            for (var j = 0; j < Project.currentPattern.locationList.length; j++) {
-                                let label = Project.currentPattern.locationList[j].label;
+                            for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
+                                let label = Project.currentPattern.locationList[i].label;
                                 let numberStr = label.substr(labelHeader.length);
                                 let newLabelNumberLen = (newLabelNumber + "").length;
     
                                 if (numberStr.length < newLabelNumberLen) {
-                                    Project.currentPattern.locationList[j].label = labelHeader + "0" + numberStr;
+                                    Project.currentPattern.locationList[i].label = labelHeader + "0" + numberStr;
                                     modCount++;
                                 }
                             }
@@ -299,6 +303,65 @@ RightArticle.onTab1MouseUp = function() {
     
                         SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, newLocation);
                         Project.currentPattern.locationList.push(newLocation);
+                        
+                        RightArticle.initialDragPosX = UNDEFINED_INT;
+                        RightArticle.initialDragPosY = UNDEFINED_INT;
+                    }
+                    else {
+                        // 로케이션이 존재할 경우 선택, 그렇지 않을 경우 생성
+                        var isLocationSelected = false;
+                        for (var i = Project.currentPattern.locationList.length - 1; i >= 0; i--) {
+                            let location = Project.currentPattern.locationList[i];
+                            if ((event.offsetX >= location.getLeft(gridWidth) && event.offsetX <= location.getRight(gridWidth)) &&
+                                 (event.offsetY >= location.getTop(gridHeight) && event.offsetY <= location.getBottom(gridHeight))) {
+                                // 로케이션 선택
+                                posX = parseInt(location.getLeft(gridWidth) / gridWidth);
+                                posY = parseInt(location.getTop(gridHeight) / gridHeight);
+                                lenX = parseInt((location.getRight(gridWidth) - location.getLeft(gridWidth)) / gridWidth);
+                                lenY = parseInt((location.getBottom(gridHeight) - location.getTop(gridHeight)) / gridHeight);
+                                borderWidth = 2;
+    
+                                RightArticle.clearContext(selectionCanvas, selectionContext);
+                                RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
+    
+                                RightArticle.selectedLocation = location;
+                                isLocationSelected = true;
+                                break;
+                            }
+                        }
+                        if (!isLocationSelected) {
+                            // 로케이션 생성 2
+                            RightArticle.clearContext(selectionCanvas, selectionContext);
+    
+                            posX = parseInt(event.offsetX / gridWidth);
+                            posY = parseInt(event.offsetY / gridHeight);
+                            lenX = 1;
+                            lenY = 1;
+        
+                            let labelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
+                            let newLabelNumber = Project.currentPattern.locationList.length + 1;
+                            let isZeroPadChecked = $("#sectionTab1 > #location > input#zeroPadCheckBox").is(":checked");
+                            let newLabel = labelHeader + newLabelNumber;
+                            let newLocation = new SCLocation(newLabel, posX, posY, lenX, lenY);
+                            let modCount = 0;
+                            
+                            if (isZeroPadChecked) {
+                                for (var j = 0; j < Project.currentPattern.locationList.length; j++) {
+                                    let label = Project.currentPattern.locationList[j].label;
+                                    let numberStr = label.substr(labelHeader.length);
+                                    let newLabelNumberLen = (newLabelNumber + "").length;
+        
+                                    if (numberStr.length < newLabelNumberLen) {
+                                        Project.currentPattern.locationList[j].label = labelHeader + "0" + numberStr;
+                                        modCount++;
+                                    }
+                                }
+                                if (modCount > 0) RightArticle.redrawLocationList();
+                            }
+        
+                            SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, newLocation);
+                            Project.currentPattern.locationList.push(newLocation);
+                        }
                     }
                 }
             }
@@ -310,9 +373,11 @@ RightArticle.onTab1MouseUp = function() {
             }
             break;
     }
+    
+    RightArticle.isLocationControlModeOn = false;
 };
 
-RightArticle.onTab1MouseMove = function() { // TODO : 로케이션 드래그 이동 기능 추가
+RightArticle.onTab1MouseMove = function() {
     // Section 1
     var gridWidth = RightArticle.canvasTileWidth;
     var gridHeight = RightArticle.canvasTileHeight
@@ -325,7 +390,12 @@ RightArticle.onTab1MouseMove = function() { // TODO : 로케이션 드래그 이
     var left, top, right, bottom;
     var mouseButton = RightArticle.getMouseButtonFromEvent(event);
     
-    if (mouseButton === MOUSEBUTTON_LEFT && RightArticle.isMouseDown) RightArticle.isDragging = true;
+    if (mouseButton === MOUSEBUTTON_LEFT && RightArticle.isMouseDown) {
+        RightArticle.isDragging = true;
+        if (RightSection.currentMode === "locationMode" && RightArticle.isMouseDown && mouseButton === MOUSEBUTTON_LEFT && RightArticle.selectedLocation !== null) {
+            RightArticle.isSelectedLocationMoving = true;
+        }
+    }
     
     if (RightSection.currentMode === "terrainMode" && RightSection.currentTile !== null) {
         RightArticle.clearContext(selectionCanvas, selectionContext);
@@ -371,17 +441,26 @@ RightArticle.onTab1MouseMove = function() { // TODO : 로케이션 드래그 이
         case "locationMode":
             if (RightArticle.isMouseDown && mouseButton === MOUSEBUTTON_LEFT) {
                 if (RightArticle.isDragging) {
-                    if (event.offsetX > RightArticle.initialDragPosX) left = parseInt(RightArticle.initialDragPosX / gridWidth);
-                    else left = parseInt(event.offsetX / gridWidth);
-                    if (event.offsetY > RightArticle.initialDragPosY) top = parseInt(RightArticle.initialDragPosY / gridHeight);
-                    else top = parseInt(event.offsetY / gridHeight);
-                    if (event.offsetX > RightArticle.initialDragPosX) right = parseInt((event.offsetX / gridWidth) + 1);
-                    else right = parseInt((RightArticle.initialDragPosX / gridWidth) + 1);
-                    if (event.offsetY > RightArticle.initialDragPosY) bottom = parseInt((event.offsetY / gridHeight) + 1);
-                    else bottom = parseInt((RightArticle.initialDragPosY / gridHeight) + 1);
-
-                    RightArticle.clearContext(selectionCanvas, selectionContext);
-                    RightArticle.drawLocationSquare(selectionContext, gridWidth, gridHeight, left, top, right, bottom);
+                    if (RightArticle.selectedLocation !== null && RightArticle.isLocationControlModeOn) {
+                        // 로케이션 이동 시 드래그 이벤트
+                        RightArticle.clearContext(selectionCanvas, selectionContext);
+                        RightArticle.drawLocationMoveSquare(selectionContext, gridWidth, gridHeight, event);
+                    }
+                    else {
+                        // 로케이션 생성 시 드래그 이벤트
+                        RightArticle.isLocationControlModeOn = false; // 만약 켜져 있으면 강제 해제
+                        if (event.offsetX > RightArticle.initialDragPosX) left = parseInt(RightArticle.initialDragPosX / gridWidth);
+                        else left = parseInt(event.offsetX / gridWidth);
+                        if (event.offsetY > RightArticle.initialDragPosY) top = parseInt(RightArticle.initialDragPosY / gridHeight);
+                        else top = parseInt(event.offsetY / gridHeight);
+                        if (event.offsetX > RightArticle.initialDragPosX) right = parseInt((event.offsetX / gridWidth) + 1);
+                        else right = parseInt((RightArticle.initialDragPosX / gridWidth) + 1);
+                        if (event.offsetY > RightArticle.initialDragPosY) bottom = parseInt((event.offsetY / gridHeight) + 1);
+                        else bottom = parseInt((RightArticle.initialDragPosY / gridHeight) + 1);
+    
+                        RightArticle.clearContext(selectionCanvas, selectionContext);
+                        RightArticle.drawLocationSquare(selectionContext, gridWidth, gridHeight, left, top, right, bottom);
+                    }
                 }
             }
             break;
@@ -461,8 +540,16 @@ RightArticle.redrawLocationList = function() {
     var gridHeight = RightArticle.canvasTileHeight;
 
     RightArticle.clearContext(locationCanvas, locationContext);
-    for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
-        SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, Project.currentPattern.locationList[i]);
+    if (!RightArticle.isSelectedLocationMoving) { // 로케이션 이동 중이 아니면 평범하게 처리
+        for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
+            SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, Project.currentPattern.locationList[i]);
+        }
+    }
+    else { // 로케이션 이동 중일 때는 선택된 로케이션을 만날 경우, 표시하지 않음.
+        for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
+            if (Project.currentPattern.locationList[i] === RightArticle.selectedLocation) continue;
+            SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, Project.currentPattern.locationList[i]);
+        }
     }
 };
 
@@ -542,6 +629,19 @@ RightArticle.drawLocationSquare = function(canvasContext, gridWidth, gridHeight,
     canvasContext.fillStyle = (hexColorStr === undefined) ? DEFAULT_LOCATION_COLOR : hexColorStr;
     canvasContext.fillRect(left, top, right - left, bottom - top);
 
+    canvasContext.globalAlpha = 1.0;
+};
+
+RightArticle.drawLocationMoveSquare = function(canvasContext, gridWidth, gridHeight, event) {
+    var width = RightArticle.selectedLocation.getRight(gridWidth) - RightArticle.selectedLocation.getLeft(gridWidth);
+    var height = RightArticle.selectedLocation.getBottom(gridHeight) - RightArticle.selectedLocation.getTop(gridHeight);
+    var left = event.offsetX - parseInt(width / 2);
+    var top = event.offsetY - parseInt(height / 2);
+
+    canvasContext.globalAlpha = DEFAULT_LOCATION_ALPHA;
+    canvasContext.fillStyle = DEFAULT_LOCATION_COLOR;
+    canvasContext.fillRect(left, top, width, height);
+    
     canvasContext.globalAlpha = 1.0;
 };
 

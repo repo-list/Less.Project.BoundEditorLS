@@ -32,6 +32,8 @@ var RightArticle = {
 
     // locationMode 관련
     selectedLocation : null, // SCLocation
+    isLocationControlModeOn : false,
+    isSelectedLocationMoving : false,
 
     // bombMode 관련
 
@@ -51,6 +53,7 @@ var RightArticle = {
     drawDragSquare : function(canvasContext, startPosX, startPosY, endPosX, endPosY) {},
     drawSelectionSquare : function(canvasContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth) {},
     drawLocationSquare : function(canvasContext, gridWidth, gridHeight, left, top, right, bottom, hexColorStr, alphaVal) {},
+    drawLocationMoveSquare : function(canvasContext, gridWidth, gridHeight, event) {},
     getMouseButtonFromEvent : function(eventObj) {},
     putTile : function(canvasContext, gridWidth, gridHeight, tile, posX, posY, lenX, lenY) {},
     getSafeLenXValue : function(originalLenX) {},
