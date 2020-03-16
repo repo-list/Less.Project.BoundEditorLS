@@ -567,3 +567,54 @@ RightSection.onOption2RadioClick = function() {
             break;
     }
 };
+
+RightSection.onBombUnits1Change = function() {
+    var targetUnit = $(this).val();
+    var turnList = Project.currentPattern.turnList;
+
+    for (var i = 0; i < turnList.length; i++) {
+        let cellList = turnList[i].cellList;
+        for (var j = 0; j < cellList.length; j++) {
+            if (cellList[j].unit === Project.currentPattern.bombUnit1) {
+                cellList[j].unit = targetUnit;
+            }
+        }
+    }
+
+    Project.currentPattern.bombUnit1 = targetUnit;
+    RightArticle.redrawBombSettings();
+};
+
+RightSection.onBombUnits2Change = function() {
+    var targetUnit = $(this).val();
+    var turnList = Project.currentPattern.turnList;
+
+    for (var i = 0; i < turnList.length; i++) {
+        let cellList = turnList[i].cellList;
+        for (var j = 0; j < cellList.length; j++) {
+            if (cellList[j].unit === Project.currentPattern.bombUnit2) {
+                cellList[j].unit = targetUnit;
+            }
+        }
+    }
+
+    Project.currentPattern.bombUnit2 = targetUnit;
+    RightArticle.redrawBombSettings();
+};
+
+RightSection.onBombUnits3Change = function() {
+    var targetUnit = $(this).val();
+    var turnList = Project.currentPattern.turnList;
+
+    for (var i = 0; i < turnList.length; i++) {
+        let cellList = turnList[i].cellList;
+        for (var j = 0; j < cellList.length; j++) {
+            if (cellList[j].unit === Project.currentPattern.bombUnit3) {
+                cellList[j].unit = targetUnit;
+            }
+        }
+    }
+
+    Project.currentPattern.bombUnit3 = targetUnit;
+    RightArticle.redrawBombSettings();
+};

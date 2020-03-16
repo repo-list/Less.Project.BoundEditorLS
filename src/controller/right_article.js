@@ -34,19 +34,18 @@ RightArticle.onTab1MouseDown = function() {
             break;
         case "bombMode":
             if (mouseButton === MOUSEBUTTON_LEFT || mouseButton === MOUSEBUTTON_RIGHT) {
-                console.log("TEMP :: spot 6");
                 var locationList = Project.currentPattern.locationList;
                 var turnList = Project.currentPattern.turnList;
                 var currentTurn = Project.currentPattern.currentTurn;
                 var cellList = turnList[currentTurn - 1].cellList;
                 var cellType, cellUnit, cellOption;
                 let isProcessDone = false;
+                let locationLenX, locationLenY;
+
                 for (var i = 0; i < locationList.length; i++) {
-                    console.log("TEMP :: spot 7");
                     if ((event.offsetX >= locationList[i].getLeft(gridWidth) && event.offsetX <= locationList[i].getRight(gridWidth)) &&
                          event.offsetY >= locationList[i].getTop(gridHeight) && event.offsetY <= locationList[i].getBottom(gridHeight)) {
                         // 로케이션 영역에 마우스 이벤트가 발생했으면
-                        console.log("TEMP :: spot 8");
                         if (mouseButton === MOUSEBUTTON_LEFT) {
                             // 폭탄 설정의 입력이 발생한 경우 (왼쪽 클릭)
                             for (var j = cellList.length - 1; j >= 0; j--) {
@@ -62,20 +61,21 @@ RightArticle.onTab1MouseDown = function() {
                             if (!isProcessDone) {
                                 // 현재 턴에는 해당 로케이션에 대한 폭탄 설정이 아직 없으므로, 셀 추가
                                 cellType = TURNCELLTYPE_BOMB;
-                                cellUnit = $("#sectionTab1 > #bomb > select#bombUnits").val();
+                                locationLenX = parseInt((locationList[i].getRight(gridWidth) - locationList[i].getLeft(gridWidth)) / gridWidth);
+                                locationLenY = parseInt((locationList[i].getBottom(gridHeight) - locationList[i].getTop(gridHeight)) / gridHeight);
+                                if (locationLenX >= 3 && locationLenY >= 3) cellUnit = $("#sectionTab1 > #bomb > select#bombUnits3").val();
+                                else if (locationLenX >= 2 && locationLenY >= 2) cellUnit = $("#sectionTab1 > #bomb > select#bombUnits2").val();
+                                else cellUnit = $("#sectionTab1 > #bomb > select#bombUnits1").val();
                                 cellOption = TURNCELLOPTION_NONE;
                                 cellList.push(new BoundTurnCell(locationList[i], cellType, cellUnit, cellOption));
                             }
                         }
                         else {
                             // 장애물 설정의 입력이 발생한 경우 (오른쪽 클릭)
-                            console.log("TEMP :: spot 9");
                             for (var j = cellList.length - 1; j >= 0; j--) {
-                                console.log("TEMP :: spot 10");
                                 if (cellList[j].location === locationList[i]) {
                                     if (cellList[j].type === TURNCELLTYPE_BLOCKCREATE || cellList[j].type === TURNCELLTYPE_BLOCKDELETE) {
                                         // 현재 턴에 이미 해당 로케이션에 대한 장애물 설정이 있으므로, 셀 삭제 처리
-                                        console.log("TEMP :: spot 11");
                                         cellList.splice(j, 1);
                                         isProcessDone = true;
                                         break;
@@ -84,10 +84,8 @@ RightArticle.onTab1MouseDown = function() {
                             }
                             if (!isProcessDone) {
                                 // 현재 턴에는 해당 로케이션에 대한 장애물 설정이 아직 없으므로, 셀 추가 (TURNCELLTYPE_BLOCKCREATE 또는 TURNCELLTYPE_BLOCKDELETE 가능)
-                                console.log("TEMP :: spot 12");
                                 if (turnList.length === 1) {
                                     // 현재 턴밖에 없므므로 기존 설정이 존재할 리가 없음. 따라서 BLOCKCREATE
-                                    console.log("TEMP :: spot 13");
                                     cellType = TURNCELLTYPE_BLOCKCREATE;
                                     cellUnit = $("#sectionTab1 > #bomb > select#blockUnits").val();
                                     if (Project.currentPattern.blockOption1 === BLOCKOPTION1_UNITKILL) cellOption = TURNCELLOPTION_UNITKILL;
@@ -96,14 +94,11 @@ RightArticle.onTab1MouseDown = function() {
                                     cellList.push(new BoundTurnCell(locationList[i], cellType, cellUnit, cellOption));
                                 }
                                 else {
-                                    console.log("TEMP :: spot 14");
                                     let isSearchFinished = false;
                                     for (var k = currentTurn - 2; ; k--) {
-                                        console.log("TEMP :: spot 15");
                                         if (k < 0) k = turnList.length - 1;
                                         if (k === currentTurn - 1) {
                                             // 모든 턴을 다 검사했으나, 기존 설정이 없으므로 BLOCKCREATE
-                                            console.log("TEMP :: spot 21");
                                             cellType = TURNCELLTYPE_BLOCKCREATE;
                                             cellUnit = $("#sectionTab1 > #bomb > select#blockUnits").val();
                                             if (Project.currentPattern.blockOption1 === BLOCKOPTION1_UNITKILL) cellOption = TURNCELLOPTION_UNITKILL;
@@ -117,13 +112,10 @@ RightArticle.onTab1MouseDown = function() {
 
                                         let tempCellList = turnList[k].cellList;
                                         for (var l = 0; l < tempCellList.length; l++) {
-                                            console.log("TEMP :: spot 16");
                                             if (tempCellList[l].location === locationList[i]) {
-                                                console.log("TEMP :: spot 17");
                                                 if (tempCellList[l].type === TURNCELLTYPE_BOMB) continue;
                                                 else if (tempCellList[l].type === TURNCELLTYPE_BLOCKCREATE) {
                                                     // 이전 패턴에 장애물 설정이 있는데 BLOCKCREATE이므로, BLOCKDELETE를 수행
-                                                    console.log("TEMP :: spot 18");
                                                     cellType = TURNCELLTYPE_BLOCKDELETE;
                                                     cellUnit = tempCellList[l].unit; // 기존에 설정했던 장애물 유닛
                                                     if (Project.currentPattern.blockOption2 === BLOCKOPTION2_BLOCKKILL) cellOption = TURNCELLOPTION_BLOCKKILL;
@@ -135,7 +127,6 @@ RightArticle.onTab1MouseDown = function() {
                                                 }
                                                 else if (tempCellList[l].type === TURNCELLTYPE_BLOCKDELETE) {
                                                     // 이전 패턴에 장애물 설정이 있는데 BLOCKDELETE이므로, 그냥 장애물이 없는 것이니 BLOCKCREATE를 수행
-                                                    console.log("TEMP :: spot 19");
                                                     cellType = TURNCELLTYPE_BLOCKCREATE;
                                                     cellUnit = $("#sectionTab1 > #bomb > select#blockUnits").val();
                                                     if (Project.currentPattern.blockOption1 === BLOCKOPTION1_UNITKILL) cellOption = TURNCELLOPTION_UNITKILL;
@@ -155,7 +146,6 @@ RightArticle.onTab1MouseDown = function() {
                         }
 
                         // 최종적으로 바뀐 것을 적용하여 캔버스 다시 그리기
-                        console.log("TEMP :: spot 20");
                         RightArticle.redrawBombSettings();
                         break;
                     }
@@ -640,42 +630,101 @@ RightArticle.redrawBombSettings = function() {
     var borderWidth = 0.5;
     var borderColorStr = "#343434";
     var fontColorStr = "#000000";
+    var location, unit, isInvalid;
 
     RightArticle.clearContext(bombCanvas, baseContext);
     RightArticle.clearContext(bombCanvas, blockContext);
     RightArticle.clearContext(bombCanvas, bombContext);
 
     for (var i = 0; i < locationList.length; i++) {
-        SCMapAPI.drawLocation(baseContext, gridWidth, gridHeight, locationList[i], fillColorStr, alphaVal, borderWidth, borderColorStr, fontColorStr);
-        console.log("TEMP :: spot 1");
+        location = locationList[i];
+        SCMapAPI.drawLocation(baseContext, gridWidth, gridHeight, location, fillColorStr, alphaVal, borderWidth, borderColorStr, fontColorStr);
     }
-    console.log("TEMP :: spot 2");
     for (var i = 0; i < selectedTurn.cellList.length; i++) {
         let cell = selectedTurn.cellList[i];
-        console.log("TEMP :: spot 3");
         if (cell.type === TURNCELLTYPE_BOMB) {
-            fillColorStr = "#c03040";
-            alphaVal = 0.8;
-            // TODO : 유닛 표시 처리
-            SCMapAPI.drawLocation(bombContext, gridWidth, gridHeight, selectedTurn.cellList[i].location, fillColorStr, alphaVal, borderWidth, borderColorStr);
+            location = selectedTurn.cellList[i].location;
+            isInvalid = false;
+            for (var j = 0; j < Units.length; j++) {
+                if (Units[j].name === selectedTurn.cellList[i].unit) {
+                    switch (Units[j].race) {
+                        case RACE_ZERG: fillColorStr = "#c03040"; break;
+                        case RACE_TERRAN: fillColorStr = "#c08040"; break;
+                        case RACE_PROTOSS: fillColorStr = "#3040c0"; break;
+                        default:
+                            console.log("Units 배열에 해당 폭탄 유닛의 종족 값이 잘못되었습니다. (" + selectedTurn.cellList[i].unit + ")");
+                            isInvalid = true;
+                            break;
+                    }
+                    break;
+                }
+                else if (j === Units.length - 1) {
+                    console.log("Units 배열에 해당 폭탄 유닛의 종족 데이터가 누락 되었습니다. (" + selectedTurn.cellList[i].unit + ")");
+                    isInvalid = true;
+                }
+            }
+            if (!isInvalid) {
+                alphaVal = 0.6;
+                SCMapAPI.drawLocation(bombContext, gridWidth, gridHeight, location, fillColorStr, alphaVal, borderWidth, borderColorStr);
+            }
         }
         else if (cell.type === TURNCELLTYPE_BLOCKCREATE) {
-            console.log("TEMP :: spot 4");
-            fillColorStr = "#676767";
-            alphaVal = 0.8;
-            fontColorStr = "#ffffff";
-            // TODO : 장애물 표시 처리
-            SCMapAPI.drawLocation(blockContext, gridWidth, gridHeight, selectedTurn.cellList[i].location, fillColorStr, alphaVal, borderWidth, borderColorStr, fontColorStr);
+            location = selectedTurn.cellList[i].location;
+            unit = selectedTurn.cellList[i].unit;
+            isCenterAligned = true;
+            RightArticle.drawBlockUnit(blockContext, gridWidth, gridHeight, location, unit, isCenterAligned);
         }
         else if (cell.type === TURNCELLTYPE_BLOCKDELETE) {
-            console.log("TEMP :: spot 5");
-            fillColorStr = "#ffff00";
-            alphaVal = 0.4;
-            fontColorStr = "#652d92";
-            // TODO : 장애물 표시 처리
-            SCMapAPI.drawLocation(blockContext, gridWidth, gridHeight, selectedTurn.cellList[i].location, fillColorStr, alphaVal, borderWidth, borderColorStr, fontColorStr);
+            location = selectedTurn.cellList[i].location;
+            isInvalid = false;
+            for (var j = 0; j < Units.length; j++) {
+                if (Units[j].name === selectedTurn.cellList[i].unit) {
+                    if (Units[j].size === 1) unit = UNIT_OTHER_BLOCKEXPLOSION1;
+                    else unit = UNIT_OTHER_BLOCKEXPLOSION2;
+                    break;
+                }
+                else if (j === Units.length - 1) {
+                    console.log("Units 배열에 해당 장애물 유닛의 사이즈 데이터가 누락 되었습니다. (" + selectedTurn.cellList[i].unit + ")");
+                    isInvalid = true;
+                }
+            }
+            if (!isInvalid) {
+                isCenterAligned = true;
+                RightArticle.drawBlockUnit(blockContext, gridWidth, gridHeight, location, unit, isCenterAligned);
+            }
         }
     }
     
     console.log("Bomb Settings Redrawn");
+};
+
+RightArticle.drawBlockUnit = function(canvasContext, gridWidth, gridHeight, location, unit, isCenterAligned) {
+    if (!isCenterAligned) {
+        for (var i = 0; i < Resource.image.units.length; i++) {
+            if (Resource.image.units[i].name === unit) {
+                canvasContext.drawImage(Resource.image.units[0].image, location.getLeft(gridWidth), location.getTop(gridHeight));
+                break;
+            }
+            else if (i === Resource.image.units.length - 1) {
+                console.log("drawBlockUnit - !isCenterAligned : 그리기 실패 (" + unit + ")");
+            }
+        }
+    }
+    else {
+        var locationCenterX = parseInt((location.getRight(gridWidth) + location.getLeft(gridWidth)) / 2);
+        var locationCenterY = parseInt((location.getBottom(gridHeight) + location.getTop(gridHeight)) / 2);
+
+        for (var i = 0; i < Resource.image.units.length; i++) {
+            if (Resource.image.units[i].name === unit) {
+                let image = Resource.image.units[i].image;
+                let imageWidth = image.width;
+                let imageHeight = image.height;
+                canvasContext.drawImage(image, locationCenterX - parseInt(imageWidth / 2), locationCenterY - parseInt(imageHeight / 2));
+                break;
+            }
+            else if (i === Resource.image.units.length - 1) {
+                console.log("drawBlockUnit - isCenterAligned : 그리기 실패 (" + unit + ")");
+            }
+        }
+    }
 };

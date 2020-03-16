@@ -10,12 +10,25 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Version : 0.6.0 <br/>
+@ Live Link : https://bound.devcos.site/BoundEditorLS/test/ <br/>
+
+@ Version : 0.7.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.6.0 (2018-03-15, Latest) <br/>
+@ 0.7.0 (2018-03-16, Latest) <br/>
+
+- Way of selecting bomb units has been changed <br/>
+- -> 폭탄 설정 모드의 폭탄 유닛 선택 방식 변경 <br/><br/>
+
+- Images are displayed when setting blocking objects <br/>
+- -> 장애물 설정 시 이미지 표시 <br/><br/>
+
+- Different colors are displayed according to the bomb unit's race <br/>
+- -> 폭탄 설정 시 종족별로 색깔 다르게 표시 <br/><br/>
+
+@ 0.6.0 (2018-03-15) <br/>
 
 - Basic functions complete for Bomb Settings Mode <br/>
 - -> 폭탄 설정 모드 기본 기능 구현 완료 <br/><br/>

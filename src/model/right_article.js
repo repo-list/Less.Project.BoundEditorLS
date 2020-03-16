@@ -56,5 +56,6 @@ var RightArticle = {
     getSafeLenXValue : function(originalLenX) {},
     getSafeLenYValue : function(originalLenY) {},
     deleteSelectedTiles : function() {},
-    redrawBombSettings : function() {}
+    redrawBombSettings : function() {},
+    drawBlockUnit : function(canvasContext, gridWidth, gridHeight, location) {}
 };

@@ -109,12 +109,12 @@
 }
 
 #right > section > #sectionTab1 > #terrain > span#tile {
-    left: 224px;
+    left: 220px;
     color: white;
 }
 #right > section > #sectionTab1 > #terrain > div.tiles {
     position: absolute;
-    left: 224px;
+    left: 220px;
     top: 30px;
     border: 1px solid black;
 }
@@ -126,7 +126,7 @@
 }
 
 #right > section > #sectionTab1 > #terrain > span#tileSize {
-    left: 500px;
+    left: 485px;
     color: white;
 }
 
@@ -136,18 +136,18 @@
     width: 40px;
 }
 #right > section > #sectionTab1 > #terrain > input#tileWidth { 
-    left: 500px;
+    left: 485px;
     height: 20px;
     font-size: 16px;
     text-align: center;
 }
 #right > section > #sectionTab1 > #terrain > span#multiply {
-    left: 550px;
+    left: 535px;
     top: 30px;
     color: white;
 }
 #right > section > #sectionTab1 > #terrain > input#tileHeight {
-    left: 563px;
+    left: 548px;
     height: 20px;
     font-size: 16px;
     text-align: center;
@@ -189,27 +189,50 @@
 }
 
 /** 폭탄 모드 **/
-#right > section > #sectionTab1 > #bomb > span#bombUnit {
+#right > section > #sectionTab1 > #bomb > span#bombUnit1 {
     left: 24px;
     color: white;
 }
-#right > section > #sectionTab1 > #bomb > select#bombUnits {
+#right > section > #sectionTab1 > #bomb > select#bombUnits1 {
     position: absolute;
     left: 24px;
     top: 29px;
     width: 230px;
     height: 30px;
 }
+#right > section > #sectionTab1 > #bomb > span#bombUnit2 {
+    left: 24px;
+    top: 59px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > select#bombUnits2 {
+    position: absolute;
+    left: 24px;
+    top: 88px;
+    width: 230px;
+    height: 30px;
+}
+#right > section > #sectionTab1 > #bomb > span#bombUnit3 {
+    left: 24px;
+    top: 118px;
+    color: white;
+}
+#right > section > #sectionTab1 > #bomb > select#bombUnits3 {
+    position: absolute;
+    left: 24px;
+    top: 147px;
+    width: 230px;
+    height: 30px;
+}
 
 #right > section > #sectionTab1 > #bomb > span#blockUnit {
-    left: 24px;
-    top: 65px;
+    left: 298px;
     color: white;
 }
 #right > section > #sectionTab1 > #bomb > select#blockUnits {
     position: absolute;
-    left: 24px;
-    top: 94px;
+    left: 298px;
+    top: 29px;
     width: 230px;
     height: 30px;
 }
@@ -222,65 +245,65 @@
 }
 
 #right > section > #sectionTab1 > #bomb > span#blockUnitCreateProcess {
-    left: 24px;
-    top: 130px;
+    left: 298px;
+    top: 70px;
     color: white;
     font-size: 13px;
 }
 #right > section > #sectionTab1 > #bomb > input#blockOption1Kill {
-    left: 117px;
-    top: 134px;
+    left: 391px;
+    top: 74px;
 }
 #right > section > #sectionTab1 > #bomb > label#blockOption1KillLabel {
-    left: 137px;
-    top: 136px;
+    left: 411px;
+    top: 76px;
     color: white;
     font-size: 13px;
 }
 #right > section > #sectionTab1 > #bomb > input#blockOption1Remove {
-    left: 155px;
-    top: 134px;
+    left: 429px;
+    top: 74px;
 }
 #right > section > #sectionTab1 > #bomb > label#blockOption1RemoveLabel {
-    left: 175px;
-    top: 136px;
+    left: 449px;
+    top: 76px;
     color: white;
     font-size: 13px;
 }
 #right > section > #sectionTab1 > #bomb > input#blockOption1Live {
-    left: 205px;
-    top: 134px;
+    left: 479px;
+    top: 74px;
 }
 #right > section > #sectionTab1 > #bomb > label#blockOption1LiveLabel {
-    left: 225px;
-    top: 136px;
+    left: 499px;
+    top: 76px;
     color: white;
     font-size: 13px;
 }
 
 #right > section > #sectionTab1 > #bomb > span#blockUnitDeleteProcess {
-    left: 24px;
-    top: 150px;
+    left: 298px;
+    top: 90px;
     color: white;
     font-size: 13px;
 }
 #right > section > #sectionTab1 > #bomb > input#blockOption2Kill {
-    left: 130px;
-    top: 154px;
+    left: 404px;
+    top: 94px;
 }
 #right > section > #sectionTab1 > #bomb > label#blockOption2KillLabel {
-    left: 150px;
-    top: 156px;
+    left: 424px;
+    top: 96px;
     color: white;
     font-size: 13px;
 }
 #right > section > #sectionTab1 > #bomb > input#blockOption2Remove {
-    left: 168px;
-    top: 154px;
+    left: 442px;
+    top: 94px;
 }
 #right > section > #sectionTab1 > #bomb > label#blockOption2RemoveLabel {
-    left: 188px;
-    top: 156px;
+    left: 462px;
+    top: 96px;
     color: white;
     font-size: 13px;
 }
@@ -305,23 +328,23 @@
 }
 
 #right > section > #sectionTab1 > #bomb > span#turnControl {
-    left: 304px;
+    left: 574px;
     color: white;
 }
 #right > section > #sectionTab1 > #bomb > span#showTurns {
-    left: 384px;
+    left: 654px;
     font-size: 15px;
     color: white;
 }
 #right > section > #sectionTab1 > #bomb > button#addTurn {
-    left: 454px;
+    left: 724px;
     top: 3px;
     width: 40px;
     height: 24px;
     font-size: 13px;
 }
 #right > section > #sectionTab1 > #bomb > button#insertTurn {
-    left: 504px;
+    left: 774px;
     top: 3px;
     width: 40px;
     height: 24px;
@@ -329,20 +352,20 @@
 }
 
 #right > section > #sectionTab1 > #bomb > button#toFirst {
-    left: 304px;
+    left: 574px;
     top: 34px;
     width: 40px;
     height: 30px;
 }
 #right > section > #sectionTab1 > #bomb > button#toPrev {
-    left: 354px;
+    left: 624px;
     top: 34px;
     width: 40px;
     height: 30px;
 }
 #right > section > #sectionTab1 > #bomb > input#currentTurn {
     position: absolute;
-    left: 404px;
+    left: 674px;
     top: 34px;
     width: 40px;
     height: 25px;
@@ -350,26 +373,26 @@
     text-align: center;
 }
 #right > section > #sectionTab1 > #bomb > button#toNext {
-    left: 454px;
+    left: 724px;
     top: 34px;
     width: 40px;
     height: 30px;
 }
 #right > section > #sectionTab1 > #bomb > button#toLast {
-    left: 504px;
+    left: 774px;
     top: 34px;
     width: 40px;
     height: 30px;
 }
 
 #right > section > #sectionTab1 > #bomb > span#setWait {
-    left: 304px;
+    left: 574px;
     top: 86px;
     color: white;
 }
 #right > section > #sectionTab1 > #bomb > input#wait {
     position: absolute;
-    left: 394px;
+    left: 664px;
     top: 86px;
     width: 64px;
     height: 20px;
@@ -377,7 +400,7 @@
     text-align: center;
 }
 #right > section > #sectionTab1 > #bomb > button#play {
-    left: 480px;
+    left: 750px;
     top: 84px;
     width: 66px;
     height: 29px;
@@ -387,38 +410,38 @@
 }
 
 #right > section > #sectionTab1 > #bomb > span#waitRange {
-    left: 304px;
+    left: 574px;
     top: 118px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#waitRangeResult {
-    left: 428px;
+    left: 698px;
     top: 118px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#actualTime {
-    left: 304px;
+    left: 574px;
     top: 138px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#actualTimeResult {
-    left: 407px;
+    left: 677px;
     top: 138px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#deathValue {
-    left: 304px;
+    left: 574px;
     top: 158px;
     color: white;
     font-size: 12px;
 }
 
 #right > section > #sectionTab1 > #bomb > span#deathValueResult {
-    left: 366px;
+    left: 636px;
     top: 158px;
     color: white;
     font-size: 12px;

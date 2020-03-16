@@ -45,6 +45,10 @@ LeftSection.selectPattern = function(pattern) {
         case BLOCKOPTION2_BLOCKKILL: $("#sectionTab1 > #bomb > input#blockOption2Kill").prop("checked", true); break;
         case BLOCKOPTION2_BLOCKREMOVE: $("#sectionTab1 > #bomb > input#blockOption2Remove").prop("checked", true); break;
     }
+
+    $("#right #sectionTab1 > #bomb > select#bombUnits1").val(pattern.bombUnit1);
+    $("#right #sectionTab1 > #bomb > select#bombUnits2").val(pattern.bombUnit2);
+    $("#right #sectionTab1 > #bomb > select#bombUnits3").val(pattern.bombUnit3);
     
     $("#sectionTab1 > #bomb > span#showTurns").text(pattern.currentTurn + " / " + pattern.turnList.length);
     $("#sectionTab1 > #bomb > input#wait").val(pattern.turnList[pattern.currentTurn - 1].wait);

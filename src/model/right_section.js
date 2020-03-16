@@ -30,5 +30,8 @@ var RightSection = {
     onToFirstClick : function() {},
     onToLastClick : function() {},
     onOption1RadioClick : function() {},
-    onOption2RadioClick : function() {}
+    onOption2RadioClick : function() {},
+    onBombUnits1Change : function() {},
+    onBombUnits2Change : function() {},
+    onBombUnits3Change : function() {}
 };

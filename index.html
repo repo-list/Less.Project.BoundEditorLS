@@ -16,6 +16,10 @@
     <!-- Project -->
     <script src="src/project.js"></script>
 
+    <!-- Resource & Data -->
+    <script src="src/resource.js"></script>
+    <script src="src/units.js"></script>
+
     <!-- View -->
     <link rel="stylesheet" href="src/view/html.css">
     <link rel="stylesheet" href="src/view/page.css">
@@ -97,6 +101,9 @@
             $("#sectionTab1 > #bomb > button#toLast").on("click", RightSection.onToLastClick);
             $("#sectionTab1 > #bomb > input[name=option1]").on("click", RightSection.onOption1RadioClick);
             $("#sectionTab1 > #bomb > input[name=option2]").on("click", RightSection.onOption2RadioClick);
+            $("#right #sectionTab1 > #bomb > select#bombUnits1").on("change", RightSection.onBombUnits1Change);
+            $("#right #sectionTab1 > #bomb > select#bombUnits2").on("change", RightSection.onBombUnits2Change);
+            $("#right #sectionTab1 > #bomb > select#bombUnits3").on("change", RightSection.onBombUnits3Change);
 
             /*** Project Init ***/
             Project.name = DEFAULT_PROJECT_NAME;
@@ -110,6 +117,9 @@
             pattern.isLocationZeroPadOn = DEFAULT_IS_LOCATION_ZERO_PAD_ON;
             pattern.blockOption1 = DEFAULT_BLOCKOPTION1;
             pattern.blockOption2 = DEFAULT_BLOCKOPTION2;
+            pattern.bombUnit1 = DEFAULT_BOMBUNIT1;
+            pattern.bombUnit2 = DEFAULT_BOMBUNIT2;
+            pattern.bombUnit3 = DEFAULT_BOMBUNIT3;
             pattern.currentTurn = 1;
             var boundTurn = new BoundTurn();
             boundTurn.wait = DEFAULT_TURN_WAIT;
@@ -226,9 +236,9 @@
                         <div id="twilightWorldTiles" class="tiles" data-tileset="Twilight World"></div>
                         
                         <span id="tileSize">* 타일 크기 :</span>
-                        <input id="tileWidth" type="number" value="1" />
+                        <input id="tileWidth" type="number" value="2" />
                         <span id="multiply">x</span>
-                        <input id="tileHeight" type="number" value="1" />
+                        <input id="tileHeight" type="number" value="2" />
                     </div>
                     <div id="location">
                         <span id="labelHeader">* 레이블 헤더 :</span>
@@ -241,16 +251,41 @@
                         <canvas id="exampleCanvas"></canvas>
                     </div>
                     <div id="bomb">
-                        <span id="bombUnit">* 폭탄 유닛 선택 :</span>
-                        <select id="bombUnits">
-                            <option value="Zerg Overlord">Zerg Overlord (오버로드)</option>
+                        <span id="bombUnit1">* 폭탄 유닛 선택 (1x1, 1x2, 2x1 등) :</span>
+                        <select id="bombUnits1">
                             <option value="Zerg Scourge">Zerg Scourge (스커지)</option>
+                            <option value="Protoss Observer">Protoss Observer (옵저버)</option>
+                            <option value="Protoss Probe">Protoss Probe (프로브)</option>
+                            <option value="Terran SCV">Terran SCV (SCV)</option>
+                        </select>
+
+                        <span id="bombUnit2">* 폭탄 유닛 선택 (2x1, 2x3, 3x2 등) :</span>
+                        <select id="bombUnits2">
+                            <option value="Zerg Overlord">Zerg Overlord (오버로드)</option>
+                            <option value="Protoss Corsair">Protoss Corsair (커세어)</option>
+                            <option value="Protoss Arbiter">Protoss Arbiter (아비터)</option>
+                            <option value="Zerg Devourer">Zerg Devourer (디바우러)</option>
+                            <option value="Terran Dropship">Terran Dropship (드랍쉽)</option>
+                            <option value="Terran Wraith">Terran Wraith (레이스)</option>
+                            <option value="Zerg Mutalisk">Zerg Mutalisk (뮤탈리스크)</option>
+                            <option value="Protoss Scout">Protoss Scout (스카웃)</option>
+                            <option value="Protoss Archon">Protoss Archon (아칸)</option>
+                            <option value="Protoss Dark Archon">Protoss Dark Archon (다크아칸)</option>
+                        </select>
+
+                        <span id="bombUnit3">* 폭탄 유닛 선택 (3x3, 3x4, 4x3 등) :</span>
+                        <select id="bombUnits3">
+                            <option value="Terran Battlecruiser">Terran Battlecruiser (배틀크루저)</option>
+                            <option value="Zerg Ultralisk">Zerg Ultralisk (울트라리스크)</option>
                         </select>
 
                         <span id="blockUnit">* 장애물 유닛 선택 :</span>
                         <select id="blockUnits">
                             <option value="Terran Machine Shop">Terran Machine Shop (머신샵)</option>
+                            <option value="Psi Emitter">Psi Emitter (사이오닉 방출기)</option>
+                            <option value="Khalis Crystal">Khalis Crystal (칼리스 크리스탈)</option>
                             <option value="Uraj Crystal">Uraj Crystal (우라즈 크리스탈)</option>
+                            <option value="Khaydarin Crystal">Khaydarin Crystal (케이다린 크리스탈)</option>
                         </select>
 
                         <span id="blockUnitCreateProcess">- 생성 시 유닛 :</span>

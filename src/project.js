@@ -24,11 +24,46 @@ const BLOCKOPTION1_UNITLIVE = 3;
 const BLOCKOPTION2_BLOCKKILL = 1;
 const BLOCKOPTION2_BLOCKREMOVE = 2;
 
-const UNIT_ZERG_OVERLORD = "Zerg Overlord";
-const UNIT_ZERG_SCOURGE = "Zerg Scourge";
+const NOTATION_UNCLEAR = "(U)";
 
+const RACE_NONE = "None";
+const RACE_ZERG = "Zerg";
+const RACE_TERRAN = "Terran";
+const RACE_PROTOSS = "Protoss";
+
+// Bomb Units
+const UNIT_ZERG_SCOURGE = "Zerg Scourge";
+const UNIT_ZERG_OVERLORD = "Zerg Overlord";
+const UNIT_ZERG_DEVOURER = "Zerg Devourer";
+const UNIT_ZERG_MUTALISK = "Zerg Mutalisk";
+const UNIT_ZERG_ULTRALISK = "Zerg Ultralisk";
+
+const UNIT_TERRAN_SCV = "Terran SCV";
+const UNIT_TERRAN_DROPSHIP = "Terran Dropship";
+const UNIT_TERRAN_WRAITH = "Terran Wraith";
+const UNIT_TERRAN_BATTLECRUISER = "Terran Battlecruiser";
+
+const UNIT_PROTOSS_OBSERVER = "Protoss Observer";
+const UNIT_PROTOSS_PROBE = "Protoss Probe";
+const UNIT_PROTOSS_CORSAIR = "Protoss Corsair";
+const UNIT_PROTOSS_ARBITER = "Protoss Arbiter";
+const UNIT_PROTOSS_SCOUT = "Protoss Scout";
+const UNIT_PROTOSS_ARCHON = "Protoss Archon";
+const UNIT_PROTOSS_DARKARCHON = "Protoss Dark Archon";
+
+// Block Units
 const UNIT_TERRAN_MACHINESHOP = "Terran Machine Shop";
+const UNIT_TERRAN_MACHINESHOP_UNCLEAR = UNIT_TERRAN_MACHINESHOP + NOTATION_UNCLEAR;
+const UNIT_NEUTRAL_PSIEMITTER = "Psi Emitter";
+const UNIT_NEUTRAL_PSIEMITTER_UNCLEAR = UNIT_NEUTRAL_PSIEMITTER + NOTATION_UNCLEAR;
+const UNIT_NEUTRAL_KHALISCRYSTAL = "Khalis Crystal";
+const UNIT_NEUTRAL_KHALISCRYSTAL_UNCLEAR = UNIT_NEUTRAL_KHALISCRYSTAL + NOTATION_UNCLEAR;
 const UNIT_NEUTRAL_URAJCRYSTAL = "Uraj Crystal";
+const UNIT_NEUTRAL_URAJCRYSTAL_UNCLEAR = UNIT_NEUTRAL_URAJCRYSTAL + NOTATION_UNCLEAR;
+const UNIT_NEUTRAL_KHAYDARINCRYSTAL = "Khaydarin Crystal";
+const UNIT_NEUTRAL_KHAYDARINCRYSTAL_UNCLEAR = UNIT_NEUTRAL_KHAYDARINCRYSTAL + NOTATION_UNCLEAR;
+const UNIT_OTHER_BLOCKEXPLOSION1 = "Block Explosion 1x1";
+const UNIT_OTHER_BLOCKEXPLOSION2 = "Block Explosion 2x2";
 
 /* Default Project Settings */
 const SHORT_APP_NAME = "BoundEditorLS";
@@ -39,7 +74,13 @@ const DEFAULT_TILESET = SCTilesetList.Badlands;
 const DEFAULT_LOCATION_LABEL_HEADER = "A";
 const DEFAULT_IS_LOCATION_ZERO_PAD_ON = true;
 const DEFAULT_BLOCKOPTION1 = BLOCKOPTION1_UNITKILL;
-const DEFAULT_BLOCKOPTION2 = BLOCKOPTION2_BLOCKKILL;
+const DEFAULT_BLOCKOPTION2 = BLOCKOPTION2_BLOCKREMOVE;
+// const DEFAULT_BOMBUNIT1 = UNIT_ZERG_SCOURGE;
+// const DEFAULT_BOMBUNIT2 = UNIT_ZERG_OVERLORD;
+// const DEFAULT_BOMBUNIT3 = UNIT_TERRAN_BATTLECRUISER;
+const DEFAULT_BOMBUNIT1 = UNIT_PROTOSS_PROBE;
+const DEFAULT_BOMBUNIT2 = UNIT_TERRAN_WRAITH;
+const DEFAULT_BOMBUNIT3 = UNIT_ZERG_ULTRALISK;
 const DEFAULT_TURN_WAIT = 42;
 
 // Classes (Modified After Declaration)
@@ -52,6 +93,9 @@ var BoundPattern = function(index, label, description, tileset) {
     this.isLocationZeroPadOn = __booleanValue;
     this.blockOption1 = __intValue;
     this.blockOption2 = __intValue;
+    this.bombUnit1 = __strValue;
+    this.bombUnit2 = __strValue;
+    this.bombUnit3 = __strValue;
     this.currentTurn = __intValue;
     this.tileDataList = __arrValue;
     this.locationList = __arrValue;
