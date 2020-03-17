@@ -8,6 +8,8 @@ HeaderElements.onButtonClick = function() {
                 if (i > 0) message += "\n";
                 message += "v" + PatchNote[i].version + " : " + PatchNote[i].detail;
             }
+            HeaderElements.showDialog(title, message);
+            console.log("Button Clicked - Patch Note");
             break;
         case "appInfo":
             title = "앱 정보";
@@ -17,10 +19,22 @@ HeaderElements.onButtonClick = function() {
             message += "버전 : " + App.version + "\n";
             message += "소스 링크 : " + App.sourceLink + "\n";
             message += "설명 : " + App.description;
+            HeaderElements.showDialog(title, message);
+            console.log("Button Clicked - App Info");
+            break;
+        case "loadProject":
+            // 이벤트 리스너는 index 파일에
+            console.log("Button Clicked - Load Project");
+            break;
+        case "saveProject":
+            if (Project.author === undefined) {
+                Project.author = prompt("프로젝트 제작자의 닉네임을 입력해주세요 : ", DEFAULT_AUTHOR_NAME);
+                if (Project.author === null) Project.author = DEFAULT_AUTHOR_NAME;
+            }
+            saveProject(Project);
+            console.log("Button Clicked - Save Project");
             break;
     }
-
-    HeaderElements.showDialog(title, message);
 };
 
 HeaderElements.showDialog = function(title, message) {

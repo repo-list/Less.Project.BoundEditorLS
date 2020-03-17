@@ -5,17 +5,20 @@ RightHeader.switchTo = function(elementID) {
 };
 
 RightHeader.onButtonClick = function() {
+    var pattern, author;
     switch ($(this).prop("id")) {
         case "newPattern":
-            alert("새 패턴 - 준비 중입니다.");
+            pattern = createNewPattern();
+            LeftSection.addNewPatternItem(pattern);
+            LeftSection.selectPattern(Project.patterns.length - 1);
             console.log("Button Clicked - New Pattern");
             break;
         case "loadPattern":
-            alert("패턴 불러오기 - 준비 중입니다.");
+            // 이벤트 핸들러는 index 파일에 있음.
             console.log("Button Clicked - Load Pattern");
             break;
         case "savePattern":
-            alert("패턴 저장 - 준비 중입니다.");
+            savePattern(Project.currentPattern);
             console.log("Button Clicked - Save Pattern");
             break;
         case "sharePattern":

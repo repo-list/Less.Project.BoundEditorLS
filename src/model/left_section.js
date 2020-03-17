@@ -4,5 +4,7 @@ var LeftSection = {
     totalWidth : function() {},
     addPatternItem : function(pattern) {},
     changeTabTo : function(tabIndex) {},
-    selectPattern : function(patternIndex) {}
+    selectPattern : function(patternIndex) {},
+    onPatternButtonClick : function() {},
+    clearPatternTab : function() {}
 };

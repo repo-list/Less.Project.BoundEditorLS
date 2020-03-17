@@ -12,5 +12,8 @@
 }
 
 #header > button:hover { opacity: 0.75; }
+#header > button#loadProject { width : 170px; left: 77px; }
+#header > button#saveProject { width : 170px; left: 284px; }
 #header > button#patchNote { right: 120px; }
 #header > button#appInfo { right: 20px; }
+#header > input#loadProjectFile { display: none; }

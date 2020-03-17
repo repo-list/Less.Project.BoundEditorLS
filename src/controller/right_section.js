@@ -7,9 +7,9 @@ RightSection.switchTo = function(elementID) {
 RightSection.onButtonClick = function() {
     var targetID = $(this).prop("id");
     switch (targetID) {
-        case "terrainMode": RightSection.selectMode("terrainMode"); break;
-        case "locationMode": RightSection.selectMode("locationMode"); break;
-        case "bombMode": RightSection.selectMode("bombMode"); break;
+        case PATTERN_MODE_TERRAIN: RightSection.selectMode(PATTERN_MODE_TERRAIN); break;
+        case PATTERN_MODE_LOCATION: RightSection.selectMode(PATTERN_MODE_LOCATION); break;
+        case PATTERN_MODE_BOMB: RightSection.selectMode(PATTERN_MODE_BOMB); break;
     }
 };
 
@@ -39,7 +39,7 @@ RightSection.onTileClick = function() {
 RightSection.deselectTiles = function() {
     var cssSelector = "";
 
-    switch (RightSection.currentTileset) {
+    switch (Project.currentPattern.tileset) {
         case SCTilesetList.Badlands: cssSelector = "#sectionTab1 div#badlandsTiles > div.tile"; break;
         case SCTilesetList.SpacePlatform: cssSelector = "#sectionTab1 div#spacePlatformTiles > div.tile"; break;
         case SCTilesetList.Installation: cssSelector = "#sectionTab1 div#installationTiles > div.tile"; break;
@@ -133,17 +133,17 @@ RightSection.selectMode = function(modeName) {
     $("#sectionTab1 button#" + modeName).addClass("selected");
 
     switch (modeName) {
-        case "terrainMode":
+        case PATTERN_MODE_TERRAIN:
             $("#sectionTab1 > div#terrain").css("display", "");
             $("#articleTab1 > canvas#grid").css("display", "");
             break;
-        case "locationMode":
+        case PATTERN_MODE_LOCATION:
         $("#articleTab1 > canvas#terrain").css("opacity", 0.8);
             $("#sectionTab1 > div#location").css("display", "");
             $("#articleTab1 > canvas#location").css("display", "");
             $("#articleTab1 > canvas#grid").css("display", "");
             break;
-        case "bombMode":
+        case PATTERN_MODE_BOMB:
             $("#sectionTab1 > div#bomb").css("display", "");
             $("#articleTab1 > canvas#terrain").css("opacity", 0.5);
             $("#articleTab1 > canvas#base").css("display", "");
@@ -153,7 +153,7 @@ RightSection.selectMode = function(modeName) {
             break;
     }
     RightArticle.clearContext(selectionCanvas, selectionContext);
-    if (modeName === "locationMode" && RightArticle.selectedLocation !== null) {
+    if (modeName === PATTERN_MODE_LOCATION && RightArticle.selectedLocation !== null) {
         let gridWidth = RightArticle.canvasTileWidth;
         let gridHeight = RightArticle.canvasTileHeight;
         let left = RightArticle.selectedLocation.getLeft(gridWidth);
@@ -167,9 +167,9 @@ RightSection.selectMode = function(modeName) {
         let borderWidth = 2;
         RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
     }
-    RightSection.currentMode = modeName;
+    Project.currentPattern.currentMode = modeName;
     
-    console.log("Selected Mode : " + RightSection.currentMode);
+    console.log("Selected Mode : " + modeName);
 };
 
 RightSection.selectTileset = function(tilesetName, isUserSelection) {
@@ -185,17 +185,16 @@ RightSection.selectTileset = function(tilesetName, isUserSelection) {
     }
 
     if (!isUserSelection) $("#sectionTab1 select#tilesets").val(tilesetName);
-    RightSection.currentTileset = tilesetName;
     Project.currentPattern.tileset = tilesetName;
     
-    console.log("Selected Tileset : " + RightSection.currentTileset);
+    console.log("Selected Tileset : " + tilesetName);
 };
 
 RightSection.selectTile = function(tileName) {
     var targetTiles = [];
     var cssSelector = "";
 
-    switch (RightSection.currentTileset) {
+    switch (Project.currentPattern.tileset) {
         case SCTilesetList.Badlands:
             targetTiles = BadlandsTiles;
             cssSelector = "#sectionTab1 div#badlandsTiles > div.tile";
@@ -244,7 +243,7 @@ RightSection.selectTile = function(tileName) {
             console.log("Exception Occured :");
             console.log("File name : right_section.js");
             console.log("Function name : selectTile");
-            console.log("Current Tileset : " + RightSection.currentTileset);
+            console.log("Current Tileset : " + Project.currentPattern.tileset);
             console.log("Selected Tile : " + tileName);
             console.log("");
         }
@@ -257,7 +256,7 @@ RightSection.selectTileByIndex = function(index) {
     var targetTiles = [];
     var cssSelector = "";
 
-    switch (RightSection.currentTileset) {
+    switch (Project.currentPattern.tileset) {
         case SCTilesetList.Badlands:
             targetTiles = BadlandsTiles;
             cssSelector = "#sectionTab1 div#badlandsTiles > div.tile";

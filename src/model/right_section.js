@@ -1,8 +1,6 @@
 var RightSection = {
     canvasTileWidth : 44,
     canvasTileHeight : 44,
-    currentMode : "",
-    currentTileset : "",
     currentTile : null, // SCTile
     currentTileIndex : 0,
 

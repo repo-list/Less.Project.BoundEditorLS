@@ -22,15 +22,15 @@ RightArticle.onTab1MouseDown = function() {
         RightArticle.initialDragPosY = event.offsetY;
     }
 
-    switch (RightSection.currentMode) {
-        case "terrainMode":
+    switch (Project.currentPattern.currentMode) {
+        case PATTERN_MODE_TERRAIN:
             if (RightSection.currentTile !== null) {
                 if (mouseButton === MOUSEBUTTON_LEFT) {
                     RightArticle.putTile(terrainContext, gridWidth, gridHeight, RightSection.currentTile, posX, posY, lenX, lenY);
                 }
             }
             break;
-        case "locationMode":
+        case PATTERN_MODE_LOCATION:
             if (mouseButton === MOUSEBUTTON_LEFT) {
                 if (RightArticle.selectedLocation !== null) {
                     let left = RightArticle.selectedLocation.getLeft(gridWidth);
@@ -46,7 +46,7 @@ RightArticle.onTab1MouseDown = function() {
                 }
             }
             break;
-        case "bombMode":
+        case PATTERN_MODE_BOMB:
             if (mouseButton === MOUSEBUTTON_LEFT || mouseButton === MOUSEBUTTON_RIGHT) {
                 var locationList = Project.currentPattern.locationList;
                 var turnList = Project.currentPattern.turnList;
@@ -207,8 +207,8 @@ RightArticle.onTab1MouseUp = function() {
     var gridHeight = RightArticle.canvasTileHeight;
     var posX, posY, lenX, lenY, borderWidth, width, height;
 
-    switch (RightSection.currentMode) {
-        case "terrainMode":
+    switch (Project.currentPattern.currentMode) {
+        case PATTERN_MODE_TERRAIN:
             if (RightSection.currentTile !== null) {
                 if (mouseButton === MOUSEBUTTON_RIGHT) {
                     RightSection.deselectTiles();
@@ -248,7 +248,7 @@ RightArticle.onTab1MouseUp = function() {
                 }
             }
             break;
-        case "locationMode":
+        case PATTERN_MODE_LOCATION:
             if (mouseButton === MOUSEBUTTON_LEFT) {
                 if (RightArticle.selectedLocation !== null && RightArticle.isLocationControlModeOn) {
                     if (RightArticle.isDragging) {
@@ -384,12 +384,12 @@ RightArticle.onTab1MouseMove = function() {
     
     if (mouseButton === MOUSEBUTTON_LEFT && RightArticle.isMouseDown) {
         RightArticle.isDragging = true;
-        if (RightSection.currentMode === "locationMode" && RightArticle.isMouseDown && mouseButton === MOUSEBUTTON_LEFT && RightArticle.selectedLocation !== null) {
+        if (Project.currentPattern.currentMode === PATTERN_MODE_LOCATION && RightArticle.isMouseDown && mouseButton === MOUSEBUTTON_LEFT && RightArticle.selectedLocation !== null) {
             RightArticle.isSelectedLocationMoving = true;
         }
     }
     
-    if (RightSection.currentMode === "terrainMode" && RightSection.currentTile !== null) {
+    if (Project.currentPattern.currentMode === PATTERN_MODE_TERRAIN && RightSection.currentTile !== null) {
         RightArticle.clearContext(selectionCanvas, selectionContext);
         borderWidth = 2.5;
         RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
@@ -408,8 +408,8 @@ RightArticle.onTab1MouseMove = function() {
     lenX = RightArticle.getSafeLenXValue(lenX);
     lenY = RightArticle.getSafeLenYValue(lenY);
     
-    switch (RightSection.currentMode) {
-        case "terrainMode":
+    switch (Project.currentPattern.currentMode) {
+        case PATTERN_MODE_TERRAIN:
             if (RightSection.currentTile !== null) {
                 if (RightArticle.isMouseDown && mouseButton === MOUSEBUTTON_LEFT) {
                     RightArticle.putTile(terrainContext, gridWidth, gridHeight, RightSection.currentTile, posX, posY, lenX, lenY);
@@ -430,7 +430,7 @@ RightArticle.onTab1MouseMove = function() {
                 /* TODO : 지형 복사,붙여넣기 기능 구현 */
             }
             break;
-        case "locationMode":
+        case PATTERN_MODE_LOCATION:
             if (RightArticle.isMouseDown && mouseButton === MOUSEBUTTON_LEFT) {
                 if (RightArticle.isDragging) {
                     if (RightArticle.selectedLocation !== null && RightArticle.isLocationControlModeOn) {
@@ -471,13 +471,13 @@ RightArticle.onKeyUp = function() {
     console.log("Keyup : " + event.keyCode);
 
     if (event.keyCode === 46) { // DELETE KEY
-        switch (RightSection.currentMode) {
-            case "terrainMode":
+        switch (Project.currentPattern.currentMode) {
+            case PATTERN_MODE_TERRAIN:
                 // 타일 삭제
                 var deletedCount = RightArticle.deleteSelectedTiles();
                 if (deletedCount > 0) RightArticle.redrawTerrainCanvas();
                 break;
-            case "locationMode":
+            case PATTERN_MODE_LOCATION:
                 if (RightArticle.selectedLocation !== null) {
                     // 로케이션 삭제
                     for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
@@ -524,8 +524,8 @@ RightArticle.onKeyUp = function() {
         }
     }
     else if (event.keyCode === 9) { // TAB KEY
-        switch (RightSection.currentMode) {
-            case "bombMode":
+        switch (Project.currentPattern.currentMode) {
+            case PATTERN_MODE_BOMB:
                 // 현재 로케이션 레이어 전환 (+1) 후 redraw
                 if (++RightArticle.currentLocationLayer > RightArticle.maxLocationLayer) RightArticle.currentLocationLayer = 1;
                 console.log("bombMode - Location Layer Changed to : " + RightArticle.currentLocationLayer);
@@ -544,10 +544,11 @@ RightArticle.redrawTerrainCanvas = function() {
         let tileData = Project.currentPattern.tileDataList[i];
         SCMapAPI.drawTile(terrainContext, gridWidth, gridHeight, tileData.tile, tileData.posX, tileData.posY, 1, 1);
     }
+    
+    console.log("Pattern Terrain Redrawn");
 };
 
 RightArticle.redrawLocationList = function() {
-    console.log("redrawLocationList called");
     var gridWidth = RightArticle.canvasTileWidth;
     var gridHeight = RightArticle.canvasTileHeight;
 
@@ -563,6 +564,8 @@ RightArticle.redrawLocationList = function() {
             SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, Project.currentPattern.locationList[i]);
         }
     }
+
+    console.log("Pattern Location List Redrawn");
 };
 
 RightArticle.initCanvases = function() {

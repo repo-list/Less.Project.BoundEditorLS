@@ -14,6 +14,7 @@
     <script src="patch_note.js"></script>
 
     <!-- Project -->
+    <script src="src/file_handler.js"></script>
     <script src="src/project.js"></script>
 
     <!-- Resource & Data -->
@@ -93,42 +94,32 @@
             $("#right #sectionTab1 > #terrain > select#tilesets").on("change", RightSection.onTilesetChange);
             $("#right #sectionTab1 input#wait").on("change", RightSection.onWaitValueChange);
             $("#right #sectionTab1 button#play").on("click", RightSection.onPlayButtonClick);
-            $("#sectionTab1 > #bomb > input#currentTurn").on("change", RightSection.onCurrentTurnTextChange);
-            $("#sectionTab1 > #bomb > button#addTurn").on("click", RightSection.addTurn);
-            $("#sectionTab1 > #bomb > button#insertTurn").on("click", RightSection.insertTurn);
-            $("#sectionTab1 > #bomb > button#toPrev").on("click", RightSection.onToPrevClick);
-            $("#sectionTab1 > #bomb > button#toNext").on("click", RightSection.onToNextClick);
-            $("#sectionTab1 > #bomb > button#toFirst").on("click", RightSection.onToFirstClick);
-            $("#sectionTab1 > #bomb > button#toLast").on("click", RightSection.onToLastClick);
-            $("#sectionTab1 > #bomb > input[name=option1]").on("click", RightSection.onOption1RadioClick);
-            $("#sectionTab1 > #bomb > input[name=option2]").on("click", RightSection.onOption2RadioClick);
+            $("#right #sectionTab1 > #bomb > input#currentTurn").on("change", RightSection.onCurrentTurnTextChange);
+            $("#right #sectionTab1 > #bomb > button#addTurn").on("click", RightSection.addTurn);
+            $("#right #sectionTab1 > #bomb > button#insertTurn").on("click", RightSection.insertTurn);
+            $("#right #sectionTab1 > #bomb > button#toPrev").on("click", RightSection.onToPrevClick);
+            $("#right #sectionTab1 > #bomb > button#toNext").on("click", RightSection.onToNextClick);
+            $("#right #sectionTab1 > #bomb > button#toFirst").on("click", RightSection.onToFirstClick);
+            $("#right #sectionTab1 > #bomb > button#toLast").on("click", RightSection.onToLastClick);
+            $("#right #sectionTab1 > #bomb > input[name=option1]").on("click", RightSection.onOption1RadioClick);
+            $("#right #sectionTab1 > #bomb > input[name=option2]").on("click", RightSection.onOption2RadioClick);
             $("#right #sectionTab1 > #bomb > select#bombUnits1").on("change", RightSection.onBombUnits1Change);
             $("#right #sectionTab1 > #bomb > select#bombUnits2").on("change", RightSection.onBombUnits2Change);
             $("#right #sectionTab1 > #bomb > select#bombUnits3").on("change", RightSection.onBombUnits3Change);
+            $("#right #headerTab1 > #loadPattern").on("click", function() { $("#right #headerTab1 > #loadPatternFile").click(); });
+            $("#right #headerTab1 > #loadPatternFile").on("change", loadPattern);
+            $("#header > #loadProject").on("click", function() { $("#header > #loadProjectFile").click(); });
+            $("#header > #loadProjectFile").on("change", loadProject);
 
             /*** Project Init ***/
             Project.name = DEFAULT_PROJECT_NAME;
+            Project.author = undefined; // 나중에 파일 저장 시, undefined인지 체크 후 닉네임 입력하게끔 유도하는 꼼수
+            Project.mapName = undefined; // 나중에 파일 저장 시, undefined인지 체크 후 닉네임 입력하게끔 유도하는 꼼수
+            Project.isPrivateProject = undefined;
             document.title = SHORT_APP_NAME + " - " + Project.name;
-            var patternIndex = 0;
-            var patternLabel = DEFAULT_PATTERN_LABEL;
-            var patternDescription = DEFAULT_PATTERN_DESCRIPTION;
-            var tileset = DEFAULT_TILESET;
-            var pattern = new BoundPattern(patternIndex, patternLabel, patternDescription, tileset);
-            pattern.locationLabelHeader = DEFAULT_LOCATION_LABEL_HEADER;
-            pattern.isLocationZeroPadOn = DEFAULT_IS_LOCATION_ZERO_PAD_ON;
-            pattern.blockOption1 = DEFAULT_BLOCKOPTION1;
-            pattern.blockOption2 = DEFAULT_BLOCKOPTION2;
-            pattern.bombUnit1 = DEFAULT_BOMBUNIT1;
-            pattern.bombUnit2 = DEFAULT_BOMBUNIT2;
-            pattern.bombUnit3 = DEFAULT_BOMBUNIT3;
-            pattern.currentTurn = 1;
-            var boundTurn = new BoundTurn();
-            boundTurn.wait = DEFAULT_TURN_WAIT;
-            pattern.turnList.push(boundTurn);
-            LeftSection.addPatternItem(pattern);
-
-            /*** Mode ***/
-            RightSection.selectMode("terrainMode");
+            var pattern = createNewPattern();
+            LeftSection.addNewPatternItem(pattern);
+            LeftSection.selectPattern(0);
 
             /*** Layout ***/
             $("#left > section").css("width", LeftSection.width + "px");
@@ -151,8 +142,11 @@
 <body>
     <div id="page">
         <header id="header">
+            <button id="loadProject">프로젝트 열기</button>
+            <button id="saveProject">프로젝트 저장</button>
             <button id="patchNote">패치 노트</button>
             <button id="appInfo">앱 정보</button>
+            <input id="loadProjectFile" type="file" />
         </header>
         <aside id="left">
             <nav>
@@ -184,9 +178,10 @@
             <header>
                 <div id="headerTab1">
                     <button id="newPattern">새 패턴</button>
-                    <button id="loadPattern">패턴 불러오기</button>
+                    <button id="loadPattern">패턴 로드</button>
                     <button id="savePattern">패턴 저장</button>
                     <button id="sharePattern">패턴 공유</button>
+                    <input id="loadPatternFile" type="file" />
                 </div>
                 <div id="headerTab2">
                     <button id="working">작업 중</button>

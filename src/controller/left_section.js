@@ -2,11 +2,14 @@ LeftSection.totalWidth = function() {
     return LeftSection.width + LeftSection.marginRight;
 };
 
-LeftSection.addPatternItem = function(pattern) {
+// 주의 사항 : Project.patterns.push(pattern); 는 addPatternItem 후에 별도로 호출해야 함. (project.js에서 해당 메서드 없이 이용이 필요)
+LeftSection.addNewPatternItem = function(pattern) {
     $infoTab1 = $("#left > section > #infoTab1");
-    $infoTab1.append("<button id='p" + pattern.index + "' class='pattern'>" + pattern.label + "</button>");
+    var patternIndex = Project.patterns.length;
+    var patternID = PATTERNID_HEADER + patternIndex;
+    $infoTab1.append("<button id='" + patternID + "' class='pattern'>" + pattern.label + "</button>");
+    $infoTab1.find("#" + patternID).on("click", LeftSection.onPatternButtonClick);
     Project.patterns.push(pattern);
-    LeftSection.selectPattern(pattern);
     console.log("Pattern added (" + pattern.label + ")");
 };
 
@@ -22,13 +25,15 @@ LeftSection.changeTabTo = function(tabIndex) {
     $infoTabs.eq(tabIndex).addClass("selected");
 };
 
-LeftSection.selectPattern = function(pattern) {
+LeftSection.selectPattern = function(patternIndex) {
+    var pattern = Project.patterns[patternIndex];
     $patternButtons = $("#left > section > #infoTab1 > button.pattern");
     for (var i = 0; i < $patternButtons.length; i++) {
         $patternButtons.eq(i).removeClass("selected");
     }
-    $patternButtons.eq(pattern.index).addClass("selected");
+    $patternButtons.eq(patternIndex).addClass("selected");
     Project.currentPattern = pattern;
+    Project.currentPatternIndex = patternIndex;
 
     RightSection.selectTileset(pattern.tileset, false);
     var $labelHeaderText = $("#sectionTab1 > #location > input#labelHeaderText");
@@ -62,18 +67,26 @@ LeftSection.selectPattern = function(pattern) {
     // 화면 갱신
     RightArticle.clearContext(terrainCanvas, terrainContext);
     RightArticle.clearContext(locationCanvas, locationContext);
+    RightArticle.clearContext(baseCanvas, baseContext);
+    RightArticle.clearContext(blockCanvas, blockContext);
     RightArticle.clearContext(bombCanvas, bombContext);
     RightArticle.clearContext(selectionCanvas, selectionContext);
+    // gridContext는 한 번 초기화하고 그대로 사용하므로, 초기화할 필요가 없음.
 
-    for (var i = 0; i < pattern.tileDataList.length; i++) {
-        let tileData = pattern.tileDataList[i];
-        SCMapAPI.drawTile(terrainContext, gridWidth, gridHeight, tileData.tile, tileData.posX, tileData.posY, 1, 1);
-    }
-    console.log("Redraw : Pattern Tiles");
-    for (var i = 0; i < pattern.locationList.length; i++) {
-        SCMapAPI.drawLocation(locationContext, gridWidth, gridHeight, pattern.locationList[i]);
-    }
-    console.log("Redraw : Pattern Locations");
+    RightSection.refreshLocationExample();
+    $("#sectionTab1 > #bomb > input#currentTurn").val(pattern.currentTurn);
 
-    // bombMode는 들어갈 때 다시 그리므로, 여기서 처리할 필요가 없음.
+    RightArticle.redrawTerrainCanvas();
+    RightArticle.redrawLocationList();
+    RightSection.selectMode(pattern.currentMode); // BombCanvas는 selectMode 내부에서 다시 그리므로, 여기서는 해줄 필요가 없음.
+};
+
+LeftSection.onPatternButtonClick = function() {
+    var buttonID = $(this).prop("id");
+    var patternIndex = parseInt(buttonID.substr(PATTERNID_HEADER.length));
+    LeftSection.selectPattern(patternIndex);
+};
+
+LeftSection.clearPatternTab = function() {
+    $("#left > section > #infoTab1 > button.pattern").remove();
 };
