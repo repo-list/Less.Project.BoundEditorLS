@@ -12,12 +12,21 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ Live Link : https://bound.devcos.site/BoundEditorLS/test/ <br/>
 
-@ Version : 0.10.0 <br/>
+@ Version : 0.11.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.10.0 (2018-03-17, Latest) <br/>
+@ 0.11.0 (2018-03-18, Latest) <br/>
+
+- 턴 복사, 반전, 삭제 기능 추가 <br/><br/>
+- 프로젝트 제작자, 프로젝트 이름, 패턴 제작자, 패턴 이름 수정 기능 추가 <br/><br/>
+- 패턴 삭제 및 위치 변경 (드래그 & 드랍) 기능 추가 <br/><br/>
+- 요소들에 마우스 커서 올릴 시 설명 툴팁 팝업 <br/><br/>
+- 기타 기능 개선 및 잡다한 버그 수정 <br/><br/>
+- 소스 코드 최적화 <br/><br/>
+
+@ 0.10.0 (2018-03-17) <br/>
 
 - New Pattern, Save Pattern, Load Pattern, Save Project, Load Project functions implemented <br/>
 - -> 새 패턴, 패턴 저장, 패턴 불러오기, 프로젝트 저장, 프로젝트 불러오기 기능 구현 <br/><br/>
