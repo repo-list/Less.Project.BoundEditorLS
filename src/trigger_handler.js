@@ -1,11 +1,12 @@
-/* 
+/*
   @file: trigger_handler.js
   @author: joshow
   @brief: 패턴을 양식에 맞는 Trigger 코드로 변환한다.(텍스트 or 바이트 코드)
   @issue
     + TE 트리거 코드 출력 기능
      개발된 기능들
-      - 폭탄 수가 총 31개 이하일 때 TE 트리거 출력 가능. 빈 패턴은 출력할 수 없음.
+      - 
+      - 한번에 터지는 폭탄 수 관계 없이 출력 가능
       - TE 상수, TETextCreator의 함수로 TE용 트리거 텍스트 코드 변환
      추가할 내용
       - 폭탄 터지는 옵션 처리
@@ -65,29 +66,72 @@ function getPatternTETriggerText(pattern) {
         }
     }
     
-    var triggerText = "";
-    //var triggerNum = 1;
     
     var creator = new TETextCreator();
+    var triggerText = "";
+    var triggerConditionCount = 1;
 
     triggerText += creator.Trigger(TE_PLAYER_P7);
     triggerText += creator.Conditions();
     triggerText += creator.Switch(15, TE_SWITCHSTATUS_SET);
+
     if (bombCount >= 30) { 
-        /* 폭탄의 갯수가 30개 이상이라면 조건을 통해 트리거를 나눈다 */
+        /* 폭탄의 갯수가 30개 이상이라면 조건을 통해 트리거를 나눈다. */
         triggerText += creator.Accumulate(TE_PLAYER_P7, TE_QUANTITYMOD_EXACTLY, 1, TE_RESOURCE_ORE);
     }
+
     triggerText += creator.Actions();
     
     var lineCount = 0;
-    for (var turn of turnList) {
+    turnList.forEach(function(turn, i, turns) {
+        
         for (var cell of turn.cellList) {
             triggerText += creator.CreateBomb(TE_PLAYER_P7, cell.unit, cell.location.label);
             triggerText += creator.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, cell.location.label);
             lineCount += 2;
+            
+            if (lineCount > 60) {
+                triggerConditionCount++;
+                triggerText += creator.SetResources(TE_PLAYER_P7, "Set To", triggerConditionCount, TE_RESOURCE_ORE);    
+                triggerText += creator.PreserveTrigger();
+    				    triggerText += creator.TriggerEnd();
+                
+                lineCount = 0;
+                triggerText += creator.Trigger(TE_PLAYER_P7);
+				        triggerText += creator.Conditions();
+			    	    triggerText += creator.Switch(15, TE_SWITCHSTATUS_SET);
+                if (bombCount >= 30) { 
+                    // 뭔가 찝찝한 조건. 나중에 고치자.
+                    triggerText += creator.Accumulate(TE_PLAYER_P7, TE_QUANTITYMOD_EXACTLY, triggerConditionCount, TE_RESOURCE_ORE);
+                }
+                triggerText += creator.Actions();
+            }
         }
         triggerText += creator.Wait(turn.wait);
         lineCount += 1;
+        
+        /* 더 출력할 액션이 있는지 확인하고 있다면 새 트리거 폼을 만든다 */
+        if (i + 1 < turns.length) {
+            if ((lineCount + turns[i + 1].cellList.length * 2) > 60) { 
+                triggerConditionCount++;
+                triggerText += creator.SetResources(TE_PLAYER_P7, "Set To", triggerConditionCount, TE_RESOURCE_ORE);
+                triggerText += creator.PreserveTrigger();
+    				    triggerText += creator.TriggerEnd();
+                
+                lineCount = 0;
+                triggerText += creator.Trigger(TE_PLAYER_P7);
+				        triggerText += creator.Conditions();
+			    	    triggerText += creator.Switch(15, TE_SWITCHSTATUS_SET);
+                triggerText += creator.Accumulate(TE_PLAYER_P7, TE_QUANTITYMOD_EXACTLY, triggerConditionCount, TE_RESOURCE_ORE);
+                triggerText += creator.Actions();
+            }
+            
+            return true; // is continue loop
+        }
+    });
+    
+    if (triggerConditionCount > 1) {
+        triggerText += creator.SetResources(TE_PLAYER_P7, "Set To", 1, TE_RESOURCE_ORE);
     }
     
     triggerText += creator.PreserveTrigger();
@@ -125,7 +169,7 @@ var TETextCreator = function() {
     }
     
     this.Accumulate = function(player, quantitymod, quantitynum, resource) {
-        return "Accumulate(\"" + player + "\", " + quantitymod + ", " + quantitynum + ", " + resource + ");\n";
+        return "\tAccumulate(\"" + player + "\", " + quantitymod + ", " + quantitynum + ", " + resource + ");\n";
     }
     
     /*** Actions ***/
@@ -143,6 +187,10 @@ var TETextCreator = function() {
     
     this.PreserveTrigger = function() {
         return "\tPreserve Trigger();\n";
+    }
+    /* setto 변수명 맵 에디터에서 확인 후 변경할 것 */
+    this.SetResources = function(player, setto, num, resource) {
+        return "\tSet Resources(\"" + player + "\", " + setto + ", " + num + ", " + resource + ");\n";
     }
     
     this.Wait = function(duration) {
