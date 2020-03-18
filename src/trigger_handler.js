@@ -5,11 +5,13 @@
   @issue
     + TE 트리거 코드 출력 기능
      개발된 기능들
-      - 총 폭탄 수 한번에 터지는 폭탄 수 관계 없이 트리거 출력 가능
+      - 
+      - 한번에 터지는 폭탄 수 관계 없이 출력 가능
       - TE 상수, TETextCreator의 함수로 TE용 트리거 텍스트 코드 변환
      추가할 내용
       - 폭탄 터지는 옵션 처리
       - 장애물 처리
+      - 64개가 넘어가는 트리거 세트 처리
       - TE 상수 추가 지속
       - TETextCreator 함수 추가 지속
 */
@@ -53,7 +55,7 @@ function getPatternTETriggerText(pattern) {
     
     if (locationListLength == 0 || (turnList.length == 1 && turnList[0].cellList.length == 0)) {
         /* 로케이션이나 폭탄이 없으면 트리거를 작성하지 않는다. */
-        return null;
+        return "";
     }
     
     // 폭탄 갯수를 파악해서 미리 트리거를 어떻게 나눌지 파악할 수 있을까?
