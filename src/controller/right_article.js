@@ -1,10 +1,12 @@
 RightArticle.switchTo = function(elementID) {
     $("#articleTab1").css("display", "none");
     $("#articleTab2").css("display", "none");
-    $("#"+elementID).css("display", "");
+    $("#" + elementID).css("display", "");
 };
 
 RightArticle.onTab1MouseDown = function() {
+    if (Project.patterns.length === 0) return;
+    
     RightArticle.isMouseDown = true;
     var gridWidth = RightArticle.canvasTileWidth;
     var gridHeight = RightArticle.canvasTileHeight;
@@ -48,11 +50,11 @@ RightArticle.onTab1MouseDown = function() {
             break;
         case PATTERN_MODE_BOMB:
             if (mouseButton === MOUSEBUTTON_LEFT || mouseButton === MOUSEBUTTON_RIGHT) {
-                var locationList = Project.currentPattern.locationList;
-                var turnList = Project.currentPattern.turnList;
-                var currentTurn = Project.currentPattern.currentTurn;
-                var cellList = turnList[currentTurn - 1].cellList;
-                var cellType, cellUnit, cellOption;
+                let locationList = Project.currentPattern.locationList;
+                let turnList = Project.currentPattern.turnList;
+                let currentTurn = Project.currentPattern.currentTurn;
+                let cellList = turnList[currentTurn - 1].cellList;
+                let cellType, cellUnit, cellOption;
                 let isProcessDone = false;
                 let locationLenX, locationLenY;
 
@@ -81,9 +83,9 @@ RightArticle.onTab1MouseDown = function() {
                                 cellType = TURNCELLTYPE_BOMB;
                                 locationLenX = parseInt((locationList[i].getRight(gridWidth) - locationList[i].getLeft(gridWidth)) / gridWidth);
                                 locationLenY = parseInt((locationList[i].getBottom(gridHeight) - locationList[i].getTop(gridHeight)) / gridHeight);
-                                if (locationLenX >= 3 && locationLenY >= 3) cellUnit = $("#sectionTab1 > #bomb > select#bombUnits3").val();
-                                else if (locationLenX >= 2 && locationLenY >= 2) cellUnit = $("#sectionTab1 > #bomb > select#bombUnits2").val();
-                                else cellUnit = $("#sectionTab1 > #bomb > select#bombUnits1").val();
+                                if (locationLenX >= 3 && locationLenY >= 3) cellUnit = Project.currentPattern.bombUnit3;
+                                else if (locationLenX >= 2 && locationLenY >= 2) cellUnit = Project.currentPattern.bombUnit2;
+                                else cellUnit = Project.currentPattern.bombUnit1;
                                 cellOption = TURNCELLOPTION_NONE;
                                 cellList.push(new BoundTurnCell(locationList[i], cellType, cellUnit, cellOption));
                             }
@@ -201,6 +203,8 @@ RightArticle.onTab1MouseDown = function() {
 };
 
 RightArticle.onTab1MouseUp = function() {
+    if (Project.patterns.length === 0) return;
+
     RightArticle.isMouseDown = false;
     var mouseButton = RightArticle.getMouseButtonFromEvent(event);
     var gridWidth = RightArticle.canvasTileWidth;
@@ -295,7 +299,7 @@ RightArticle.onTab1MouseUp = function() {
                                         RightArticle.selectedLocation = locationList[j];
                                         RightArticle.clearContext(selectionCanvas, selectionContext);
                                         RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
-                                        console.log("Location Selected (Label : " + locationList[j].label + ", PosX : " + posX + ", PosY : " + posY + ", lenX : " + lenX + ", lenY : " + lenY + ", Layer : " + locationList[j].layer + ")");
+                                        Log.debug("Location Selected (Label : " + locationList[j].label + ", PosX : " + posX + ", PosY : " + posY + ", lenX : " + lenX + ", lenY : " + lenY + ", Layer : " + locationList[j].layer + ")");
                                         break;
                                     }
                                 }
@@ -338,7 +342,7 @@ RightArticle.onTab1MouseUp = function() {
                                 RightArticle.clearContext(selectionCanvas, selectionContext);
                                 RightArticle.drawSelectionSquare(selectionContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth);
 
-                                console.log("Location Selected (Label : " + location.label + ", PosX : " + posX + ", PosY : " + posY + ", lenX : " + lenX + ", lenY : " + lenY + ", Layer : " + location.layer + ")");
+                                Log.debug("Location Selected (Label : " + location.label + ", PosX : " + posX + ", PosY : " + posY + ", lenX : " + lenX + ", lenY : " + lenY + ", Layer : " + location.layer + ")");
     
                                 RightArticle.selectedLocation = location;
                                 isLocationSelected = true;
@@ -370,6 +374,8 @@ RightArticle.onTab1MouseUp = function() {
 };
 
 RightArticle.onTab1MouseMove = function() {
+    if (Project.patterns.length === 0) return;
+
     // Section 1
     var gridWidth = RightArticle.canvasTileWidth;
     var gridHeight = RightArticle.canvasTileHeight
@@ -459,16 +465,22 @@ RightArticle.onTab1MouseMove = function() {
     }
 };
 
-RightArticle.onTab1MouseOut = function() {};
+RightArticle.onTab1MouseOut = function() {
+    if (Project.patterns.length === 0) return;
+};
 
 RightArticle.onKeyDown = function() {
+    if (Project.patterns.length === 0) return;
+
     if (event.keyCode === 9) { // TAB KEY
         event.preventDefault(); // 탭 키 눌렀을 때 기본 이벤트 취소
     }
 };
 
 RightArticle.onKeyUp = function() {
-    console.log("Keyup : " + event.keyCode);
+    if (Project.patterns.length === 0) return;
+
+    Log.debug("Keyup : " + event.keyCode);
 
     if (event.keyCode === 46) { // DELETE KEY
         switch (Project.currentPattern.currentMode) {
@@ -528,7 +540,7 @@ RightArticle.onKeyUp = function() {
             case PATTERN_MODE_BOMB:
                 // 현재 로케이션 레이어 전환 (+1) 후 redraw
                 if (++RightArticle.currentLocationLayer > RightArticle.maxLocationLayer) RightArticle.currentLocationLayer = 1;
-                console.log("bombMode - Location Layer Changed to : " + RightArticle.currentLocationLayer);
+                Log.debug("bombMode - Location Layer Changed to : " + RightArticle.currentLocationLayer);
                 RightArticle.redrawBombSettings();
                 break;
         }
@@ -545,7 +557,7 @@ RightArticle.redrawTerrainCanvas = function() {
         SCMapAPI.drawTile(terrainContext, gridWidth, gridHeight, tileData.tile, tileData.posX, tileData.posY, 1, 1);
     }
     
-    console.log("Pattern Terrain Redrawn");
+    Log.debug("Pattern Terrain Redrawn");
 };
 
 RightArticle.redrawLocationList = function() {
@@ -565,11 +577,12 @@ RightArticle.redrawLocationList = function() {
         }
     }
 
-    console.log("Pattern Location List Redrawn");
+    Log.debug("Pattern Location List Redrawn");
 };
 
 RightArticle.initCanvases = function() {
     var canvasHolder = document.getElementById("articleTab1");
+
     terrainCanvas = canvasHolder.querySelector("#terrain");
     locationCanvas = canvasHolder.querySelector("#location");
     baseCanvas = canvasHolder.querySelector("#base");
@@ -634,13 +647,13 @@ RightArticle.drawSelectionSquare = function(canvasContext, gridWidth, gridHeight
     canvasContext.strokeStyle = "";
 };
 
-RightArticle.drawLocationSquare = function(canvasContext, gridWidth, gridHeight, left, top, right, bottom, hexColorStr, alphaVal) {
+RightArticle.drawLocationSquare = function(canvasContext, gridWidth, gridHeight, left, top, right, bottom, hexColorStr, fillColorAlpha) {
     left = left * gridWidth;
     top = top * gridHeight;
     right = right * gridWidth;
     bottom = bottom * gridHeight;
 
-    canvasContext.globalAlpha = (alphaVal === undefined) ? DEFAULT_LOCATION_ALPHA : alphaVal;
+    canvasContext.globalAlpha = (fillColorAlpha === undefined) ? DEFAULT_LOCATION_ALPHA : fillColorAlpha;
     canvasContext.fillStyle = (hexColorStr === undefined) ? DEFAULT_LOCATION_COLOR : hexColorStr;
     canvasContext.fillRect(left, top, right - left, bottom - top);
 
@@ -661,12 +674,15 @@ RightArticle.drawLocationMoveSquare = function(canvasContext, gridWidth, gridHei
 };
 
 RightArticle.getMouseButtonFromEvent = function(eventObj) {
-    return (eventObj.which === 1) ? MOUSEBUTTON_LEFT : (eventObj.which === 2) ? MOUSEBUTTON_MIDDLE : (eventObj.which === 3) ? MOUSEBUTTON_RIGHT : MOUSEBUTTON_UNKNOWN;
+    return (eventObj.which === 1) ? MOUSEBUTTON_LEFT :
+           (eventObj.which === 2) ? MOUSEBUTTON_MIDDLE :
+           (eventObj.which === 3) ? MOUSEBUTTON_RIGHT :
+                                    MOUSEBUTTON_UNKNOWN;
 };
 
 RightArticle.putTile = function(canvasContext, gridWidth, gridHeight, tile, posX, posY, lenX, lenY) {
     // 이미 해당 좌표에 타일이 존재할 경우, 제거하고 새로 적용
-    console.log("dataList Length : " + Project.currentPattern.tileDataList.length);
+    Log.debug("dataList Length : " + Project.currentPattern.tileDataList.length);
     for (var i = Project.currentPattern.tileDataList.length - 1; i >= 0; i--) {
         for (var j = 0; j < lenY; j++) {
             for (var k = 0; k < lenX; k++) {
@@ -730,7 +746,7 @@ RightArticle.deleteSelectedTiles = function() {
         }
     }
     
-    console.log("Tiles deleted (count : " + deletedCount + ")");
+    Log.debug("Tiles deleted (count : " + deletedCount + ")");
 
     return deletedCount;
 };
@@ -810,14 +826,14 @@ RightArticle.redrawBombSettings = function() {
                             case RACE_TERRAN: fillColorStr = "#c08040"; break;
                             case RACE_PROTOSS: fillColorStr = "#3040c0"; break;
                             default:
-                                console.log("Units 배열에 해당 폭탄 유닛의 종족 값이 잘못되었습니다. (" + selectedTurn.cellList[j].unit + ")");
+                                Log.error("Units 배열에 해당 폭탄 유닛의 종족 값이 잘못되었습니다. (" + selectedTurn.cellList[j].unit + ")");
                                 isInvalid = true;
                                 break;
                         }
                         break;
                     }
                     else if (k === Units.length - 1) {
-                        console.log("Units 배열에 해당 폭탄 유닛의 종족 데이터가 누락 되었습니다. (" + selectedTurn.cellList[j].unit + ")");
+                        Log.error("Units 배열에 해당 폭탄 유닛의 종족 데이터가 누락 되었습니다. (" + selectedTurn.cellList[j].unit + ")");
                         isInvalid = true;
                     }
                 }
@@ -841,7 +857,7 @@ RightArticle.redrawBombSettings = function() {
                         break;
                     }
                     else if (k === Units.length - 1) {
-                        console.log("Units 배열에 해당 장애물 유닛의 사이즈 데이터가 누락 되었습니다. (" + selectedTurn.cellList[j].unit + ")");
+                        Log.error("Units 배열에 해당 장애물 유닛의 사이즈 데이터가 누락 되었습니다. (" + selectedTurn.cellList[j].unit + ")");
                         isInvalid = true;
                     }
                 }
@@ -855,7 +871,7 @@ RightArticle.redrawBombSettings = function() {
         if (i === RightArticle.currentLocationLayer) break;
     }
     
-    console.log("Bomb Settings Redrawn");
+    Log.debug("Bomb Settings Redrawn");
 };
 
 RightArticle.drawBlockUnit = function(canvasContext, gridWidth, gridHeight, location, unit, isCenterAligned) {
@@ -866,7 +882,7 @@ RightArticle.drawBlockUnit = function(canvasContext, gridWidth, gridHeight, loca
                 break;
             }
             else if (i === Resource.image.units.length - 1) {
-                console.log("drawBlockUnit - !isCenterAligned : 그리기 실패 (" + unit + ")");
+                Log.error("drawBlockUnit - !isCenterAligned : 그리기 실패 (" + unit + ")");
             }
         }
     }
@@ -883,7 +899,7 @@ RightArticle.drawBlockUnit = function(canvasContext, gridWidth, gridHeight, loca
                 break;
             }
             else if (i === Resource.image.units.length - 1) {
-                console.log("drawBlockUnit - isCenterAligned : 그리기 실패 (" + unit + ")");
+                Log.error("drawBlockUnit - isCenterAligned : 그리기 실패 (" + unit + ")");
             }
         }
     }

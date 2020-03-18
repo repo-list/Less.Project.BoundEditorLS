@@ -6,19 +6,26 @@
 }
 
 #left > section { display: none; }
-#left > section.open { display: block; }
+#left > section.open {
+	display: block;
+	overflow-y: hidden;
+}
 
 #left > section > .infoTab {
-    position: absolute;
+	position: relative;
+	overflow-y: scroll;
+	-ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
 }
-#left > section > #infoTab1 > button {
+#left > section > .infoTab::-webkit-scrollbar { display: none; }
+#left > section > #infoTab1 li { margin-bottom: 15px; }
+#left > section > #infoTab1 li:first-of-type { margin-top: 15px; }
+#left > section > #infoTab1 li:last-of-type { margin-bottom: 40px; }
+#left > section > #infoTab1 button {
     position: relative;
-    left: 15%;
-    margin-top: 15px;
-    width: 70%;
-    height: 40px;
+    left: 10%;
+    width: 80%;
+    height: 30px;
     font-size: 13px;
-    
 	box-shadow: inset 0px 1px 0px 0px #dddddd;
 	background: linear-gradient(to bottom, #dddddd 5%, #d0d0d0 100%);
 	background-color: #dddddd;
@@ -30,13 +37,15 @@
 	font-weight: bold;
 	padding: 6px 24px;
 	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
-#left > section > #infoTab1 > button:hover {
-	background: linear-gradient(to bottom, #cccccc 5%, #e0e0e0 100%);
-	background-color: #f6f6f6;
+#left > section > #infoTab1 button:hover {
+	background: linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
+	background-color: #ffffff;
 }
-#left > section > #infoTab1 > button.selected {
+#left > section > #infoTab1 button.selected {
 	box-shadow: inset 0px 1px 0px 0px #ffffff;
 	background: linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
 	background-color: #ffffff;
@@ -44,7 +53,3 @@
 	text-shadow: 0px 1px 0px #ffffff;
 	color: #333333;
 }
-/* #left > section > #infoTab1 > button.selected:hover {
-	background: linear-gradient(to bottom, #84525a 5%, #8e6365 100%);
-	background-color: #84525a;
-} */

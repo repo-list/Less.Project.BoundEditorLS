@@ -19,7 +19,7 @@
     position: static;
     float: left;
     height: calc(100% - 40px - 28px); /* page.height - headerSize - footerSize */
-    min-height: 582px;
+    min-height: 602px;
     margin-bottom: 4px;
 }
 
@@ -29,7 +29,7 @@
     /* width -> controller/page.js */
     min-width: calc(640px + 17px); /* 17px -> Scrollbar Size */
     height: calc(100% - 40px - 28px);
-    min-height: 582px;
+    min-height: 602px;
     margin-bottom: 4px;
 }
 

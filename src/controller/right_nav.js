@@ -1,6 +1,8 @@
 RightNav.changeTab = function() {
     var $tabList = $("#right > nav li");
+    var $listTab1 = $("#listTab1");
     var $tab;
+
     if ($(this).hasClass("selected")) return;
 
     for (var i = 0; i < $tabList.length; i++) {
@@ -12,7 +14,7 @@ RightNav.changeTab = function() {
     }
     $(this).toggleClass("selected");
     
-    if ($("#listTab1").hasClass("selected")) {
+    if ($listTab1.hasClass("selected")) {
         RightHeader.switchTo("headerTab1");
         RightArticle.switchTo("articleTab1");
         RightSection.switchTo("sectionTab1");

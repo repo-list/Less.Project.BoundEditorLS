@@ -1,4 +1,9 @@
 var HeaderElements = {
     onButtonClick : function() {},
-    showDialog : function(title, message) {}
+    onClickPatchNote : function() {},
+    onClickAppInfo : function() {},
+    onClickLoadProject : function() {},
+    onClickSaveProject : function() {},
+    onClickProjectAuthor : function() {},
+    onClickProjectName : function() {}
 };

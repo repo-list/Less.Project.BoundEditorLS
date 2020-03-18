@@ -1,7 +1,7 @@
 #right > article {
     position: relative;
     width: 100%;
-    height: calc(100% - 24px - 221px);
+    height: calc(100% - 24px - 257px); /* 100% - nav.height - article을 제외한 나머지 (브라우저에서 최종 값 확인) */
     min-height: calc(320px + 17px); /* 17px -> Scrollbar Size */
     margin-bottom: 4px;
     background-color: #a8a8a8;

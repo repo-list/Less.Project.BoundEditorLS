@@ -74,7 +74,7 @@ const UNIT_OTHER_BLOCKEXPLOSION2 = "Block Explosion 2x2";
 
 /* Default Project Settings */
 const SHORT_APP_NAME = "BoundEditorLS";
-const DEFAULT_PROJECT_NAME = "새 프로젝트";
+const DEFAULT_PROJECT_NAME = "나의 프로젝트";
 const DEFAULT_PATTERN_LABEL_HEADER = "패턴 ";
 const DEFAULT_PATTERN_DESCRIPTION = "";
 const DEFAULT_TILESET = SCTilesetList.Badlands;
@@ -90,7 +90,7 @@ const DEFAULT_BOMBUNIT1 = UNIT_ZERG_SCOURGE;
 const DEFAULT_BOMBUNIT2 = UNIT_ZERG_OVERLORD;
 const DEFAULT_BOMBUNIT3 = UNIT_TERRAN_BATTLECRUISER;
 const DEFAULT_TURN_WAIT = 42;
-const DEFAULT_AUTHORPROMPT_DELAY = 500;
+const DEFAULT_INITIAL_AUTHORPROMPT_DELAY = 500;
 
 // Classes (Modified After Declaration)
 var BoundPattern = function(label, description, tileset) {
@@ -200,7 +200,7 @@ var createNewPattern = function() {
     var pattern = new BoundPattern(patternLabel, patternDescription, tileset);
 
     pattern.author = undefined; // 나중에 파일 저장 시, undefined인지 체크 후 닉네임 입력하게끔 유도하는 꼼수
-    pattern.mapName = undefined; // 나중에 파일 저장 시, undefined인지 체크 후 닉네임 입력하게끔 유도하는 꼼수
+    pattern.mapName = undefined; // 나중에 트리거 출력 시, undefined인지 체크 후 닉네임 입력하게끔 유도하는 꼼수
     pattern.currentMode = PATTERN_MODE_TERRAIN;
     pattern.locationLabelHeader = DEFAULT_LOCATION_LABEL_HEADER;
     pattern.isLocationZeroPadOn = DEFAULT_IS_LOCATION_ZERO_PAD_ON;
@@ -214,29 +214,15 @@ var createNewPattern = function() {
     boundTurn.wait = DEFAULT_TURN_WAIT;
     pattern.turnList.push(boundTurn);
 
-    setTimeout(function() {
-        if (Project.isPrivateProject !== true || Project.author === undefined) {
-            pattern.author = prompt("패턴 제작자의 닉네임을 입력해주세요 : ", DEFAULT_AUTHOR_NAME);
-            if (pattern.author === null) pattern.author = DEFAULT_AUTHOR_NAME;
-            
-            if (Project.isPrivateProject) Project.author = pattern.author;
-            else if (Project.isPrivateProject === undefined) {
-                var confirmResult = confirm("현재 프로젝트가 본인의 개인 프로젝트입니까?\n" +
-                                            "확인 선택 시, 앞으로 모든 패턴에 동일한 제작자 이름이 적용됩니다.\n" +
-                                            "취소 선택 시, 패턴을 저장할 때마다 제작자를 반복해서 묻습니다.");
-                if (confirmResult === true) {
-                    Project.author = pattern.author;
-                    Project.isPrivateProject = true;
-                    console.log("Project.isPrivateProject : " + Project.isPrivateProject);
-                }
-                else {
-                    Project.isPrivateProject = false;
-                    console.log("Project.isPrivateProject 2 : " + Project.isPrivateProject);
-                }
-            }
-        }
-        else pattern.author = Project.author;
-    }, DEFAULT_AUTHORPROMPT_DELAY);
+    if (Page.isFreshLoad) {
+        Page.isFreshLoad = false;
+        setTimeout(function() {
+            checkPatternAuthor(pattern);
+        }, DEFAULT_INITIAL_AUTHORPROMPT_DELAY);
+    }
+    else {
+        checkPatternAuthor(pattern);
+    }
 
     return pattern;
 };
@@ -250,15 +236,25 @@ var loadProject = function(event) {
         Project = project;
         LeftSection.clearPatternTab();
 
+        // 태그 수동 추가
         var patternLen = project.patterns.length;
         for (var i = 0; i < patternLen; i++) {
-            $infoTab1 = $("#left > section > #infoTab1");
+            var $infoTab1List = $("#left > section > #infoTab1 > ul");
             let patternID = PATTERNID_HEADER + i;
-            $infoTab1.append("<button id='" + patternID + "' class='pattern'>" + project.patterns[i].label + "</button>");
-            $infoTab1.find("#" + patternID).on("click", LeftSection.onPatternButtonClick);
+            $infoTab1List.append("<li><button id='" + patternID + "' class='pattern'>" + project.patterns[i].label + "</button></li>");
+            $newButton = $infoTab1List.find("#" + patternID);
+            $newButton.on("click", LeftSection.onPatternButtonClick);
         }
 
+        // 프로젝트 데이터 세팅
+        var $projectName = $("#header > #projectName");
+        var $projectAuthor = $("#header > #projectAuthor");
+        $projectName.html(project.name);
+        $projectAuthor.html(project.author);
+
         LeftSection.selectPattern(project.currentPatternIndex);
+
+        Log.debug(project.patterns);
     });
 };
 
@@ -274,11 +270,102 @@ var loadPattern = function(event) {
             return;
         }
         
-        LeftSection.addPatternItem(pattern);
+        LeftSection.addNewPatternItem(pattern);
+        LeftSection.selectPattern(Project.patterns.length - 1);
     });
 };
 
 var savePattern = function(pattern) {
     var content = FileHandler.getPatternFileContent(pattern);
     FileHandler.download(content.data, content.fileName, content.type);
+};
+
+var deletePattern = function(patternIndex) {
+    // 객체 제거
+    var $patternButtons = $("#left > section > #infoTab1 button.pattern");
+    Project.patterns.splice(patternIndex, 1);
+    $patternButtons.eq(patternIndex).parent().remove(); // parent === <li> element
+    $patternButtons = $("#left > section > #infoTab1 button.pattern"); // 다시 찾아줘야 length가 변함...
+
+    // 버튼 ID 초기화
+    for (var i = patternIndex; i < $patternButtons.length; i++) {
+        $patternButtons.eq(i).prop("id", PATTERNID_HEADER + i);
+    }
+
+    // 패턴 탭에서 버튼 제거
+
+    // 캔버스 지우기
+    RightArticle.clearContext(terrainCanvas, terrainContext);
+    RightArticle.clearContext(locationCanvas, locationContext);
+    RightArticle.clearContext(baseCanvas, baseContext);
+    RightArticle.clearContext(blockCanvas, blockContext);
+    RightArticle.clearContext(bombCanvas, bombContext);
+    RightArticle.clearContext(selectionCanvas, selectionContext);
+    // gridContext는 한 번 초기화하고 그대로 사용하므로, 지울 필요가 없음.
+
+    // 패턴 레이블 변경
+    var $patternLabel = $("#right > header button#patternLabel");
+    $patternLabel.html("");
+
+    // 현재 패턴 정보 제거
+    Project.currentPattern = null;
+    Project.currentPatternIndex = null;
+}
+
+var checkPatternAuthor = function(pattern) {
+    if (Project.isPrivateProject !== true || Project.author === undefined) {
+        pattern.author = Popup.prompt("패턴 제작자의 닉네임을 입력해주세요 : ", DEFAULT_AUTHOR_NAME);
+        if (pattern.author === null) pattern.author = DEFAULT_AUTHOR_NAME;
+        
+        if (Project.isPrivateProject) Project.author = pattern.author;
+        else if (Project.isPrivateProject === undefined) {
+            var confirmResult = Popup.confirm("현재 프로젝트가 본인의 개인 프로젝트입니까?\n" +
+                                        "확인 선택 시, 앞으로 모든 패턴에 동일한 제작자 이름이 적용됩니다.\n" +
+                                        "취소 선택 시, 패턴을 저장할 때마다 제작자를 반복해서 묻습니다.");
+            if (confirmResult === true) {
+                updateProjectAuthor(pattern.author);
+                Project.isPrivateProject = true;
+                Log.debug("Project.isPrivateProject : " + Project.isPrivateProject);
+            }
+            else {
+                Project.isPrivateProject = false;
+                Log.debug("Project.isPrivateProject 2 : " + Project.isPrivateProject);
+            }
+            WebStorage.setPrivateProject(Project.isPrivateProject);
+        }
+    }
+    else {
+        pattern.author = Project.author;
+        updateProjectAuthor(pattern.author);
+    }
+};
+
+var updateProjectAuthor = function(author) {
+    var $projectAuthor = $("#header > #projectAuthor");
+
+    $projectAuthor.html(author);
+    Project.author = author;
+    WebStorage.setProjectAuthor(author);
+
+    Log.debug("Project author changed to : " + author);
+};
+
+var updateProjectName = function(name) {
+    var $projectName = $("#header > #projectName");
+
+    $projectName.html(name);
+    Project.name = name;
+    
+    Log.debug("Project name changed to : " + name);
+};
+
+var updatePatternLabel = function(patternIndex, label) {
+    var $patternButtons = $("#left > section > #infoTab1 button.pattern");
+    var $patternLabel = $("#right > header button#patternLabel");
+
+    $patternButtons.eq(patternIndex).html(label);
+    $patternLabel.html(label);
+    Project.patterns[patternIndex].label = label;
+    
+    Log.debug("Pattern label changed to : " + label);
 };

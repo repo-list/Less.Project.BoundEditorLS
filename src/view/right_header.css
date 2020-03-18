@@ -1,7 +1,7 @@
 #right > header {
     position: relative;
     width: 100%;
-    height: 30px;
+    height: 36px;
     background-color: #909090;
     border-bottom: 2px solid #454545;
 }
@@ -12,22 +12,36 @@
 }
 
 #right > header button {
-    position: absolute;
-    width: 102px;
-    height: 20px;
+    position: initial;
+    display: inline-block;
+    height: 24px;
     margin-top: 5px;
+    margin-left: 7px;
     background-color: #868686;
     border: 1px solid #566963;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 13px;
     color: white;
     cursor: pointer;
 }
+#right > header button:not(.input) {
+    vertical-align: top;
+}
+#right > header button.input {
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: #f0f0f0;
+    color: black;
+    letter-spacing: 0.2px;
+    min-width: 40px;
+}
 
 #right > header button:hover { opacity: 0.75; }
-#right > header button#newPattern { left: 10px; }
-#right > header button#loadPattern { left: 127px; }
-#right > header button#savePattern { left: 244px; }
-#right > header button#sharePattern { left: 361px; }
-#right > header button#working { left: 10px; }
+#right > header button#patternLabel { margin-left: 15px; }
+#right > header button#newPattern { width: 54px; }
+#right > header button#loadPattern { width: 54px; }
+#right > header button#savePattern { width: 54px; }
+#right > header button#deletePattern { width: 54px; }
+#right > header button#sharePattern { width: 54px; }
+#right > header button#working { width: 100px; margin-left: 15px; }
 #right > header input#loadPatternFile { display: none; }

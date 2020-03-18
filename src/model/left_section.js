@@ -1,10 +1,11 @@
 var LeftSection = {
     width: 206,
     marginRight: 4,
-    totalWidth : function() {},
-    addPatternItem : function(pattern) {},
+    getTotalWidth : function() {},
+    addNewPatternItem : function(pattern) {},
     changeTabTo : function(tabIndex) {},
     selectPattern : function(patternIndex) {},
     onPatternButtonClick : function() {},
-    clearPatternTab : function() {}
+    clearPatternTab : function() {},
+    onSortComplete : function(event, ui) {}
 };

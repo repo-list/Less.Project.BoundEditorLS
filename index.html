@@ -5,7 +5,9 @@
     <meta charset="utf-8" />
 
     <!-- Dependencies -->
+    <link rel="stylesheet" href="lib/jquery-ui.min.css">
     <script src="lib/jquery-3.3.1.min.js"></script>
+    <script src="lib/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="lib/reset.css">
     <script src="lib/scmap_api/scmap_api.js"></script>
 
@@ -14,8 +16,11 @@
     <script src="patch_note.js"></script>
 
     <!-- Project -->
+    <script src="src/log.js"></script>
+    <script src="src/popup.js"></script>
     <script src="src/file_handler.js"></script>
     <script src="src/project.js"></script>
+    <script src="src/web_storage.js"></script>
 
     <!-- Resource & Data -->
     <script src="src/resource.js"></script>
@@ -97,6 +102,9 @@
             $("#right #sectionTab1 > #bomb > input#currentTurn").on("change", RightSection.onCurrentTurnTextChange);
             $("#right #sectionTab1 > #bomb > button#addTurn").on("click", RightSection.addTurn);
             $("#right #sectionTab1 > #bomb > button#insertTurn").on("click", RightSection.insertTurn);
+            $("#right #sectionTab1 > #bomb > button#copyTurn").on("click", RightSection.copyTurn);
+            $("#right #sectionTab1 > #bomb > button#invertTurn").on("click", RightSection.invertTurn);
+            $("#right #sectionTab1 > #bomb > button#deleteTurn").on("click", RightSection.deleteTurn);
             $("#right #sectionTab1 > #bomb > button#toPrev").on("click", RightSection.onToPrevClick);
             $("#right #sectionTab1 > #bomb > button#toNext").on("click", RightSection.onToNextClick);
             $("#right #sectionTab1 > #bomb > button#toFirst").on("click", RightSection.onToFirstClick);
@@ -110,12 +118,17 @@
             $("#right #headerTab1 > #loadPatternFile").on("change", loadPattern);
             $("#header > #loadProject").on("click", function() { $("#header > #loadProjectFile").click(); });
             $("#header > #loadProjectFile").on("change", loadProject);
+            $("#left > section ul.sortable").sortable({ handle: "button", cancel: "", update: LeftSection.onSortComplete });
 
             /*** Project Init ***/
             Project.name = DEFAULT_PROJECT_NAME;
-            Project.author = undefined; // 나중에 파일 저장 시, undefined인지 체크 후 닉네임 입력하게끔 유도하는 꼼수
-            Project.mapName = undefined; // 나중에 파일 저장 시, undefined인지 체크 후 닉네임 입력하게끔 유도하는 꼼수
-            Project.isPrivateProject = undefined;
+            if (isWebStorageAvailable) {
+                Project.author = WebStorage.getProjectAuthor();
+                Project.isPrivateProject = WebStorage.isPrivateProject();
+            }
+            if (!Project.author) Project.author = undefined;
+            if (!Project.isPrivateProject) Project.isPrivateProject = undefined;
+            Project.mapName = undefined;
             document.title = SHORT_APP_NAME + " - " + Project.name;
             var pattern = createNewPattern();
             LeftSection.addNewPatternItem(pattern);
@@ -142,25 +155,29 @@
 <body>
     <div id="page">
         <header id="header">
-            <button id="loadProject">프로젝트 열기</button>
-            <button id="saveProject">프로젝트 저장</button>
-            <button id="patchNote">패치 노트</button>
-            <button id="appInfo">앱 정보</button>
-            <input id="loadProjectFile" type="file" />
+            <button id="projectName" class="input" title="프로젝트 이름">나의 프로젝트</button>
+            <button id="loadProject" title="프로젝트 열기">열기</button>
+            <button id="saveProject" title="프로젝트 저장">저장</button>
+            <button id="projectAuthor" class="input" title="프로젝트 제작자 닉네임">닉네임을 입력하세요</button>
+            <button id="patchNote" title="패치 노트">패치 노트</button>
+            <button id="appInfo" title="앱 정보">앱 정보</button>
+            <input id="loadProjectFile" type="file" accept=".bpj" />
         </header>
         <aside id="left">
             <nav>
                 <ul>
-                    <li id="patternInfo" class="selected">
+                    <li id="patternInfo" class="selected" title="패턴 목록 탭">
                         <img src="res/image/icon/pattern.png" draggable="false">
                     </li>
-                    <li id="waitInfo">
+                    <li id="waitInfo" title="웨잇 정보 탭">
                         <img src="res/image/icon/figure.png" draggable="false">
                     </li>
                 </ul>
             </nav>
             <section class="open">
-                <div id="infoTab1" class="infoTab"></div>
+                <div id="infoTab1" class="infoTab">
+                    <ul class="sortable"></ul>
+                </div>
                 <div id="infoTab2" class="infoTab"></div>
             </section>
         </aside>
@@ -177,14 +194,16 @@
             </nav>
             <header>
                 <div id="headerTab1">
-                    <button id="newPattern">새 패턴</button>
-                    <button id="loadPattern">패턴 로드</button>
-                    <button id="savePattern">패턴 저장</button>
-                    <button id="sharePattern">패턴 공유</button>
-                    <input id="loadPatternFile" type="file" />
+                    <button id="patternLabel" class="input" title="패턴 이름">패턴 1</button>
+                    <button id="newPattern" title="패턴 생성">생성</button>
+                    <button id="loadPattern" title="패턴 열기">열기</button>
+                    <button id="savePattern" title="패턴 저장">저장</button>
+                    <button id="deletePattern" title="패턴 삭제">삭제</button>
+                    <button id="sharePattern" title="패턴 공유">공유</button>
+                    <input id="loadPatternFile" type="file" accept=".bpn" />
                 </div>
                 <div id="headerTab2">
-                    <button id="working">작업 중</button>
+                    <button id="working" title="작업 중">작업 중</button>
                 </div>
             </header>
             <article>
@@ -203,14 +222,14 @@
                 <div id="sectionTab1">
                     <div id="mode">
                         <span id="creationMode">* 모드 선택 :</span>
-                        <button id="terrainMode" class="mode">지형</button>
-                        <button id="locationMode"class="mode">로케이션</button>
-                        <button id="bombMode"class="mode">폭탄</button>
+                        <button id="terrainMode" class="mode" title="지형 모드 : 맵에서 유닛이 이동하는 타일을 설치합니다.">지형</button>
+                        <button id="locationMode"class="mode" title="로케이션 모드 : 폭탄 및 장애물이 설치될 곳들의 위치를 생성합니다.">로케이션</button>
+                        <button id="bombMode"class="mode" title="폭탄 설정 모드 : 폭탄 및 장애물을 설치하고 시뮬레이션을 확인합니다.">폭탄</button>
                     </div>
 
                     <div id="terrain">
                         <span id="tileset">* 타일셋 선택 :</span>
-                        <select id="tilesets">
+                        <select id="tilesets" title="타일의 모음, 즉 맵의 기반이 되는 지형을 설정합니다.">
                             <option value="Badlands">Badlands (배드랜드)</option>
                             <option value="Space Platform">Space Platform (우주)</option>
                             <option value="Installation">Installation (기지)</option>
@@ -248,7 +267,7 @@
                     </div>
                     <div id="bomb">
                         <span id="bombUnit1">* 폭탄 유닛 선택 (1x1, 1x2, 2x1 등) :</span>
-                        <select id="bombUnits1">
+                        <select id="bombUnits1" title="현재 패턴 전체에서 1x1 크기의 로케이션에 사용할 폭탄 유닛을 지정합니다.">
                             <option value="Zerg Scourge">Zerg Scourge (스커지)</option>
                             <option value="Protoss Observer">Protoss Observer (옵저버)</option>
                             <option value="Protoss Probe">Protoss Probe (프로브)</option>
@@ -256,7 +275,7 @@
                         </select>
 
                         <span id="bombUnit2">* 폭탄 유닛 선택 (2x2, 2x3, 3x2 등) :</span>
-                        <select id="bombUnits2">
+                        <select id="bombUnits2" title="현재 패턴 전체에서 2x2 크기의 로케이션에 사용할 폭탄 유닛을 지정합니다.">
                             <option value="Zerg Overlord">Zerg Overlord (오버로드)</option>
                             <option value="Protoss Corsair">Protoss Corsair (커세어)</option>
                             <option value="Protoss Arbiter">Protoss Arbiter (아비터)</option>
@@ -270,13 +289,13 @@
                         </select>
 
                         <span id="bombUnit3">* 폭탄 유닛 선택 (3x3, 3x4, 4x3 등) :</span>
-                        <select id="bombUnits3">
+                        <select id="bombUnits3" title="현재 패턴 전체에서 3x3 크기의 로케이션에 사용할 폭탄 유닛을 지정합니다.">
                             <option value="Terran Battlecruiser">Terran Battlecruiser (배틀크루저)</option>
                             <option value="Zerg Ultralisk">Zerg Ultralisk (울트라리스크)</option>
                         </select>
 
                         <span id="blockUnit">* 장애물 유닛 선택 :</span>
-                        <select id="blockUnits">
+                        <select id="blockUnits" title="로케이션에 사용할 장애물을 선택합니다. 주로 편법 방지에 활용됩니다.">
                             <option value="Terran Machine Shop">Terran Machine Shop (머신샵)</option>
                             <option value="Psi Emitter">Psi Emitter (사이오닉 방출기)</option>
                             <option value="Khalis Crystal">Khalis Crystal (칼리스 크리스탈)</option>
@@ -303,17 +322,20 @@
 
                         <span id="turnControl">* 턴 제어 :</span>
                         <span id="showTurns"></span>
-                        <button id="addTurn" class="control">추가</button>
-                        <button id="insertTurn" class="control">삽입</button>
+                        <button id="addTurn" class="control" title="새로운 턴을 추가합니다.">추가</button>
+                        <button id="insertTurn" class="control" title="현재 턴 전에 새로운 턴을 삽입합니다.">삽입</button>
+                        <button id="copyTurn" class="control" title="현재 턴의 설정 내용을 복사하여 새로운 턴을 추가합니다.">복사</button>
+                        <button id="invertTurn" class="control" title="현재 턴의 폭탄 설정을 반전시킵니다. (장애물 설정과는 무관합니다)">반전</button>
+                        <button id="deleteTurn" class="control" title="현재 턴을 삭제합니다.">삭제</button>
                         <button id="toFirst" class="control">&lt;&lt;</button>
                         <button id="toPrev" class="control">&lt;</button>
-                        <input id="currentTurn" type="text" value="1" />
+                        <input id="currentTurn" type="text" value="1" title="특정 턴으로 이동합니다." />
                         <button id="toNext" class="control">&gt;</button>
                         <button id="toLast" class="control">&gt;&gt;</button>
                         
                         <span id="setWait">* 웨잇 설정 :</span>
-                        <input id="wait" type="number" min="0" max="99960" step="42" />
-                        <button id="play" class="control">▶</button>
+                        <input id="wait" type="number" min="0" max="99960" step="42" title="폭탄과 폭탄 사이에 기다리는 시간 간격입니다. 실제 시간과 약간 다르며, 자세한 값은 아래와 같습니다." />
+                        <button id="play" class="control" title="시뮬레이션 시작">▶</button>
                         <span id="waitRange">- 동일 웨잇 구간 (w) :</span>
                         <span id="waitRangeResult"></span>
                         <span id="actualTime">- 실제 시간 (ms) :</span>

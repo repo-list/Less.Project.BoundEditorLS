@@ -1,7 +1,7 @@
 #right > section {
     position: relative;
     width: 100%;
-    height: 185px;
+    height: 215px;
     background-color: #909090;
 }
 
@@ -75,21 +75,21 @@
 
 #right > section > #sectionTab1 > #mode > button#terrainMode {
     left: 24px;
-    top: 30px;
+    top: 33px;
     width: 120px;
     height: 40px;
 }
 
 #right > section > #sectionTab1 > #mode > button#locationMode {
     left: 24px;
-    top: 80px;
+    top: 95px;
     width: 120px;
     height: 40px;
 }
 
 #right > section > #sectionTab1 > #mode > button#bombMode {
     left: 24px;
-    top: 130px;
+    top: 157px;
     width: 120px;
     height: 40px;
 }
@@ -348,15 +348,36 @@
     color: white;
 }
 #right > section > #sectionTab1 > #bomb > button#addTurn {
-    left: 724px;
-    top: 3px;
+    left: 574px;
+    top: 74px;
     width: 40px;
     height: 24px;
     font-size: 13px;
 }
 #right > section > #sectionTab1 > #bomb > button#insertTurn {
+    left: 624px;
+    top: 74px;
+    width: 40px;
+    height: 24px;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > button#copyTurn {
+    left: 674px;
+    top: 74px;
+    width: 40px;
+    height: 24px;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > button#invertTurn {
+    left: 724px;
+    top: 74px;
+    width: 40px;
+    height: 24px;
+    font-size: 13px;
+}
+#right > section > #sectionTab1 > #bomb > button#deleteTurn {
     left: 774px;
-    top: 3px;
+    top: 74px;
     width: 40px;
     height: 24px;
     font-size: 13px;
@@ -398,13 +419,13 @@
 
 #right > section > #sectionTab1 > #bomb > span#setWait {
     left: 574px;
-    top: 86px;
+    top: 116px;
     color: white;
 }
 #right > section > #sectionTab1 > #bomb > input#wait {
     position: absolute;
     left: 664px;
-    top: 86px;
+    top: 116px;
     width: 64px;
     height: 20px;
     font-size: 15px;
@@ -412,7 +433,7 @@
 }
 #right > section > #sectionTab1 > #bomb > button#play {
     left: 750px;
-    top: 84px;
+    top: 114px;
     width: 66px;
     height: 29px;
     font-size: 18px;
@@ -422,38 +443,38 @@
 
 #right > section > #sectionTab1 > #bomb > span#waitRange {
     left: 574px;
-    top: 118px;
+    top: 148px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#waitRangeResult {
     left: 698px;
-    top: 118px;
+    top: 148px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#actualTime {
     left: 574px;
-    top: 138px;
+    top: 168px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#actualTimeResult {
     left: 677px;
-    top: 138px;
+    top: 168px;
     color: white;
     font-size: 12px;
 }
 #right > section > #sectionTab1 > #bomb > span#deathValue {
     left: 574px;
-    top: 158px;
+    top: 188px;
     color: white;
     font-size: 12px;
 }
 
 #right > section > #sectionTab1 > #bomb > span#deathValueResult {
     left: 636px;
-    top: 158px;
+    top: 188px;
     color: white;
     font-size: 12px;
 }

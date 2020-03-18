@@ -37,8 +37,6 @@ var RightArticle = {
     currentLocationLayer : 1,
     maxLocationLayer : 1,
 
-    // bombMode 관련
-
     // 메서드
     switchTo : function(elementID) {},
     onTab1MouseDown : function() {},
@@ -54,7 +52,7 @@ var RightArticle = {
     clearContext : function(canvasElement, canvasContext) {},
     drawDragSquare : function(canvasContext, startPosX, startPosY, endPosX, endPosY) {},
     drawSelectionSquare : function(canvasContext, gridWidth, gridHeight, posX, posY, lenX, lenY, borderWidth) {},
-    drawLocationSquare : function(canvasContext, gridWidth, gridHeight, left, top, right, bottom, hexColorStr, alphaVal) {},
+    drawLocationSquare : function(canvasContext, gridWidth, gridHeight, left, top, right, bottom, hexColorStr, fillColorAlpha) {},
     drawLocationMoveSquare : function(canvasContext, gridWidth, gridHeight, event) {},
     getMouseButtonFromEvent : function(eventObj) {},
     putTile : function(canvasContext, gridWidth, gridHeight, tile, posX, posY, lenX, lenY) {},
@@ -62,7 +60,7 @@ var RightArticle = {
     getSafeLenYValue : function(originalLenY) {},
     deleteSelectedTiles : function() {},
     redrawBombSettings : function() {},
-    drawBlockUnit : function(canvasContext, gridWidth, gridHeight, location) {},
+    drawBlockUnit : function(canvasContext, gridWidth, gridHeight, location, unit, isCenterAligned) {},
     createLocation : function(gridWidth, gridHeight, posX, posY, lenX, lenY) {},
     refreshLocationListLayers : function(gridWidth, gridHeight) {}
 };

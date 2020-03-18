@@ -1,11 +1,12 @@
 RightSection.switchTo = function(elementID) {
     $("#sectionTab1").css("display", "none");
     $("#sectionTab2").css("display", "none");
-    $("#"+elementID).css("display", "");
+    $("#" + elementID).css("display", "");
 };
 
 RightSection.onButtonClick = function() {
     var targetID = $(this).prop("id");
+
     switch (targetID) {
         case PATTERN_MODE_TERRAIN: RightSection.selectMode(PATTERN_MODE_TERRAIN); break;
         case PATTERN_MODE_LOCATION: RightSection.selectMode(PATTERN_MODE_LOCATION); break;
@@ -15,6 +16,7 @@ RightSection.onButtonClick = function() {
 
 RightSection.onTilesetChange = function() {
     var tilesetName = $(this).val();
+
     RightSection.selectTileset(tilesetName, true);
 
     // 이미 그려져 있는 타일들의 정보 변경 후 다시 그리기
@@ -22,9 +24,9 @@ RightSection.onTilesetChange = function() {
         let byte1 = Project.currentPattern.tileDataList[i].tile.byteCode[0];
         let byte2 = Project.currentPattern.tileDataList[i].tile.byteCode[1];
         let newTile = new SCTile(tilesetName, byte1, byte2);
+
         Project.currentPattern.tileDataList[i].tile = newTile;
     }
-
     RightArticle.redrawTerrainCanvas();
 
     var index = RightSection.currentTileIndex;
@@ -33,6 +35,7 @@ RightSection.onTilesetChange = function() {
 
 RightSection.onTileClick = function() {
     var tileName = $(this).prop("id");
+
     RightSection.selectTile(tileName);
 };
 
@@ -52,15 +55,18 @@ RightSection.deselectTiles = function() {
     
     var $tempTileDivs = $(cssSelector);
     for (var j = 0; j < $tempTileDivs.length; j++) $tempTileDivs.eq(j).css("border", "");
+
     RightSection.currentTile = null;
     RightSection.currentTileIndex = UNDEFINED_INT;
 
-    console.log("Tile deselected.");
+    Log.debug("Tile deselected.");
 };
 
 RightSection.onSCMapAPILoad = function() {
     RightSection.addTiles(); // 타일 선택 부분에 타일 추가
-    $("#sectionTab1 div.tiles > div.tile").on("click", RightSection.onTileClick); // 모든 타일이 생성되었으면, 이벤트 등록
+    
+    var $tiles = $("#sectionTab1 div.tiles > div.tile");
+    $tiles.on("click", RightSection.onTileClick); // 모든 타일이 생성되었으면, 이벤트 등록
     RightSection.selectTile(SCTileList.Badlands.Null); // 타일 선택
 
     // 로케이션 예시 크기 조절
@@ -76,15 +82,15 @@ RightSection.onSCMapAPILoad = function() {
     var $labelHeaderText = $("#sectionTab1 > #location > input#labelHeaderText");
     $labelHeaderText.on("change", function() {
         RightSection.refreshLocationExample();
+
         var newLabelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
         var listStrLen = (Project.currentPattern.locationList.length + "").length;
         for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
             let newNumber = i + 1;
-            for (j = (newNumber + "").length; j < listStrLen; j++) {
-                newNumber = "0" + newNumber;
-            }
+            for (j = (newNumber + "").length; j < listStrLen; j++) newNumber = "0" + newNumber;
             Project.currentPattern.locationList[i].label = newLabelHeader + newNumber;
         }
+
         RightArticle.redrawLocationList();
         Project.currentPattern.locationLabelHeader = newLabelHeader;
     });
@@ -95,12 +101,10 @@ RightSection.onSCMapAPILoad = function() {
 
         var labelHeader = $("#sectionTab1 > #location > input#labelHeaderText").val();
         if ($zeroPadCheckBox.is(":checked")) {
-            var listStrLen = (Project.currentPattern.locationList.length + "").length;
+            let listStrLen = (Project.currentPattern.locationList.length + "").length;
             for (var i = 0; i < Project.currentPattern.locationList.length; i++) {
                 let newNumber = i + 1;
-                for (j = (newNumber + "").length; j < listStrLen; j++) {
-                    newNumber = "0" + newNumber;
-                }
+                for (j = (newNumber + "").length; j < listStrLen; j++) newNumber = "0" + newNumber;
                 Project.currentPattern.locationList[i].label = labelHeader + newNumber;
             }
         }
@@ -153,6 +157,7 @@ RightSection.selectMode = function(modeName) {
             break;
     }
     RightArticle.clearContext(selectionCanvas, selectionContext);
+
     if (modeName === PATTERN_MODE_LOCATION && RightArticle.selectedLocation !== null) {
         let gridWidth = RightArticle.canvasTileWidth;
         let gridHeight = RightArticle.canvasTileHeight;
@@ -169,7 +174,7 @@ RightSection.selectMode = function(modeName) {
     }
     Project.currentPattern.currentMode = modeName;
     
-    console.log("Selected Mode : " + modeName);
+    Log.debug("Selected Mode : " + modeName);
 };
 
 RightSection.selectTileset = function(tilesetName, isUserSelection) {
@@ -187,7 +192,7 @@ RightSection.selectTileset = function(tilesetName, isUserSelection) {
     if (!isUserSelection) $("#sectionTab1 select#tilesets").val(tilesetName);
     Project.currentPattern.tileset = tilesetName;
     
-    console.log("Selected Tileset : " + tilesetName);
+    Log.debug("Selected Tileset : " + tilesetName);
 };
 
 RightSection.selectTile = function(tileName) {
@@ -240,16 +245,16 @@ RightSection.selectTile = function(tileName) {
         }
         else if (i == targetTiles.length - 1) {
             alert("예기치 않은 오류 발생 (RightSection - selectTile). 타일 선택에 실패하였습니다.");
-            console.log("Exception Occured :");
-            console.log("File name : right_section.js");
-            console.log("Function name : selectTile");
-            console.log("Current Tileset : " + Project.currentPattern.tileset);
-            console.log("Selected Tile : " + tileName);
-            console.log("");
+            Log.error("Exception Occured :");
+            Log.error("File name : right_section.js");
+            Log.error("Function name : selectTile");
+            Log.error("Current Tileset : " + Project.currentPattern.tileset);
+            Log.error("Selected Tile : " + tileName);
+            Log.error("");
         }
     }
 
-    console.log("Selected Tile : " + RightSection.currentTile.alias);
+    Log.debug("Selected Tile : " + RightSection.currentTile.alias);
 };
 
 RightSection.selectTileByIndex = function(index) {
@@ -299,7 +304,7 @@ RightSection.selectTileByIndex = function(index) {
     for (var i = 0; i < $tempTileDivs.length; i++) $tempTileDivs.eq(i).css("border", "");
     $tempTileDivs.eq(index).css("border", "2px solid white");
 
-    console.log("Selected Tile (By Index) : " + RightSection.currentTile.alias);
+    Log.debug("Selected Tile (By Index) : " + RightSection.currentTile.alias);
 };
 
 RightSection.addTiles = function() {
@@ -457,6 +462,7 @@ RightSection.refreshLocationExample = function() {
 
 RightSection.onWaitValueChange = function() {
     var newWait = parseInt($("#sectionTab1 > #bomb > input#wait").val());
+
     Project.currentPattern.turnList[Project.currentPattern.currentTurn - 1].wait = newWait;
     RightSection.refreshWaitRefData();
 };
@@ -487,34 +493,114 @@ RightSection.onPlayButtonClick = function() {
 
 RightSection.addTurn = function() {
     var boundTurn = new BoundTurn();
-    boundTurn.wait = DEFAULT_TURN_WAIT;
     var turnList = Project.currentPattern.turnList;
+
+    boundTurn.wait = DEFAULT_TURN_WAIT;
     turnList.push(boundTurn);
+
     RightSection.changeTurn(turnList.length);
 };
 
 RightSection.insertTurn = function() {
     var boundTurn = new BoundTurn();
-    boundTurn.wait = DEFAULT_TURN_WAIT;
     var turnList = Project.currentPattern.turnList;
     var currentTurn = Project.currentPattern.currentTurn;
+
+    boundTurn.wait = DEFAULT_TURN_WAIT;
     for (var i = turnList.length - 1; i >= currentTurn - 1; i--) turnList[i + 1] = turnList[i];
     turnList[currentTurn - 1] = boundTurn;
+
     RightSection.changeTurn(currentTurn);
+};
+
+RightSection.copyTurn = function() {
+    var turnList = Project.currentPattern.turnList;
+    var currentTurn = Project.currentPattern.currentTurn;
+    var cellList = Project.currentPattern.turnList[currentTurn - 1].cellList;
+    var newTurn = new BoundTurn();
+    newTurn.wait = Project.currentPattern.turnList[currentTurn - 1].wait;
+
+    // 턴 객체 Deep Copy (로케이션 제외)
+    for (var i = 0; i < cellList.length; i++) {
+        if (cellList[i].type === TURNCELLTYPE_BOMB) {
+            newTurn.cellList.push(new BoundTurnCell(cellList[i].location, cellList[i].type, cellList[i].unit, cellList[i].option));
+        }
+    }
+    turnList.push(newTurn);
+
+    RightSection.changeTurn(turnList.length);
+};
+
+RightSection.invertTurn = function() {
+    var currentTurn = Project.currentPattern.currentTurn;
+    var cellList = Project.currentPattern.turnList[currentTurn - 1].cellList;
+    var locationList = Project.currentPattern.locationList;
+    var gridWidth = RightArticle.canvasTileWidth;
+    var gridHeight = RightArticle.canvasTileHeight;
+    var cellType = TURNCELLTYPE_BOMB;
+    var cellOption = TURNCELLOPTION_NONE;
+
+    // Boolean Board 초기화
+    var board = new Array();
+    for (var i = 0; i < locationList.length; i++) board[i] = true;
+
+    // 셀 체크 및 폭탄 셀 제거
+    for (var i = cellList.length - 1; i >= 0; i--) {
+        if (cellList[i].type === TURNCELLTYPE_BOMB) {
+            for (var j = 0; j < locationList.length; j++) {
+                if (locationList[j] === cellList[i].location) {
+                    board[j] = false;
+                    cellList.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    }
+
+    for (var i = 0; i < board.length; i++) {
+        if (board[i]) {
+            locationLenX = parseInt((locationList[i].getRight(gridWidth) - locationList[i].getLeft(gridWidth)) / gridWidth);
+            locationLenY = parseInt((locationList[i].getBottom(gridHeight) - locationList[i].getTop(gridHeight)) / gridHeight);
+
+            let cellUnit;
+            if (locationLenX >= 3 && locationLenY >= 3) cellUnit = Project.currentPattern.bombUnit3;
+            else if (locationLenX >= 2 && locationLenY >= 2) cellUnit = Project.currentPattern.bombUnit2;
+            else cellUnit = Project.currentPattern.bombUnit1;
+
+            cellList.push(new BoundTurnCell(locationList[i], cellType, cellUnit, cellOption));
+        }
+    }
+
+    RightArticle.redrawBombSettings();
+};
+
+RightSection.deleteTurn = function() {
+    var turnList = Project.currentPattern.turnList;
+    if (turnList.length === 1) return;
+
+    var currentTurn = Project.currentPattern.currentTurn;
+    turnList.splice(currentTurn - 1, 1);
+
+    Log.temp((currentTurn === 1 ? turnList.length : currentTurn));
+    alert((currentTurn === 1 ? turnList.length : currentTurn));
+
+    RightSection.changeTurn((currentTurn === 1 ? turnList.length : currentTurn - 1));
 };
 
 RightSection.changeTurn = function(turnNumber) {
     var currentTurn = Project.currentPattern.currentTurn = turnNumber;
     var turnList = Project.currentPattern.turnList;
+
     $("#sectionTab1 > #bomb > input#currentTurn").val(currentTurn);
     $("#sectionTab1 > #bomb > span#showTurns").text(currentTurn + " / " + turnList.length);
 
-    console.log("BoundTurn Changed to : " + currentTurn + "/" + turnList.length);
     var boundTurn = turnList[currentTurn - 1];
     $("#sectionTab1 > #bomb > input#wait").val(boundTurn.wait);
 
     RightSection.refreshWaitRefData();
     RightArticle.redrawBombSettings();
+    
+    Log.debug("BoundTurn Changed to : " + currentTurn + "/" + turnList.length);
 };
 
 RightSection.onCurrentTurnTextChange = function() {
@@ -535,6 +621,7 @@ RightSection.onCurrentTurnTextChange = function() {
 
 RightSection.onToPrevClick = function() {
     var currentTurn = Project.currentPattern.currentTurn;
+
     if (currentTurn === 1) return;
 
     RightSection.changeTurn(currentTurn - 1);
@@ -542,6 +629,7 @@ RightSection.onToPrevClick = function() {
 
 RightSection.onToNextClick = function() {
     var currentTurn = Project.currentPattern.currentTurn;
+    
     if (currentTurn === Project.currentPattern.turnList.length) return;
 
     RightSection.changeTurn(currentTurn + 1);
