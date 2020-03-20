@@ -84,8 +84,8 @@ HeaderElements.onClickExtractTrigger = function() {
     if (HeaderElements.$extractTriggerDialog === null) {
         HeaderElements.addTrigExtDialogEventListeners();
         HeaderElements.$extractTriggerDialog = $("#header > #extractTriggerDialog").dialog({
-            width: 400,
-            height: 1040,
+            width: 410,
+            height: 520,
             modal: true,
             open: function() { $page.css("opacity", 0.8); },
             close: function() { $page.css("opacity", 1.0); },
