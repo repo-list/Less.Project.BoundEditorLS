@@ -41,6 +41,7 @@ HeaderElements.onClickAppInfo = function() {
     message += "이메일 : " + App.authorEmail + "\n";
     message += "버전 : " + App.version + "\n";
     message += "소스 링크 : " + App.sourceLink + "\n";
+    message += "네이버 카페 : " + App.naverCafe + "\n";
     message += "설명 : " + App.description;
 
     Popup.alert(title, message);

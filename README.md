@@ -10,14 +10,18 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : https://bound.devcos.site/BoundEditorLS/test/ <br/>
+@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.12.0/ <br/>
 
-@ Version : 0.11.0 <br/>
+@ Version : 0.12.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.11.0 (2018-03-18, Latest) <br/>
+@ 0.12.0 (2018-03-21, Latest) <br/>
+
+- 트리거 추출 기능 추가 (ScmDraft2 - TrigEdit) <br/><br/>
+
+@ 0.11.0 (2018-03-18) <br/>
 
 - 턴 복사, 반전, 삭제 기능 추가 <br/><br/>
 - 프로젝트 제작자, 프로젝트 이름, 패턴 제작자, 패턴 이름 수정 기능 추가 <br/><br/>
