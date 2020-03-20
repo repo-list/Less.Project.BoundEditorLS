@@ -19,6 +19,9 @@ var RightSection = {
     onWaitValueChange : function() {},
     refreshWaitRefData : function() {},
     onPlayButtonClick : function() {},
+    onControlButtonClick : function() {},
+    onOption1RadioClick : function() {},
+    onOption2RadioClick : function() {},
     addTurn : function() {},
     insertTurn : function() {},
     copyTurn : function() {},
@@ -30,8 +33,6 @@ var RightSection = {
     onToNextClick : function() {},
     onToFirstClick : function() {},
     onToLastClick : function() {},
-    onOption1RadioClick : function() {},
-    onOption2RadioClick : function() {},
     onBombUnits1Change : function() {},
     onBombUnits2Change : function() {},
     onBombUnits3Change : function() {}

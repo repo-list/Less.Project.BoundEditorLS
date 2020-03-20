@@ -244,7 +244,7 @@ RightSection.selectTile = function(tileName) {
             break;
         }
         else if (i == targetTiles.length - 1) {
-            alert("예기치 않은 오류 발생 (RightSection - selectTile). 타일 선택에 실패하였습니다.");
+            Popup.alert("예기치 않은 오류 발생 (RightSection - selectTile). 타일 선택에 실패하였습니다.");
             Log.error("Exception Occured :");
             Log.error("File name : right_section.js");
             Log.error("Function name : selectTile");
@@ -488,7 +488,46 @@ RightSection.refreshWaitRefData = function() {
 
 RightSection.onPlayButtonClick = function() {
     // TODO : 기능 구현
-    alert("시뮬레이션 기능은 현재 구현 중입니다.");
+    Popup.alert("시뮬레이션 기능은 현재 구현 중입니다.");
+};
+
+RightSection.onControlButtonClick = function() {
+    switch ($(this).prop("id")) {
+        case "addTurn": RightSection.addTurn(); break;
+        case "insertTurn": RightSection.insertTurn(); break;
+        case "copyTurn": RightSection.copyTurn(); break;
+        case "invertTurn": RightSection.invertTurn(); break;
+        case "deleteTurn": RightSection.deleteTurn(); break;
+        case "toPrev": RightSection.onToPrevClick(); break;
+        case "toNext": RightSection.onToNextClick(); break;
+        case "toFirst": RightSection.onToFirstClick(); break;
+        case "toLast": RightSection.onToLastClick(); break;
+    }
+};
+
+RightSection.onOption1RadioClick = function() {
+    switch (event.target.value) {
+        case "kill":
+            Project.currentPattern.blockOption1 = BLOCKOPTION1_UNITKILL;
+            break;
+        case "remove":
+            Project.currentPattern.blockOption1 = BLOCKOPTION1_UNITREMOVE;
+            break;
+        case "live":
+            Project.currentPattern.blockOption1 = BLOCKOPTION1_UNITLIVE;
+            break;
+    }
+};
+
+RightSection.onOption2RadioClick = function() {
+    switch (event.target.value) {
+        case "kill":
+            Project.currentPattern.blockOption2 = BLOCKOPTION2_BLOCKKILL;
+            break;
+        case "remove":
+            Project.currentPattern.blockOption2 = BLOCKOPTION2_BLOCKREMOVE;
+            break;
+    }
 };
 
 RightSection.addTurn = function() {
@@ -581,9 +620,6 @@ RightSection.deleteTurn = function() {
     var currentTurn = Project.currentPattern.currentTurn;
     turnList.splice(currentTurn - 1, 1);
 
-    Log.temp((currentTurn === 1 ? turnList.length : currentTurn));
-    alert((currentTurn === 1 ? turnList.length : currentTurn));
-
     RightSection.changeTurn((currentTurn === 1 ? turnList.length : currentTurn - 1));
 };
 
@@ -606,13 +642,13 @@ RightSection.changeTurn = function(turnNumber) {
 RightSection.onCurrentTurnTextChange = function() {
     var currentTurnText = $("#sectionTab1 > #bomb > input#currentTurn").val();
     if (!currentTurnText.match(/^[0-9]+$/)) {
-        alert("올바른 숫자를 입력해주세요.");
+        Popup.alert("올바른 숫자를 입력해주세요.");
         return;
     }
 
     var turnNumber = parseInt(currentTurnText);
     if (turnNumber < 1 || turnNumber > Project.currentPattern.turnList.length) {
-        alert("존재하지 않는 턴입니다. 올바른 값을 입력해주세요.");
+        Popup.alert("존재하지 않는 턴입니다. 올바른 값을 입력해주세요.");
         return;
     }
 
@@ -641,31 +677,6 @@ RightSection.onToFirstClick = function() {
 
 RightSection.onToLastClick = function() {
     RightSection.changeTurn(Project.currentPattern.turnList.length);
-};
-
-RightSection.onOption1RadioClick = function() {
-    switch (event.target.value) {
-        case "kill":
-            Project.currentPattern.blockOption1 = BLOCKOPTION1_UNITKILL;
-            break;
-        case "remove":
-            Project.currentPattern.blockOption1 = BLOCKOPTION1_UNITREMOVE;
-            break;
-        case "live":
-            Project.currentPattern.blockOption1 = BLOCKOPTION1_UNITLIVE;
-            break;
-    }
-};
-
-RightSection.onOption2RadioClick = function() {
-    switch (event.target.value) {
-        case "kill":
-            Project.currentPattern.blockOption2 = BLOCKOPTION2_BLOCKKILL;
-            break;
-        case "remove":
-            Project.currentPattern.blockOption2 = BLOCKOPTION2_BLOCKREMOVE;
-            break;
-    }
 };
 
 RightSection.onBombUnits1Change = function() {

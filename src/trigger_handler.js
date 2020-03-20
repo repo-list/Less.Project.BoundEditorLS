@@ -19,239 +19,419 @@
  *    - 또한 conditionLineCount와 actionLineCount가 최대치를 넘지 않도록 유의하여 작성하여야 한다.
  *    - 0.1.1v 에서는 구현하면서 꼭 필요했던 상수들과 함수들만 추가하였으나 그 외의 것이 필요하다면 TE와 동일한 양식으로 추가하면 된다.
  *    - 기본 기능 테스트는 전부 마쳤지만 그 외 많은 테스트를 수행하지 못했기에 문제가 발생할 여지가 있다.
+ * 
+ *   2020-03-20 수정 (수정자 : `Less)
+ *    - var TETextCreator를 trigedit.js로 이동
+ *    - TETextCreator -> TrigEdit으로 이름 변경하고, 클래스 방식에서 객체로 변경
+ *    - Trigger -> TriggerStart로 이름 변경.
+ *    - TriggerHandler 객체 추가. 기존 함수(getPatternTETriggerText)를 TriggerHandler 객체로 넣고, parsePattern으로 이름 변경.
+ *    - 분석 실패 시 return undefined; 처리
+ *    - 그 외 전반적으로 코드 수정 및 여러 메서드 추가.
 */
 
-const TE_QUANTITYMOD_AT_MOST = "At most";
-const TE_QUANTITYMOD_AT_LEAST = "At least";
-const TE_QUANTITYMOD_EXACTLY = "Exactly";
+const TH_TEXT_LEVEL_KOREAN = "스테이지";
+const TH_TEXT_LEVEL_ENGLISH = "Stage";
+const TH_TEXT_START_CONDITION = "시작 조건";
+const TH_TEXT_UNIT_REVIVE = "유닛 부활";
+const TH_TEXT_DEFEAT = "Game Over";
+const TH_TEXT_VICTORY = "Victory";
+const TH_TEXT_HYPER_TRIGGER = "터보 트리거";
+const TH_TEXT_DEFEAT_CONDITION = "패배 조건";
+const TH_TEXT_VICTORY_CONDITION = "승리 조건";
+const TH_TEXT_P12_KILL = "나간 유닛 삭제";
+const TH_TEXT_LIFE_SETTINGS = "목숨 설정";
 
-const TE_RESOURCE_ORE = "ore";
-const TE_RESOURCE_GAS = "gas";
-const TE_RESOURCE_ORE_AND_GAS = "ore and gas";
+const TH_TRIGGERTYPE_BOMB = 1;
+const TH_TRIGGERTYPE_BLOCKCREATE = 2;
+const TH_TRIGGERTYPE_BLOCKDELETE = 3;
+const TH_TRIGGERTYPE_WAIT = 4;
 
-const TE_SWITCHSTATUS_CLEARED = "not set";
-const TE_SWITCHSTATUS_SET = "set";
+const TH_P12_KILL = "Kill";
+const TH_P12_REMOVE = "Remove";
 
-const TE_PLAYER_P1 = "Player 1";
-const TE_PLAYER_P2 = "Player 2";
-const TE_PLAYER_P3 = "Player 3";
-const TE_PLAYER_P4 = "Player 4";
-const TE_PLAYER_P5 = "Player 5";
-const TE_PLAYER_P6 = "Player 6";
-const TE_PLAYER_P7 = "Player 7";
-const TE_PLAYER_P8 = "Player 8";
-const TE_PLAYER_ALL = "All Players";
-const TE_PLAYER_CURRENT = "Current Player";
+const TH_LIFETYPE_LIFE = "Life";
+const TH_LIFETYPE_DEATH = "Death";
 
-const TE_UNIT_MEN = "Men";
-const TE_UNIT_FACTORIES = "Factories";
-const TE_UNIT_BUILDINGS = "Buildings";
-const TE_UNIT_ANY_UNIT = "Any unit";
+const TH_EDITORTYPE_TRIGEDIT = "TrigEdit";
 
-const TE_ALL = "All"; // 갯수 셀 때 전부를 의미
+const ACTIONCOUNT_LIMIT = 64;
 
-const TE_STATE_DISABLE = "disabled";
-const TE_STATE_ENABLE = "enabled";
-const TE_STATE_TOGGLE = "toggle";
+var THTrigger = function(type, contentObj) {
+    this.type = type;
+    this.contentObj = contentObj;
+};
 
-const TE_MODIFY_ADD = "Add";
-const TE_MODIFY_SET_TO = "Set To";
-const TE_MODIFY_SUBTRACT = "Subtract";
+var TriggerHandler = { // 아래의 메서드 순서는, parsePattern을 제외하고 실제 바운드에서 요구하는 트리거 출력 순서에 준함. 함부로 변경하지 말 것.
+    // editorType -> TH_EDITORTYPE_TRIGEDIT 참고
+    parsePattern : function(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit) {}, // 실제 패턴 분석 작업 수행 후 string을 리턴하는 용도
+    
 
+    getLifeSettingsTrigger : function(editorType, userForce, lifeType, lifeCount) {},
+    getP12DeleteTrigger : function(editorType, bombPlayer, deleteMethod) {},
+    getDefeatTrigger : function(editorType, userForce, boundingUnit) {},
+    getVictoryTrigger : function(editorType, userForce, conditionLocationLabel) {},
+    getLevelStartConditionTriggers : function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {},
+    getReviveConditionTriggers : function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {},
+    parsePatternList : function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit) {}, // 단순히 parsePattern을 여러 번 수행한 후 string을 리턴하는 용도
+    getHyperTrigger : function(editorType, conditionUnit) {}
+};
 
-function getPatternTETriggerText(pattern) {
-    var locationListLength = pattern.locationList.length;
+// 수정 사항 : level (스테이지), bombPlayer, patternConditionUnit, turnConditionUnit 추가
+// Switch -> Deaths로 변경
+// 분석 실패 시, return undefined 처리
+TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+
+    if (!pattern) return null; // 패턴 존재 X
+
+    // 로케이션이나 폭탄이 없으면 트리거를 작성하지 않는다.
+    var locationList = pattern.locationList;
     var turnList = pattern.turnList;
-    
-    if (locationListLength == 0 || (turnList.length == 1 && turnList[0].cellList.length == 0)) {
-        /* 로케이션이나 폭탄이 없으면 트리거를 작성하지 않는다. */
-        return null;
+    if (!locationList || locationList.length === 0) return null;
+    if (!turnList || (turnList.length === 1 && turnList[0].cellList.length === 0)) return null;
+
+    if (!isValidBombPlayer(bombPlayer)) {
+        Log.error("Invalid Bomb Player");
+        return undefined;
     }
-    
-    // 폭탄 갯수를 파악해서 미리 트리거를 어떻게 나눌지 파악할 수 있을까?
-    var bombCount = 0;   
-    for (var turn of turnList) {
-        for (var cell of turn.cellList) {
-            bombCount += 1;
+
+    // 2차원으로 얽혀 있는 배열의 다양한 유형의 값들을 하나의 타입(=클래스)으로 묶은 다음 1차원으로 나열
+    var triggerList = new Array();
+    for (var i = 0; i < turnList.length; i++) {
+        for (var j = 0; j < turnList[i].cellList.length; j++) {
+            let cell = turnList[i].cellList[j];
+            let type;
+            
+            switch (cell.type) {
+                case TURNCELLTYPE_BOMB: type = TH_TRIGGERTYPE_BOMB; break;
+                case TURNCELLTYPE_BLOCKCREATE : type = TH_TRIGGERTYPE_BLOCKCREATE; break;
+                case TURNCELLTYPE_BLOCKDELETE : type = TH_TRIGGERTYPE_BLOCKDELETE; break;
+            }
+            
+            triggerList.push(new THTrigger(type, cell));
         }
+        triggerList.push(new THTrigger(TH_TRIGGERTYPE_WAIT, turnList[i].wait));
     }
-    
-    
-    var creator = new TETextCreator();
+
+    var currentLoop = 0;
     var triggerText = "";
-    var triggerConditionCount = 1;
+    // 1차원으로 나열한 triggerList 안에 요소가 남아 있는 동안 반복하며, 요소의 내용을 하나 사용 완료할 때마다 배열에서 제거하는 원리
+    while (triggerList.length > 0) {
+        triggerText += TrigEdit.TriggerStart(bombPlayer);
 
-    triggerText += creator.Trigger(TE_PLAYER_P7);
-    triggerText += creator.Conditions();
-    triggerText += creator.Switch(15, TE_SWITCHSTATUS_SET);
+        triggerText += TrigEdit.Conditions();
+        triggerText += TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level);
+        triggerText += TrigEdit.Deaths(bombPlayer, turnConditionUnit, TE_QUANTITYMOD_EXACTLY, currentLoop);
 
-    if (bombCount >= 30) { 
-        /* 폭탄의 갯수가 30개 이상이라면 조건을 통해 트리거를 나눈다. */
-        triggerText += creator.Accumulate(TE_PLAYER_P7, TE_QUANTITYMOD_EXACTLY, 1, TE_RESOURCE_ORE);
-    }
+        triggerText += TrigEdit.Actions();
+        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + "-" + (currentLoop + 1));
 
-    triggerText += creator.Actions();
-    
-    turnList.forEach(function(turn, i, turns) {
-        
-        for (var cell of turn.cellList) {
-            // type - 1 : 폭탄 Cell, 2 : 장애물 생성 Cell, 3 : 장애물 삭제 Cell
-            // option - 1 : 유닛 Kill, 2 : 유닛 Remove, 3 : 유닛 생존, 4 : 장애물 Kill, 5: 장애물 Remove
-            // option은 type 2,3 일 때만 의미를 가지며 type 1일 때의 값은 0 이다.
-            // Remove와 kill 순서가 꼬여서 문제가 발생 가능성 있음. 일단 다 작성하고 확인
-            if (cell.type == 1) { 
-                triggerText += creator.CreateBomb(TE_PLAYER_P7, cell.unit, cell.location.label);
-                triggerText += creator.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, cell.location.label);
-            }
-            else if (cell.type == 2) {
-                if (cell.option == 1)
-                    triggerText += creator.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, cell.location.label);
-                else if (cell.option == 2)
-                    triggerText += creator.RemoveUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, cell.location.label);
-                
-                // 장애물 생성
-                triggerText += creator.CreateBomb(TE_PLAYER_P7, cell.unit, cell.location.label);
-                
-            }
-            else if (cell.type == 3) {
-                if (cell.option == 4)
-                    triggerText += creator.KillUnitAtLocation(TE_PLAYER_ALL, cell.unit, 1, cell.location.label);
-                else if (cell.option == 5)
-                    triggerText += creator.RemoveUnitAtLocation(TE_PLAYER_ALL, cell.unit, 1, cell.location.label);
-            }
-            else console.error("Unknown type BoundTurncell");
-            
-            if (creator.actionLineCount > 60) {
-                triggerConditionCount++;
-                triggerText += creator.SetResources(TE_PLAYER_P7, "Set To", triggerConditionCount, TE_RESOURCE_ORE);    
-                triggerText += creator.PreserveTrigger();
-    				    triggerText += creator.TriggerEnd();
-                
+        let actionCount = 1; // Comment 1개
+        while (actionCount <= ACTIONCOUNT_LIMIT - 2 - 2) { // 64 - (Set Deaths & PreserveTrigger) - (while문 한 번 당 올라갈 수 있는 최대 actionCount값)
+            if (triggerList.length === 0) break;
 
-                triggerText += creator.Trigger(TE_PLAYER_P7);
-				        triggerText += creator.Conditions();
-			    	    triggerText += creator.Switch(15, TE_SWITCHSTATUS_SET);
-                if (bombCount >= 30) { 
-                    // 뭔가 찝찝한 조건. 나중에 고치자.
-                    triggerText += creator.Accumulate(TE_PLAYER_P7, TE_QUANTITYMOD_EXACTLY, triggerConditionCount, TE_RESOURCE_ORE);
-                }
-                triggerText += creator.Actions();
+            let index = 0; // 인덱스는 무조건 0 고정. 가장 첫 번째 요소를 검사하고, 사용을 완료하면 배열에서 제거. 해당 행위를 반복.
+            let content = triggerList[index].contentObj; // 웨잇일 경우 int, 그렇지 않을 경우 cell
+            switch (triggerList[index].type) {
+                case TH_TRIGGERTYPE_BOMB:
+                    triggerText += TrigEdit.CreateInvincibleUnit(bombPlayer, content.unit, content.location.label);
+                    triggerText += TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, content.location.label);
+                    actionCount += 2;
+                    break;
+                case TH_TRIGGERTYPE_BLOCKCREATE:
+                    triggerText += TrigEdit.CreateInvincibleUnit(bombPlayer, content.unit, content.location.label);
+                    actionCount++;
+                    if (content.option === TURNCELLOPTION_UNITKILL) {
+                        triggerText += TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, content.location.label);
+                        actionCount++;
+                    }
+                    else if (content.option === TURNCELLOPTION_UNITREMOVE) {
+                        triggerText += TrigEdit.RemoveUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, content.location.label);
+                        actionCount++;
+                    }
+                    break;
+                case TH_TRIGGERTYPE_BLOCKDELETE:
+                    if (content.option === TURNCELLOPTION_BLOCKKILL) {
+                        triggerText += TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, content.unit, TE_ALL, content.location.label);
+                    }
+                    else if (content.option === TURNCELLOPTION_BLOCKREMOVE) {
+                        triggerText += TrigEdit.RemoveUnitAtLocation(TE_PLAYER_ALL, content.unit, TE_ALL, content.location.label);
+                    }
+                    actionCount++;
+                    break;
+                case TH_TRIGGERTYPE_WAIT:
+                    triggerText += TrigEdit.Wait(content);
+                    actionCount++;
+                    break;
+                default:
+                    Log.error("Invalid THTrigger Type");
+                    return undefined;
             }
+
+            triggerList.splice(index, 1); // triggerList 배열에서 'index' 인덱스부터 총 1개의 요소를 배열에서 제거
         }
-        triggerText += creator.Wait(turn.wait);
-        
-        /* 더 출력할 액션이 있는지 확인하고 있다면 새 트리거 폼을 만든다 */
-        if (i + 1 < turns.length) {
-            if ((creator.actionLineCount + turns[i + 1].cellList.length * 2) > 60) { 
-                triggerConditionCount++;
-                triggerText += creator.SetResources(TE_PLAYER_P7, TE_MODIFY_SET_TO, triggerConditionCount, TE_RESOURCE_ORE);
-                triggerText += creator.PreserveTrigger();
-    				    triggerText += creator.TriggerEnd();
-                
-                triggerText += creator.Trigger(TE_PLAYER_P7);
-				        triggerText += creator.Conditions();
-			    	    triggerText += creator.Switch(15, TE_SWITCHSTATUS_SET);
-                triggerText += creator.Accumulate(TE_PLAYER_P7, TE_QUANTITYMOD_EXACTLY, triggerConditionCount, TE_RESOURCE_ORE);
-                triggerText += creator.Actions();
-            }
-            
-            return true; // is continue loop
+
+        if (triggerList.length > 0) {
+            triggerText += TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_ADD, 1);
         }
-    });
-    
-    if (triggerConditionCount > 1) {
-        triggerText += creator.SetResources(TE_PLAYER_P7, TE_MODIFY_SET_TO, 1, TE_RESOURCE_ORE);
+        else {
+            triggerText += TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_SET_TO, 0);
+        }
+        triggerText += TrigEdit.PreserveTrigger();
+        triggerText += TrigEdit.TriggerEnd();
+        currentLoop++;
     }
     
-    triggerText += creator.PreserveTrigger();
-    triggerText += creator.TriggerEnd();
-    
-    console.log(triggerText);
+    Log.debug(":: Trigger Extraction Request ::");
+    // Log.debug(triggerText);
+
     return triggerText;
-}
+};
 
+TriggerHandler.getLifeSettingsTrigger = function(editorType, userForce, lifeType, lifeCount) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
 
-var TETextCreator = function() {
-    this.conditionLineCount = 0;
-    this.actionLineCount = 0;
-    
-    /*** TRIGGER ***/
-    this.Trigger = function(player) {
-        this.conditionLineCount = 0;
-        this.actionLineCount = 0;
-        // '{' 를 열기 떄문에 사용 후 TriggerEnd()로 끝나야함
-        return "Trigger(\"" + player + "\"){\n";
-    }
-    
-    this.TriggerEnd = function() {
-        return "}\n\n//-----------------------------------------------------------------//\n\n";
-    }
-    
-    /*** Label ***/
-    this.Conditions = function() {
-        return "Conditions:\n";
-    }
-    
-    this.Actions = function() {
-        return "\nActions:\n";
-    }
-    
-    /*** Conditions ***/
-    this.Switch = function(num) {
-        this.conditionLineCount++;
-        return "\tSwitch(\"Switch" + num + "\", set);\n";
-    }
-    
-    this.Accumulate = function(player, quantitymod, quantitynum, resource) {
-        this.conditionLineCount
-        return "\tAccumulate(\"" + player + "\", " + quantitymod + ", " + quantitynum + ", " + resource + ");\n";
-    }
-    
-    /*** Actions ***/
-    this.CreateUnitWithProperties = function(player, unit, num, location, properties) {
-        /* properties
-         * TE+와 달리 그냥 TE는 Properties에 대한 명확한 명시가 제대로 안되어 있음.
-         * 따라서 필요에 따라 직접 확인하거나 아래 명시된 수치를 사용할 것
-         * 3 - Invicible
-         * 4 - Invicible & Hallucinated
-         * 5 - Hallucinated
-        */
-        this.actionLineCount++;
-        return "\tCreate Unit with Properties(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\", " + properties + ");\n"; // 마지막 숫자 매개변수가 유닛의 상태이다.
-    }
-    
-    this.CreateBomb = function(player, unit, location) {
-        /* CreateBomb()은 무적 상태 유닛을 1기를 생산한다. */
-        return this.CreateUnitWithProperties(player, unit, 1, location, 3);
+    if (!isValidUserForce(userForce)) {
+        Log.error("Invalid User Force");
+        return undefined;
     }
 
-    this.KillUnitAtLocation = function(player, unit, num, location) {
-        this.actionLineCount++;
-        return "\tKill Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\n";
+    if (lifeType !== TH_LIFETYPE_LIFE && lifeType !== TH_LIFETYPE_DEATH) {
+        Log.error("Invalid Life Type");
+        return undefined;
     }
+
+    var scoreText = (lifeType === TH_LIFETYPE_LIFE) ? "\\x007Lives" : "\\x007Deaths";
+    if (lifeType === TH_LIFETYPE_DEATH) lifeCount = 0;
+    var triggerText = "";
+
+    triggerText += TrigEdit.TriggerStart(userForce);
+    triggerText += TrigEdit.Conditions();
+    triggerText += TrigEdit.Always();
+    triggerText += TrigEdit.Actions();
+    triggerText += TrigEdit.Comment(TH_TEXT_LIFE_SETTINGS);
+    triggerText += TrigEdit.LeaderboardPoints("\\x007Lives", TE_SCORETYPE_CUSTOM);
+    triggerText += TrigEdit.LeaderboardComputerPlayers(TE_STATE_DISABLE);
+    triggerText += TrigEdit.SetScore(userForce, TE_MODIFY_SET_TO, lifeCount, TE_SCORETYPE_CUSTOM);
+    triggerText += TrigEdit.TriggerEnd();
+
+    return triggerText;
+};
+
+TriggerHandler.getP12DeleteTrigger = function(editorType, bombPlayer, deleteMethod) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     
-    this.PreserveTrigger = function() {
-        this.actionLineCount++;
-        return "\tPreserve Trigger();\n";
+    if (deleteMethod !== TH_P12_KILL && deleteMethod !== TH_P12_REMOVE) {
+        Log.error("Invalid P12 Delete Method");
+        return undefined;
     }
+
+    var triggerText = "";
+
+    triggerText += TrigEdit.TriggerStart(bombPlayer);
+    triggerText += TrigEdit.Conditions();
+    triggerText += TrigEdit.Command(TE_PLAYER_P12, TE_UNIT_MEN, TE_QUANTITYMOD_AT_LEAST, 1);
+    triggerText += TrigEdit.Actions();
+    triggerText += TrigEdit.Comment(TH_TEXT_P12_KILL);
+    if (deleteMethod === TH_P12_KILL) {
+        triggerText += TrigEdit.KillUnit(TE_PLAYER_P12, TE_UNIT_MEN);
+    }
+    else {
+        triggerText += TrigEdit.RemoveUnit(TE_PLAYER_P12, TE_UNIT_MEN);
+    }
+    triggerText += TrigEdit.PreserveTrigger();
+    triggerText += TrigEdit.TriggerEnd();
+
+    return triggerText;
+};
+
+TriggerHandler.getDefeatTrigger = function(editorType, userForce, boundingUnit) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     
-    this.RemoveUnitAtLocation = function(player, unit, num, location) {
-        this.actionLineCount++;
-        return "\tRemove Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\n";
+    if (!isValidUserForce(userForce)) {
+        Log.error("Invalid User Force");
+        return undefined;
     }
-    /*
-    this.SetInvincibility = function(player, unit, location, state) {
-        this.actionLineCount++;
-        return "\tSet Invincibility(\"" + player + "\", \"" + unit + "\", \"" + location + "\", " + state + ");\n";
-    }
-    */
-    this.SetResources = function(player, modify, num, resource) {
-        this.actionLineCount++;
-        return "\tSet Resources(\"" + player + "\", " + modify + ", " + num + ", " + resource + ");\n";
-    }
+
+    var triggerText = "";
+
+    triggerText += TrigEdit.TriggerStart(userForce);
+    triggerText += TrigEdit.Conditions();
+    triggerText += TrigEdit.Command(userForce, boundingUnit, TE_QUANTITYMOD_EXACTLY, 0);
+    triggerText += TrigEdit.Score(userForce, TE_SCORETYPE_CUSTOM, TE_QUANTITYMOD_EXACTLY, 0);
+    triggerText += TrigEdit.Actions();
+    triggerText += TrigEdit.Comment(TH_TEXT_DEFEAT_CONDITION);
+    triggerText += TrigEdit.DisplayTextMessage("\\x006" + TH_TEXT_DEFEAT);
+    triggerText += TrigEdit.Defeat();
+    triggerText += TrigEdit.TriggerEnd();
+
+    return triggerText;
+};
+
+TriggerHandler.getVictoryTrigger = function(editorType, userForce, conditionLocationLabel) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     
-    this.Wait = function(duration) {
-        this.actionLineCount++;
-        return "\tWait(" + duration + ");\n";
+    if (!isValidUserForce(userForce)) {
+        Log.error("Invalid User Force");
+        return undefined;
     }
-}
+
+    var triggerText = "";
+
+    triggerText += TrigEdit.TriggerStart(userForce);
+    triggerText += TrigEdit.Conditions();
+    triggerText += TrigEdit.Bring(userForce, TE_UNIT_MEN, conditionLocationLabel, TE_QUANTITYMOD_AT_LEAST, 1);
+    triggerText += TrigEdit.Actions();
+    triggerText += TrigEdit.Comment(TH_TEXT_VICTORY_CONDITION);
+    triggerText += TrigEdit.DisplayTextMessage("\\x007" + TH_TEXT_VICTORY);
+    triggerText += TrigEdit.Victory();
+    triggerText += TrigEdit.TriggerEnd();
+
+    return triggerText;
+};
+
+TriggerHandler.getLevelStartConditionTriggers = function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+    
+    if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
+
+    if (!isValidUserForce(userForce)) {
+        Log.error("Invalid User Force");
+        return undefined;
+    }
+
+    if (!isValidBombPlayer(bombPlayer)) {
+        Log.error("Invalid Bomb Player");
+        return undefined;
+    }
+
+    var triggerText = "";
+    for (var i = 0; i < patternList.length; i++) {
+        if (patternList[i] === null) continue;
+        let level = i + 1;
+
+        triggerText += TrigEdit.TriggerStart(userForce);
+        triggerText += TrigEdit.Conditions();
+        triggerText += TrigEdit.Bring(userForce, TE_UNIT_MEN, conditionLocationLabelHeader + level, TE_QUANTITYMOD_AT_LEAST, 1);
+        triggerText += TrigEdit.Actions();
+        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + " " + TH_TEXT_START_CONDITION);
+        triggerText += TrigEdit.SetDeaths(bombPlayer, patternConditionUnit, TE_MODIFY_SET_TO, level);
+        triggerText += TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_SET_TO, 0);
+        triggerText += TrigEdit.DisplayTextMessage("\\x007" + TH_TEXT_LEVEL_ENGLISH + level);
+        triggerText += TrigEdit.TriggerEnd();
+    }
+
+    return triggerText;
+};
+
+TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+    
+    if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
+
+    if (!isValidUserForce(userForce)) {
+        Log.error("Invalid User Force");
+        return undefined;
+    }
+
+    if (!isValidBombPlayer(bombPlayer)) {
+        Log.error("Invalid Bomb Player");
+        return undefined;
+    }
+
+    var triggerText = "";
+    for (var i = 0; i < patternList.length; i++) {
+        if (patternList[i] === null) continue;
+        let level = i + 1;
+
+        triggerText += TrigEdit.TriggerStart(userForce);
+        triggerText += TrigEdit.Conditions();
+        triggerText += TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level);
+        triggerText += TrigEdit.Score(TE_PLAYER_CURRENT, TE_SCORETYPE_CUSTOM, TE_QUANTITYMOD_AT_LEAST, 1);
+        triggerText += TrigEdit.Command(TE_PLAYER_CURRENT, boundingUnit, TE_QUANTITYMOD_EXACTLY, 0);
+        triggerText += TrigEdit.Actions();
+        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + " " + TH_TEXT_UNIT_REVIVE);
+        triggerText += TrigEdit.CreateUnit(TE_PLAYER_CURRENT, boundingUnit, 1, conditionLocationLabelHeader + level);
+        if (lifeType === TH_LIFETYPE_LIFE) {
+            // 라이프제인 경우
+            triggerText += TrigEdit.SetScore(TE_PLAYER_CURRENT, TE_MODIFY_SUBTRACT, 1, TE_SCORETYPE_CUSTOM);
+        }
+        else {
+            // 무한 목숨인 경우
+            triggerText += TrigEdit.SetScore(TE_PLAYER_CURRENT, TE_MODIFY_ADD, 1, TE_SCORETYPE_CUSTOM);
+        }
+        triggerText += TrigEdit.DisplayTextMessage("\\x006T\\x004ry\\x006A\\x004gain");
+        triggerText += TrigEdit.PreserveTrigger();
+        triggerText += TrigEdit.TriggerEnd();
+    }
+
+    return triggerText;
+};
+
+TriggerHandler.parsePatternList = function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+    
+    if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
+    
+    var triggerText = "";
+
+    for (var i = 0; i < patternList.length; i++) {
+        let pattern = patternList[i];
+        let level = i + 1;
+        let result = TriggerHandler.parsePattern(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit);
+        if (!result) continue;
+        else triggerText += result;
+    }
+
+    return (triggerText === "") ? null : triggerText;
+};
+
+TriggerHandler.getHyperTrigger = function(editorType, conditionUnit) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+    
+    var triggerText = "";
+    
+    triggerText += TrigEdit.TriggerStart(TE_PLAYER_ALL);
+    triggerText += TrigEdit.Conditions();
+    triggerText += TrigEdit.Deaths(TE_PLAYER_ALL, conditionUnit, TE_QUANTITYMOD_EXACTLY, 0);
+    triggerText += TrigEdit.Actions();
+    triggerText += TrigEdit.Comment(TH_TEXT_HYPER_TRIGGER);
+    triggerText += TrigEdit.SetDeaths(TE_PLAYER_CURRENT, conditionUnit, TE_MODIFY_SET_TO, 1);
+    triggerText += TrigEdit.Wait(0);
+    triggerText += TrigEdit.SetDeaths(TE_PLAYER_CURRENT, conditionUnit, TE_MODIFY_SET_TO, 0);
+    triggerText += TrigEdit.Wait(0);
+    triggerText += TrigEdit.PreserveTrigger();
+    triggerText += TrigEdit.TriggerEnd();
+
+    return triggerText;
+};
+
+var isValidBombPlayer = function(bombPlayer) {
+    // 폭탄 트리거용 플레이어 체크
+    if (bombPlayer !== TE_PLAYER_P1 &&
+        bombPlayer !== TE_PLAYER_P2 &&
+        bombPlayer !== TE_PLAYER_P3 &&
+        bombPlayer !== TE_PLAYER_P4 &&
+        bombPlayer !== TE_PLAYER_P5 &&
+        bombPlayer !== TE_PLAYER_P6 &&
+        bombPlayer !== TE_PLAYER_P7 &&
+        bombPlayer !== TE_PLAYER_P8) {
+
+        return false;
+    }
+
+    return true;
+};
+
+var isValidUserForce = function(userForce) {
+    // 유저의 세력 체크
+    if (userForce !== TE_PLAYER_FORCE1 &&
+        userForce !== TE_PLAYER_FORCE2 &&
+        userForce !== TE_PLAYER_FORCE3 &&
+        userForce !== TE_PLAYER_FORCE4) {
+
+        return false;
+    }
+
+    return true;
+};

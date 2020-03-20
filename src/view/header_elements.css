@@ -9,6 +9,74 @@
     color: white;
     cursor: pointer;
 }
+
+#header > div#mainMenuIcon {
+    position: absolute;
+    display: inline-block;
+    left: 12px;
+    top: 4px;
+    width: 32px;
+    height: 28px;
+    cursor: pointer;
+}
+#header > div#mainMenuIcon > img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+#header > div#mainMenuIcon { opacity: 0.4; }
+#header > div#mainMenuIcon:hover { opacity: 1.0; }
+#header > div#mainMenuIcon.selected { opacity: 1.0; }
+
+#header > div#mainMenu {
+    position: absolute;
+    left: 0;
+    top: 40px;
+    width: 180px;
+    background-color: #717171;
+    border-right: 4px solid #585858;
+    border-bottom: 4px solid #585858;
+    z-index: 9999;
+}
+#header > div#mainMenu:not(.open) {
+    display: none;
+    height: 0px;
+}
+#header > div#mainMenu.open {
+    display: initial;
+    height: 80px;
+    animation-name: mainMenuOpen;
+    animation-duration: 0.15s;
+}
+@keyframes mainMenuOpen {
+    from { height: 0px; }
+    to { height: 80px; }
+}
+
+#header > div#mainMenu > ul {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+#header > div#mainMenu > ul > li.menuItem {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: #ffffff33;
+}
+#header > div#mainMenu > ul > li.menuItem:hover { opacity: 0.7; cursor: pointer; }
+#header > div#mainMenu > ul > li.menuItem > div {
+    position: relative;
+    width: 80%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 40px;
+    color: white;
+    font-size: 14px;
+}
+
 #header > button:not(.input) { width: 80px; }
 #header > button.input {
     display: inline-block;
@@ -40,3 +108,33 @@
 #header > button#patchNote { right: 120px; }
 #header > button#appInfo { right: 20px; }
 #header > input#loadProjectFile { display: none; }
+
+/* Dialog */
+/* .extractTrigger.ui-dialog { background: green; } */
+#header > #extractTriggerDialog { display: none; }
+#extractTriggerDialog span { /* is not in header */
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+}
+#extractTriggerDialog select { /* is not in header */
+    height: 24px;
+}
+#extractTriggerDialog > div {
+    margin-bottom: 18px;
+}
+#extractTriggerDialog > div.short-interval {
+    margin-bottom: 2px;
+}
+#extractTriggerDialog button#extract {
+    display: block;
+    width: 200px;
+    height: 40px;
+    margin-top: 24px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#extractTriggerDialog #stageLocation > * { display: block; margin-bottom: 4px; }
+#extractTriggerDialog #reviveLocation > * { display: block; margin-bottom: 4px; }
+#extractTriggerDialog #levelLocationHeaderExample { font-weight: initial; }
+#extractTriggerDialog #reviveLocationHeaderExample { font-weight: initial; }

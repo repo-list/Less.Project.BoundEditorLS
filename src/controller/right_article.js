@@ -5,7 +5,7 @@ RightArticle.switchTo = function(elementID) {
 };
 
 RightArticle.onTab1MouseDown = function() {
-    if (Project.patterns.length === 0) return;
+    if (Project.patternList.length === 0) return;
     
     RightArticle.isMouseDown = true;
     var gridWidth = RightArticle.canvasTileWidth;
@@ -203,7 +203,7 @@ RightArticle.onTab1MouseDown = function() {
 };
 
 RightArticle.onTab1MouseUp = function() {
-    if (Project.patterns.length === 0) return;
+    if (Project.patternList.length === 0) return;
 
     RightArticle.isMouseDown = false;
     var mouseButton = RightArticle.getMouseButtonFromEvent(event);
@@ -374,7 +374,7 @@ RightArticle.onTab1MouseUp = function() {
 };
 
 RightArticle.onTab1MouseMove = function() {
-    if (Project.patterns.length === 0) return;
+    if (Project.patternList.length === 0) return;
 
     // Section 1
     var gridWidth = RightArticle.canvasTileWidth;
@@ -466,11 +466,11 @@ RightArticle.onTab1MouseMove = function() {
 };
 
 RightArticle.onTab1MouseOut = function() {
-    if (Project.patterns.length === 0) return;
+    if (Project.patternList.length === 0) return;
 };
 
 RightArticle.onKeyDown = function() {
-    if (Project.patterns.length === 0) return;
+    if (Project.patternList.length === 0) return;
 
     if (event.keyCode === 9) { // TAB KEY
         event.preventDefault(); // 탭 키 눌렀을 때 기본 이벤트 취소
@@ -478,7 +478,7 @@ RightArticle.onKeyDown = function() {
 };
 
 RightArticle.onKeyUp = function() {
-    if (Project.patterns.length === 0) return;
+    if (Project.patternList.length === 0) return;
 
     Log.debug("Keyup : " + event.keyCode);
 

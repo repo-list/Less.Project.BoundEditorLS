@@ -1,10 +1,16 @@
+/**
+ * Bound Editor LS Project File, Bound Editor LS Pattern File 1.1버전 변경 사항 :
+ * - Project.patterns -> Project.patternList로 이름 변경
+ * - Project 파일에는 triggerSettings가 포함될 수 있음.
+ */
+
 const PROJECTFILE_TYPE = "Bound Editor LS Project File";
-const PROJECTFILE_VERSION = "1.0";
+const PROJECTFILE_VERSION = "1.1";
 const PROJECTFILE_MIMETYPE = "application/json";
 const PROJECTFILE_EXTENSION = ".bpj";
 
 const PATTERNFILE_TYPE = "Bound Editor LS Pattern File";
-const PATTERNFILE_VERSION = "1.0";
+const PATTERNFILE_VERSION = "1.1";
 const PATTERNFILE_MIMETYPE = "application/json";
 const PATTERNFILE_EXTENSION = ".bpn";
 
@@ -97,9 +103,10 @@ FileHandler.getProjectFileContent = function(project) {
         author: project.author,
         mapName: project.mapName,
         isPrivateProject: project.isPrivateProject,
-        patterns: project.patterns,
+        patternList: project.patternList,
         currentPattern: project.currentPattern,
-        currentPatternIndex: project.currentPatternIndex
+        currentPatternIndex: project.currentPatternIndex,
+        triggerSettings : project.triggerSettings
     };
 
     var data = JSON.stringify(new ProjectFile(fileType, fileVersion, projectObj), undefined, 4);
@@ -134,39 +141,44 @@ FileHandler.loadProjectFromFileSystem = function(event, callback) {
     reader.onload = function(ev) {
         var content = ev.target.result;
         if (!FileHandler.isJSONString(content)) {
-            console.log("FileHandler.loadProjectFromFileSystem : JSON 형식 오류");
+            Log.error("FileHandler.loadProjectFromFileSystem : JSON 형식 오류");
             content = null;
         }
         else {
             var projectFile = JSON.parse(content);
             if (projectFile.fileType === undefined || projectFile.fileType !== PROJECTFILE_TYPE) {
-                console.log("FileHandler.loadProjectFromFileSystem : projectFile.fileType 오류");
+                Log.error("FileHandler.loadProjectFromFileSystem : projectFile.fileType 오류");
                 content = null;
             }
-            else if (projectFile.fileVersion === undefined || projectFile.fileVersion !== PROJECTFILE_VERSION) {
-                console.log("FileHandler.loadProjectFromFileSystem : projectFile.fileVersion 오류");
+            else if (projectFile.fileVersion === undefined) {
+                Log.error("FileHandler.loadProjectFromFileSystem : projectFile.fileVersion 오류");
                 content = null;
             }
             else {
                 if (projectFile.project.name === undefined ||
                     projectFile.project.author === undefined ||
                     projectFile.project.isPrivateProject === undefined ||
-                    projectFile.project.patterns === undefined ||
+                    (projectFile.fileVersion === "1.1" && projectFile.project.patternList === undefined) ||
+                    (projectFile.fileVersion === "1.0" && projectFile.project.patterns === undefined) ||
                     projectFile.project.currentPattern === undefined) {
-                    console.log("FileHandler.loadProjectFromFileSystem : projectFile 항목 누락 오류");
+                    Log.error("FileHandler.loadProjectFromFileSystem : projectFile 항목 누락 오류");
                     content = null;
                 }
                 else {
-                    var patterns = projectFile.project.patterns;
-                    for (var i = 0; i < patterns.length; i++) {
-                        patterns[i] = FileHandler.convertToPatternObject(patterns[i]);
-                        if (patterns[i] === null) {
-                            console.log("FileHandler.loadProjectFromFileSystem : patternFile.pattern 컨버팅 오류");
+                    var patternList = (projectFile.fileVersion === "1.1") ? projectFile.project.patternList : projectFile.project.patterns;
+                    for (var i = 0; i < patternList.length; i++) {
+                        patternList[i] = FileHandler.convertToPatternObject(patternList[i]);
+                        if (patternList[i] === null) {
+                            Log.error("FileHandler.loadProjectFromFileSystem : patternFile.pattern 컨버팅 오류");
                             content = null;
                             break;
                         }
                     }
-                    projectFile.project.currentPattern = projectFile.project.patterns[projectFile.project.currentPatternIndex];
+                    if (projectFile.fileVersion === "1.0") {
+                        projectFile.project.patternList = projectFile.project.patterns;
+                        projectFile.project.patterns = undefined;
+                    }
+                    projectFile.project.currentPattern = projectFile.project.patternList[projectFile.project.currentPatternIndex];
                     content = projectFile.project;
                 }
             }
@@ -186,17 +198,17 @@ FileHandler.loadPatternFromFileSystem = function(event, callback) {
     reader.onload = function(ev) {
         var content = ev.target.result;
         if (!FileHandler.isJSONString(content)) {
-            console.log("FileHandler.loadPatternFromFileSystem : JSON 형식 오류");
+            Log.error("FileHandler.loadPatternFromFileSystem : JSON 형식 오류");
             content = null;
         }
         else {
             var patternFile = JSON.parse(content);
             if (patternFile.fileType === undefined || patternFile.fileType !== PATTERNFILE_TYPE) {
-                console.log("FileHandler.loadPatternFromFileSystem : patternFile.fileType 오류");
+                Log.error("FileHandler.loadPatternFromFileSystem : patternFile.fileType 오류");
                 content = null;
             }
             else if (patternFile.fileVersion === undefined || patternFile.fileVersion !== PATTERNFILE_VERSION) {
-                console.log("FileHandler.loadPatternFromFileSystem : patternFile.fileVersion 오류");
+                Log.error("FileHandler.loadPatternFromFileSystem : patternFile.fileVersion 오류");
                 content = null;
             }
             else {
@@ -217,13 +229,13 @@ FileHandler.loadPatternFromFileSystem = function(event, callback) {
                     patternFile.pattern.tileDataList === undefined ||
                     patternFile.pattern.locationList === undefined ||
                     patternFile.pattern.turnList === undefined) {
-                    console.log("FileHandler.loadPatternFromFileSystem : patternFile.pattern 항목 누락 오류");
+                    Log.error("FileHandler.loadPatternFromFileSystem : patternFile.pattern 항목 누락 오류");
                     content = null;
                 }
                 else {
                     content = FileHandler.convertToPatternObject(patternFile.pattern);
                     if (content === null) {
-                        console.log("FileHandler.loadPatternFromFileSystem : patternFile.pattern 컨버팅 오류");
+                        Log.error("FileHandler.loadPatternFromFileSystem : patternFile.pattern 컨버팅 오류");
                     }
                 }
             }
@@ -270,7 +282,7 @@ FileHandler.convertToPatternObject = function(loadedPattern) {
                     break;
                 }
                 else if (k === locationList.length - 1) {
-                    console.log("FileHandler.convertToPatternObject : pattern.turnList 컨버팅 오류");
+                    Log.error("FileHandler.convertToPatternObject : pattern.turnList 컨버팅 오류");
                     return null;
                 }
             }

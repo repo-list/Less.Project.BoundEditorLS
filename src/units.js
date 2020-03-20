@@ -1,3 +1,57 @@
+const UNITSIZE_UNKNOWN = -1;
+
+const NOTATION_UNCLEAR = "(U)";
+
+// Race
+const RACE_NONE = "None";
+const RACE_ZERG = "Zerg";
+const RACE_TERRAN = "Terran";
+const RACE_PROTOSS = "Protoss";
+
+// Bomb Units
+const UNIT_ZERG_SCOURGE = "Zerg Scourge";
+const UNIT_ZERG_OVERLORD = "Zerg Overlord";
+const UNIT_ZERG_DEVOURER = "Zerg Devourer";
+const UNIT_ZERG_MUTALISK = "Zerg Mutalisk";
+const UNIT_ZERG_ULTRALISK = "Zerg Ultralisk";
+
+const UNIT_TERRAN_SCV = "Terran SCV";
+const UNIT_TERRAN_DROPSHIP = "Terran Dropship";
+const UNIT_TERRAN_WRAITH = "Terran Wraith";
+const UNIT_TERRAN_BATTLECRUISER = "Terran Battlecruiser";
+
+const UNIT_PROTOSS_OBSERVER = "Protoss Observer";
+const UNIT_PROTOSS_PROBE = "Protoss Probe";
+const UNIT_PROTOSS_CORSAIR = "Protoss Corsair";
+const UNIT_PROTOSS_ARBITER = "Protoss Arbiter";
+const UNIT_PROTOSS_SCOUT = "Protoss Scout";
+const UNIT_PROTOSS_ARCHON = "Protoss Archon";
+const UNIT_PROTOSS_DARKARCHON = "Protoss Dark Archon";
+
+// Block Units
+const UNIT_TERRAN_MACHINESHOP = "Terran Machine Shop";
+const UNIT_TERRAN_MACHINESHOP_UNCLEAR = UNIT_TERRAN_MACHINESHOP + NOTATION_UNCLEAR;
+const UNIT_NEUTRAL_PSIEMITTER = "Psi Emitter";
+const UNIT_NEUTRAL_PSIEMITTER_UNCLEAR = UNIT_NEUTRAL_PSIEMITTER + NOTATION_UNCLEAR;
+const UNIT_NEUTRAL_KHALISCRYSTAL = "Khalis Crystal";
+const UNIT_NEUTRAL_KHALISCRYSTAL_UNCLEAR = UNIT_NEUTRAL_KHALISCRYSTAL + NOTATION_UNCLEAR;
+const UNIT_NEUTRAL_URAJCRYSTAL = "Uraj Crystal";
+const UNIT_NEUTRAL_URAJCRYSTAL_UNCLEAR = UNIT_NEUTRAL_URAJCRYSTAL + NOTATION_UNCLEAR;
+const UNIT_NEUTRAL_KHAYDARINCRYSTAL = "Khaydarin Crystal";
+const UNIT_NEUTRAL_KHAYDARINCRYSTAL_UNCLEAR = UNIT_NEUTRAL_KHAYDARINCRYSTAL + NOTATION_UNCLEAR;
+const UNIT_OTHER_BLOCKEXPLOSION1 = "Block Explosion 1x1";
+const UNIT_OTHER_BLOCKEXPLOSION2 = "Block Explosion 2x2";
+
+// Bound Units
+const UNIT_ZERG_ZERGLING = "Zerg Zergling";
+const UNIT_ZERG_DEVOURING_ONE = "Devouring One";
+const UNIT_ZERG_HUNTER_KILLER = "Hunter Killer";
+
+// Trigger Condition Units
+const UNIT_NEUTRAL_FLAG = "Flag";
+const UNIT_NEUTRAL_CAVE = "Cave";
+const UNIT_NEUTRAL_CANTINA = "Cantina";
+
 var Units = [
     // Bomb Units
     {
@@ -132,6 +186,40 @@ var Units = [
     {
         name : UNIT_NEUTRAL_KHAYDARINCRYSTAL_UNCLEAR,
         size : 1,
+        race : RACE_NONE
+    },
+
+    // Bound Units
+    {
+        name : UNIT_ZERG_ZERGLING,
+        size : 1,
+        race : RACE_ZERG
+    },
+    {
+        name : UNIT_ZERG_DEVOURING_ONE,
+        size : 1,
+        race : RACE_ZERG
+    },
+    {
+        name : UNIT_ZERG_HUNTER_KILLER,
+        size : 1,
+        race : RACE_ZERG
+    },
+
+    // Trigger Condition Units
+    {
+        name : UNIT_NEUTRAL_FLAG,
+        size : 1,
+        race : RACE_NONE
+    },
+    {
+        name : UNIT_NEUTRAL_CAVE,
+        size : UNITSIZE_UNKNOWN,
+        race : RACE_NONE
+    },
+    {
+        name : UNIT_NEUTRAL_CANTINA,
+        size : UNITSIZE_UNKNOWN,
         race : RACE_NONE
     }
 ];

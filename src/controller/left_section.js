@@ -2,16 +2,16 @@ LeftSection.getTotalWidth = function() {
     return LeftSection.width + LeftSection.marginRight;
 };
 
-// 주의 사항 : Project.patterns.push(pattern); 는 addPatternItem 후에 별도로 호출해야 함. (project.js에서 해당 메서드 없이 이용이 필요)
+// 주의 사항 : Project.patternList.push(pattern); 는 addPatternItem 후에 별도로 호출해야 함. (project.js에서 해당 메서드 없이 이용이 필요)
 LeftSection.addNewPatternItem = function(pattern) {
     var $infoTab1List = $("#left > section > #infoTab1 > ul");
-    var patternIndex = Project.patterns.length;
+    var patternIndex = Project.patternList.length;
     var patternID = PATTERNID_HEADER + patternIndex;
 
     $infoTab1List.append("<li><button id='" + patternID + "' class='pattern'>" + pattern.label + "</button></li>");
     $newButton = $infoTab1List.find("#" + patternID);
     $newButton.on("click", LeftSection.onPatternButtonClick);
-    Project.patterns.push(pattern);
+    Project.patternList.push(pattern);
 
     Log.debug("Pattern added (" + pattern.label + ")");
 };
@@ -29,7 +29,7 @@ LeftSection.changeTabTo = function(tabIndex) {
 };
 
 LeftSection.selectPattern = function(patternIndex) {
-    var pattern = Project.patterns[patternIndex];
+    var pattern = Project.patternList[patternIndex];
     var $patternButtons = $("#left > section > #infoTab1 button.pattern");
     var $selectedButton = $patternButtons.eq(patternIndex);
 
@@ -100,7 +100,7 @@ LeftSection.onPatternButtonClick = function() {
     var patternIndex = parseInt(buttonID.substr(PATTERNID_HEADER.length));
 
     if (patternIndex === Project.currentPatternIndex) {
-        let input = Popup.prompt("패턴의 이름을 입력해주세요 : ", Project.patterns[patternIndex].label);
+        let input = Popup.prompt("패턴의 이름을 입력해주세요 : ", Project.patternList[patternIndex].label);
     
         if (input !== null) updatePatternLabel(patternIndex, input);
     }
@@ -119,8 +119,6 @@ LeftSection.onSortComplete = function(event, ui) {
     var prevIndex = parseInt(buttonID.substr(PATTERNID_HEADER.length));
     var currentIndex = ui.item.index();
     $patternButtons = $("#left > section > #infoTab1 button.pattern");
-
-    Log.temp(prevIndex + " -> " + currentIndex);
     
     // 버튼 ID 변경
     for (var i = 0; i < $patternButtons.length; i++) {
@@ -128,24 +126,24 @@ LeftSection.onSortComplete = function(event, ui) {
     }
 
     // 패턴 배열 내의 객체들 위치 변경
-    var patterns = Project.patterns;
+    var patternList = Project.patternList;
     if (currentIndex < prevIndex) {
-        let temp = patterns[prevIndex];
+        let temp = patternList[prevIndex];
         for (var i = prevIndex; i > currentIndex; i--) {
-            patterns[i] = patterns[i - 1];
+            patternList[i] = patternList[i - 1];
             if (i - 1 === Project.currentPatternIndex) Project.currentPatternIndex = i;
         }
-        patterns[currentIndex] = temp;
+        patternList[currentIndex] = temp;
     }
     else {
-        let temp = patterns[prevIndex];
+        let temp = patternList[prevIndex];
         for (var i = prevIndex; i < currentIndex; i++) {
-            patterns[i] = patterns[i + 1];
+            patternList[i] = patternList[i + 1];
             if (i + 1 === Project.currentPatternIndex) Project.currentPatternIndex = i;
         }
-        patterns[currentIndex] = temp;
+        patternList[currentIndex] = temp;
     }
     if (prevIndex === Project.currentPatternIndex) Project.currentPatternIndex = currentIndex;
 
-    Project.currentPattern = patterns[currentIndex];
+    Project.currentPattern = patternList[currentIndex];
 };

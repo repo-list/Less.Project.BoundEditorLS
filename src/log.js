@@ -1,7 +1,9 @@
 var Log = {
     isDebugMode : true,
     debug : function(message) {},
-    error : function(message) {}
+    warn : function(message) {},
+    error : function(message) {},
+    temp : function(message) {}
 };
 
 Log.debug = function(message) {

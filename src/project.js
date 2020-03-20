@@ -31,46 +31,24 @@ const BLOCKOPTION1_UNITLIVE = 3;
 const BLOCKOPTION2_BLOCKKILL = 1;
 const BLOCKOPTION2_BLOCKREMOVE = 2;
 
-const NOTATION_UNCLEAR = "(U)";
+// Triggers
+const TRIGGER_EDITORTYPE_TRIGEDIT = "TrigEdit";
+const TRIGGER_EDITORTYPE_TRIGEDITPLUS = "TrigEditPlus";
 
-const RACE_NONE = "None";
-const RACE_ZERG = "Zerg";
-const RACE_TERRAN = "Terran";
-const RACE_PROTOSS = "Protoss";
+const TRIGGER_EXTRANGE_ALLDATA = 1;
+const TRIGGER_EXTRANGE_ALLPATTERNS = 2;
+const TRIGGER_EXTRANGE_CURRENTPATTERN = 3;
+const TRIGGER_EXTRANGE_CUSTOM = 4;
 
-// Bomb Units
-const UNIT_ZERG_SCOURGE = "Zerg Scourge";
-const UNIT_ZERG_OVERLORD = "Zerg Overlord";
-const UNIT_ZERG_DEVOURER = "Zerg Devourer";
-const UNIT_ZERG_MUTALISK = "Zerg Mutalisk";
-const UNIT_ZERG_ULTRALISK = "Zerg Ultralisk";
+const TRIGGER_PLAYERTYPE_NONE = 0;
+const TRIGGER_PLAYERTYPE_HUMAN = 1;
+const TRIGGER_PLAYERTYPE_COMPUTER = 2;
 
-const UNIT_TERRAN_SCV = "Terran SCV";
-const UNIT_TERRAN_DROPSHIP = "Terran Dropship";
-const UNIT_TERRAN_WRAITH = "Terran Wraith";
-const UNIT_TERRAN_BATTLECRUISER = "Terran Battlecruiser";
+const TRIGGER_P12_KILL = "Kill";
+const TRIGGER_P12_REMOVE = "Remove";
 
-const UNIT_PROTOSS_OBSERVER = "Protoss Observer";
-const UNIT_PROTOSS_PROBE = "Protoss Probe";
-const UNIT_PROTOSS_CORSAIR = "Protoss Corsair";
-const UNIT_PROTOSS_ARBITER = "Protoss Arbiter";
-const UNIT_PROTOSS_SCOUT = "Protoss Scout";
-const UNIT_PROTOSS_ARCHON = "Protoss Archon";
-const UNIT_PROTOSS_DARKARCHON = "Protoss Dark Archon";
-
-// Block Units
-const UNIT_TERRAN_MACHINESHOP = "Terran Machine Shop";
-const UNIT_TERRAN_MACHINESHOP_UNCLEAR = UNIT_TERRAN_MACHINESHOP + NOTATION_UNCLEAR;
-const UNIT_NEUTRAL_PSIEMITTER = "Psi Emitter";
-const UNIT_NEUTRAL_PSIEMITTER_UNCLEAR = UNIT_NEUTRAL_PSIEMITTER + NOTATION_UNCLEAR;
-const UNIT_NEUTRAL_KHALISCRYSTAL = "Khalis Crystal";
-const UNIT_NEUTRAL_KHALISCRYSTAL_UNCLEAR = UNIT_NEUTRAL_KHALISCRYSTAL + NOTATION_UNCLEAR;
-const UNIT_NEUTRAL_URAJCRYSTAL = "Uraj Crystal";
-const UNIT_NEUTRAL_URAJCRYSTAL_UNCLEAR = UNIT_NEUTRAL_URAJCRYSTAL + NOTATION_UNCLEAR;
-const UNIT_NEUTRAL_KHAYDARINCRYSTAL = "Khaydarin Crystal";
-const UNIT_NEUTRAL_KHAYDARINCRYSTAL_UNCLEAR = UNIT_NEUTRAL_KHAYDARINCRYSTAL + NOTATION_UNCLEAR;
-const UNIT_OTHER_BLOCKEXPLOSION1 = "Block Explosion 1x1";
-const UNIT_OTHER_BLOCKEXPLOSION2 = "Block Explosion 2x2";
+const TRIGGER_LIFETYPE_LIFE = "Life";
+const TRIGGER_LIFETYPE_DEATH = "Death";
 
 /* Default Project Settings */
 const SHORT_APP_NAME = "BoundEditorLS";
@@ -185,16 +163,17 @@ const __patternValue = new BoundPattern();
 var Project = {
     name : __strValue,
     author : __strValue,
-    mapName : __strValue,
+    mapInfo : __objValue,
     isPrivateProject : __booleanValue,
-    patterns : __arrValue,
+    patternList : __arrValue,
     currentPattern : __patternValue,
-    currentPatternIndex : __intValue
+    currentPatternIndex : __intValue,
+    triggerSettings : __objValue
 };
 
 
 var createNewPattern = function() {
-    var patternLabel = DEFAULT_PATTERN_LABEL_HEADER + (Project.patterns.length + 1);
+    var patternLabel = DEFAULT_PATTERN_LABEL_HEADER + (Project.patternList.length + 1);
     var patternDescription = DEFAULT_PATTERN_DESCRIPTION;
     var tileset = DEFAULT_TILESET;
     var pattern = new BoundPattern(patternLabel, patternDescription, tileset);
@@ -230,18 +209,18 @@ var createNewPattern = function() {
 var loadProject = function(event) {
     FileHandler.loadProjectFromFileSystem(event, function(project) {
         if (!project) {
-            alert("프로젝트 파일이 잘못되었습니다.");
+            Popup.alert("프로젝트 파일이 잘못되었습니다.");
             return;
         }
         Project = project;
         LeftSection.clearPatternTab();
 
         // 태그 수동 추가
-        var patternLen = project.patterns.length;
+        var patternLen = project.patternList.length;
         for (var i = 0; i < patternLen; i++) {
             var $infoTab1List = $("#left > section > #infoTab1 > ul");
             let patternID = PATTERNID_HEADER + i;
-            $infoTab1List.append("<li><button id='" + patternID + "' class='pattern'>" + project.patterns[i].label + "</button></li>");
+            $infoTab1List.append("<li><button id='" + patternID + "' class='pattern'>" + project.patternList[i].label + "</button></li>");
             $newButton = $infoTab1List.find("#" + patternID);
             $newButton.on("click", LeftSection.onPatternButtonClick);
         }
@@ -254,7 +233,7 @@ var loadProject = function(event) {
 
         LeftSection.selectPattern(project.currentPatternIndex);
 
-        Log.debug(project.patterns);
+        Log.debug(project.patternList);
     });
 };
 
@@ -266,12 +245,12 @@ var saveProject = function(project) {
 var loadPattern = function(event) {
     FileHandler.loadPatternFromFileSystem(event, function(pattern) {
         if (!pattern) {
-            alert("패턴 파일이 잘못되었습니다.");
+            Popup.alert("패턴 파일이 잘못되었습니다.");
             return;
         }
         
         LeftSection.addNewPatternItem(pattern);
-        LeftSection.selectPattern(Project.patterns.length - 1);
+        LeftSection.selectPattern(Project.patternList.length - 1);
     });
 };
 
@@ -283,7 +262,7 @@ var savePattern = function(pattern) {
 var deletePattern = function(patternIndex) {
     // 객체 제거
     var $patternButtons = $("#left > section > #infoTab1 button.pattern");
-    Project.patterns.splice(patternIndex, 1);
+    Project.patternList.splice(patternIndex, 1);
     $patternButtons.eq(patternIndex).parent().remove(); // parent === <li> element
     $patternButtons = $("#left > section > #infoTab1 button.pattern"); // 다시 찾아줘야 length가 변함...
 
@@ -355,6 +334,7 @@ var updateProjectName = function(name) {
 
     $projectName.html(name);
     Project.name = name;
+    document.title = Project.name;
     
     Log.debug("Project name changed to : " + name);
 };
@@ -365,7 +345,7 @@ var updatePatternLabel = function(patternIndex, label) {
 
     $patternButtons.eq(patternIndex).html(label);
     $patternLabel.html(label);
-    Project.patterns[patternIndex].label = label;
+    Project.patternList[patternIndex].label = label;
     
     Log.debug("Pattern label changed to : " + label);
 };

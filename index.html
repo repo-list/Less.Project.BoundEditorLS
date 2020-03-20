@@ -15,16 +15,19 @@
     <script src="app.js"></script>
     <script src="patch_note.js"></script>
 
+    <!-- Resource & Data -->
+    <script src="src/units.js"></script>
+    <script src="src/resource.js"></script>
+    <script src="src/players.js"></script>
+
     <!-- Project -->
     <script src="src/log.js"></script>
     <script src="src/popup.js"></script>
     <script src="src/file_handler.js"></script>
     <script src="src/project.js"></script>
     <script src="src/web_storage.js"></script>
-
-    <!-- Resource & Data -->
-    <script src="src/resource.js"></script>
-    <script src="src/units.js"></script>
+    <script src="src/trigedit.js"></script>
+    <script src="src/trigger_handler.js"></script>
 
     <!-- View -->
     <link rel="stylesheet" href="src/view/html.css">
@@ -87,38 +90,31 @@
             $(document).on("keyup", RightArticle.onKeyUp);
             $(document).on("contextmenu", function() { event.preventDefault(); });
             $(document).on("scmapapiload", RightSection.onSCMapAPILoad);
+            $("#page").on("click", Page.onClick);
+            $("#header > #mainMenuIcon").on("click", HeaderElements.onMainMenuIconClick);
             $("#header > button").on("click", HeaderElements.onButtonClick);
+            $("#header > #mainMenu .menuItem").on("click", HeaderElements.onMainMenuItemClick);
+            $("#header > #loadProjectFile").on("change", loadProject);
             $("#left > nav li").on("click", LeftNav.changeOrClosePanel);
+            $("#left > section ul.sortable").sortable({ handle: "button", cancel: "", update: LeftSection.onSortComplete });
             $("#right > nav li").on("click", RightNav.changeTab);
             $("#right > header button").on("click", RightHeader.onButtonClick);
-            $("#right #articleTab1").on("mousemove", function() { RightArticle.onTab1MouseMove(); FooterElements.onRightArticleTab1MouseMove(); });
-            $("#right #articleTab1").on("mouseout", function() { RightArticle.onTab1MouseOut(); FooterElements.onRightArticleTab1MouseOut(); });
-            $("#right #articleTab1").on("mousedown", RightArticle.onTab1MouseDown);
-            $("#right #articleTab1").on("mouseup", RightArticle.onTab1MouseUp);
+            $("#right > header > #headerTab1 > #loadPatternFile").on("change", loadPattern);
+            $("#right > article > #articleTab1").on("mousemove", function() { RightArticle.onTab1MouseMove(); FooterElements.onRightArticleTab1MouseMove(); });
+            $("#right > article > #articleTab1").on("mouseout", function() { RightArticle.onTab1MouseOut(); FooterElements.onRightArticleTab1MouseOut(); });
+            $("#right > article > #articleTab1").on("mousedown", RightArticle.onTab1MouseDown);
+            $("#right > article > #articleTab1").on("mouseup", RightArticle.onTab1MouseUp);
             $("#right > section button").on("click", RightSection.onButtonClick);
-            $("#right #sectionTab1 > #terrain > select#tilesets").on("change", RightSection.onTilesetChange);
-            $("#right #sectionTab1 input#wait").on("change", RightSection.onWaitValueChange);
-            $("#right #sectionTab1 button#play").on("click", RightSection.onPlayButtonClick);
-            $("#right #sectionTab1 > #bomb > input#currentTurn").on("change", RightSection.onCurrentTurnTextChange);
-            $("#right #sectionTab1 > #bomb > button#addTurn").on("click", RightSection.addTurn);
-            $("#right #sectionTab1 > #bomb > button#insertTurn").on("click", RightSection.insertTurn);
-            $("#right #sectionTab1 > #bomb > button#copyTurn").on("click", RightSection.copyTurn);
-            $("#right #sectionTab1 > #bomb > button#invertTurn").on("click", RightSection.invertTurn);
-            $("#right #sectionTab1 > #bomb > button#deleteTurn").on("click", RightSection.deleteTurn);
-            $("#right #sectionTab1 > #bomb > button#toPrev").on("click", RightSection.onToPrevClick);
-            $("#right #sectionTab1 > #bomb > button#toNext").on("click", RightSection.onToNextClick);
-            $("#right #sectionTab1 > #bomb > button#toFirst").on("click", RightSection.onToFirstClick);
-            $("#right #sectionTab1 > #bomb > button#toLast").on("click", RightSection.onToLastClick);
-            $("#right #sectionTab1 > #bomb > input[name=option1]").on("click", RightSection.onOption1RadioClick);
-            $("#right #sectionTab1 > #bomb > input[name=option2]").on("click", RightSection.onOption2RadioClick);
-            $("#right #sectionTab1 > #bomb > select#bombUnits1").on("change", RightSection.onBombUnits1Change);
-            $("#right #sectionTab1 > #bomb > select#bombUnits2").on("change", RightSection.onBombUnits2Change);
-            $("#right #sectionTab1 > #bomb > select#bombUnits3").on("change", RightSection.onBombUnits3Change);
-            $("#right #headerTab1 > #loadPattern").on("click", function() { $("#right #headerTab1 > #loadPatternFile").click(); });
-            $("#right #headerTab1 > #loadPatternFile").on("change", loadPattern);
-            $("#header > #loadProject").on("click", function() { $("#header > #loadProjectFile").click(); });
-            $("#header > #loadProjectFile").on("change", loadProject);
-            $("#left > section ul.sortable").sortable({ handle: "button", cancel: "", update: LeftSection.onSortComplete });
+            $("#right > section > #sectionTab1 > #terrain > select#tilesets").on("change", RightSection.onTilesetChange);
+            $("#right > section > #sectionTab1 input#wait").on("change", RightSection.onWaitValueChange);
+            $("#right > section > #sectionTab1 button#play").on("click", RightSection.onPlayButtonClick);
+            $("#right > section > #sectionTab1 > #bomb > input#currentTurn").on("change", RightSection.onCurrentTurnTextChange);
+            $("#right > section > #sectionTab1 > #bomb > button.control").on("click", RightSection.onControlButtonClick);
+            $("#right > section > #sectionTab1 > #bomb > input[name=option1]").on("click", RightSection.onOption1RadioClick);
+            $("#right > section > #sectionTab1 > #bomb > input[name=option2]").on("click", RightSection.onOption2RadioClick);
+            $("#right > section > #sectionTab1 > #bomb > select#bombUnits1").on("change", RightSection.onBombUnits1Change);
+            $("#right > section > #sectionTab1 > #bomb > select#bombUnits2").on("change", RightSection.onBombUnits2Change);
+            $("#right > section > #sectionTab1 > #bomb > select#bombUnits3").on("change", RightSection.onBombUnits3Change);
 
             /*** Project Init ***/
             Project.name = DEFAULT_PROJECT_NAME;
@@ -155,6 +151,7 @@
 <body>
     <div id="page">
         <header id="header">
+            <div id="mainMenuIcon" title="메인 메뉴"><img src="res/image/icon/menu.png" draggable="false"></div>
             <button id="projectName" class="input" title="프로젝트 이름">나의 프로젝트</button>
             <button id="loadProject" title="프로젝트 열기">열기</button>
             <button id="saveProject" title="프로젝트 저장">저장</button>
@@ -162,6 +159,142 @@
             <button id="patchNote" title="패치 노트">패치 노트</button>
             <button id="appInfo" title="앱 정보">앱 정보</button>
             <input id="loadProjectFile" type="file" accept=".bpj" />
+            <div id="mainMenu">
+                <ul>
+                    <li id="extractTrigger" class="menuItem"><div>트리거 추출</div></li>
+                </ul>
+            </div>
+            <div id="extractTriggerDialog" title="트리거 추출">
+                <div>
+                    <span id="mapName">* 맵 이름 :</span>
+                    <input id="mapNameText" type="text" maxlength="30" />
+                </div>
+                <div>
+                    <span id="lifeType">* 목숨 유형 :</span>
+                    <select id="lifeTypes" title="목숨 유형을 무한 목숨과 개수 지정 방식 중에 선택합니다.">
+                        <option value="Life">Life (개수 지정)</option>
+                        <option value="Death">Death (무한 목숨)</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="lifeCount">* 라이프 수 :</span>
+                    <input id="lifeCountInput" type="number" max="65535" value="100" />
+                </div>
+                <div>
+                    <span id="editorType">* 에디터 형식 :</span>
+                    <select id="editorTypes" title="트리거문이 들어갈 에디터를 지정합니다.">
+                        <option value="TrigEdit">TrigEdit (ScmDraft 2 기본)</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="extractionRange">* 출력 범위 :</span>
+                    <select id="extractionRanges" title="트리거문을 출력할 범위를 지정합니다.">
+                        <option value="1">모든 맵 데이터</option>
+                        <option value="2">전체 패턴 (맵 데이터 비포함)</option>
+                        <option value="3">현재 패턴 (맵 데이터 비포함)</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="computerPlayer">* 컴퓨터 플레이어 :</label>
+                    <select id="computerPlayers" title="폭탄 설정 및 맵 제어 기능을 하는 컴퓨터 플레이어를 지정합니다.">
+                        <option value="Player 1">플레이어 1</option>
+                        <option value="Player 2">플레이어 2</option>
+                        <option value="Player 3">플레이어 3</option>
+                        <option value="Player 4">플레이어 4</option>
+                        <option value="Player 5">플레이어 5</option>
+                        <option value="Player 6">플레이어 6</option>
+                        <option value="Player 7">플레이어 7</option>
+                        <option value="Player 8" selected>플레이어 8</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="userForce">* 유저들이 속한 세력 : </span>
+                    <select id="userForces" title="유저들이 속한 세력을 지정합니다.">
+                        <option value="Force 1">Force 1 (세력 1)</option>
+                        <option value="Force 2">Force 2 (세력 2)</option>
+                        <option value="Force 3">Force 3 (세력 3)</option>
+                        <option value="Force 4">Force 4 (세력 4)</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="boundingUnit">* 폭피 유닛 :</span>
+                    <select id="boundingUnits" title="폭피를 하는 유닛을 지정합니다.">
+                        <option value="Zerg Zergling">Zerg Zergling (기본 저글링)</option>
+                        <option value="Devouring One">Devouring One (영웅 저글링)</option>
+                        <option value="Hunter Killer">Hunter Killer (영웅 히드라)</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="p12DeleteMethod">* 나간 유닛 삭제 방식 :</span>
+                    <select id="p12DeleteMethods" title="나간 유닛을 삭제하는 방식을 지정합니다.">
+                        <option value="Kill">Kill (킬)</option>
+                        <option value="Remove" selected>Remove (제거)</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="patternConditionUnit">* 스테이지 조건 유닛 :</span>
+                    <select id="patternConditionUnits" title="폭탄 트리거에서 데스값으로 사용될 스테이지 조건 유닛을 설정합니다.">
+                        <option value="Flag">Flag</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="turnConditionUnit">* 턴 조건 유닛 :</span>
+                    <select id="turnConditionUnits" title="폭탄 트리거에서 데스값으로 사용될 턴 조건 유닛을 설정합니다.">
+                        <option value="Cave">Cave</option>
+                    </select>
+                </div>
+                <div>
+                    <span id="hyperConditionUnit">* 터보트리거 조건 유닛 :</span>
+                    <select id="hyperConditionUnits" title="터보 트리거에서 데스값으로 사용될 조건 유닛을 설정합니다.">
+                        <option value="Cantina">Cantina</option>
+                    </select>
+                </div>
+                <div id="stageLocation">
+                    <span id="levelLocationHeader">* 스테이지 시작 로케이션 헤더 :</span>
+                    <input id="levelLocationHeaderInput" type="text" maxLength="12" value="Stage" />
+                    <span id="levelLocationHeaderExample">예시 : Stage1, Stage2, Stage3, ...</span>
+                </div>
+                <div id="reviveLocation">
+                    <span id="reviveLocationHeader">* 리바이브 로케이션 헤더 :</span>
+                    <input id="reviveLocationHeaderInput" type="text" maxLength="12" value="Revive" />
+                    <span id="reviveLocationHeaderExample">예시 : Revive1, Revive2, Revive3, ...</span>
+                </div>
+                <div id="reviveLocation">
+                    <span id="victoryLocation">* 승리 조건 로케이션 :</span>
+                    <input id="victoryLocationInput" type="text" maxLength="12" value="Victory" />
+                </div>
+                <div class="short-interval">
+                    <input id="lifeSettingsCheckBox" type="checkbox" checked />
+                    <label for="lifeSettingsCheckBox">목숨 설정을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="p12DeleteCheckBox" type="checkbox" checked />
+                    <label for="p12DeleteCheckBox">나간 유닛 삭제 설정을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="defeatConditionCheckBox" type="checkbox" checked />
+                    <label for="defeatConditionCheckBox">패배 조건을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="victoryConditionCheckBox" type="checkbox" checked />
+                    <label for="victoryConditionCheckBox">승리 조건을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="levelStartConditionCheckBox" type="checkbox" checked />
+                    <label for="levelStartConditionCheckBox">스테이지 시작 조건을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="reviveConditionCheckBox" type="checkbox" checked />
+                    <label for="reviveConditionCheckBox">리바이브 조건을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="hyperTriggerCheckBox" type="checkbox" checked />
+                    <label for="hyperTriggerCheckBox">터보 트리거를 포함합니다.</label>
+                </div>
+                <div>
+                    <button id="extract">출력</button>
+                </div>
+            </div>
         </header>
         <aside id="left">
             <nav>

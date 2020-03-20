@@ -27,13 +27,14 @@ RightHeader.onPatternLabelClick = function() {
 RightHeader.onNewPatternClick = function() {
     let pattern = createNewPattern();
     LeftSection.addNewPatternItem(pattern);
-    LeftSection.selectPattern(Project.patterns.length - 1);
+    LeftSection.selectPattern(Project.patternList.length - 1);
 
     Log.debug("Button Clicked - New Pattern");
 };
 
 RightHeader.onLoadPatternClick = function() {
-    // 이벤트 핸들러는 index 파일에 있음.
+    var $loadPatternFile = $("#right #headerTab1 > #loadPatternFile");
+    $loadPatternFile.click();
 
     Log.debug("Button Clicked - Load Pattern");
 };
@@ -49,8 +50,8 @@ RightHeader.onDeletePatternClick = function() {
     
     if (confirmResult === true) {
         deletePattern(Project.currentPatternIndex);
-        if (Project.patterns.length > 0) {
-            LeftSection.selectPattern(Project.patterns.length - 1);
+        if (Project.patternList.length > 0) {
+            LeftSection.selectPattern(Project.patternList.length - 1);
         }
     }
 
@@ -58,13 +59,13 @@ RightHeader.onDeletePatternClick = function() {
 };
 
 RightHeader.onSharePatternClick = function() {
-    alert("패턴 공유 - 준비 중입니다.");
+    Popup.alert("패턴 공유 - 준비 중입니다.");
 
     Log.debug("Button Clicked - Share Pattern");
 };
 
 RightHeader.onWorkingClick = function() {
-    alert("작업 중");
+    Popup.alert("작업 중");
 
     Log.debug("Button Clicked - Working");
 };

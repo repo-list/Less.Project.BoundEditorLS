@@ -1,3 +1,7 @@
+HeaderElements.onMainMenuIconClick = function() {
+    $("#header > div#mainMenu").toggleClass("open");
+};
+
 HeaderElements.onButtonClick = function() {
     switch ($(this).prop("id")) {
         case "patchNote": HeaderElements.onClickPatchNote(); break;
@@ -6,6 +10,12 @@ HeaderElements.onButtonClick = function() {
         case "saveProject": HeaderElements.onClickSaveProject(); break;
         case "projectAuthor": HeaderElements.onClickProjectAuthor(); break;
         case "projectName": HeaderElements.onClickProjectName(); break;
+    }
+};
+
+HeaderElements.onMainMenuItemClick = function() {
+    switch ($(this).prop("id")) {
+        case "extractTrigger": HeaderElements.onClickExtractTrigger(); break;
     }
 };
 
@@ -38,8 +48,8 @@ HeaderElements.onClickAppInfo = function() {
 };
 
 HeaderElements.onClickLoadProject = function() {
-    // 파일 시스템에서 프로젝트 파일을 검색함
-    // 해당 이벤트 리스너는 index 파일에 있음
+    var $loadProjectFile = $("#header > #loadProjectFile");
+    $loadProjectFile.click();
 
     Log.debug("Button Clicked - Load Project");
 };
@@ -65,4 +75,389 @@ HeaderElements.onClickProjectName = function() {
     var input = Popup.prompt("프로젝트의 이름을 입력해주세요 : ", Project.name);
 
     if (input !== null) updateProjectName(input);
+};
+
+HeaderElements.onClickExtractTrigger = function() {
+    var $page = $("#page");
+
+    if (HeaderElements.$extractTriggerDialog === null) {
+        HeaderElements.addTrigExtDialogEventListeners();
+        HeaderElements.$extractTriggerDialog = $("#header > #extractTriggerDialog").dialog({
+            width: 400,
+            height: 1040,
+            modal: true,
+            open: function() { $page.css("opacity", 0.8); },
+            close: function() { $page.css("opacity", 1.0); },
+            dialogClass: "extractTrigger"
+        });
+    }
+    else {
+        HeaderElements.$extractTriggerDialog.dialog("open");
+    }
+    
+    $("#header > div#mainMenu").removeClass("open");
+};
+
+HeaderElements.addTrigExtDialogEventListeners = function() {
+    var $dialog = $("#header > #extractTriggerDialog");
+    var $mapNameText = $dialog.find("#mapNameText");
+    var $lifeTypes = $dialog.find("#lifeTypes");
+    var $lifeCountInput = $dialog.find("#lifeCountInput");
+    var $editorTypes = $dialog.find("#editorTypes");
+    var $extractionRanges = $dialog.find("#extractionRanges");
+    var $computerPlayers = $dialog.find("#computerPlayers");
+    var $userForces = $dialog.find("#userForces");
+    var $boundingUnits = $dialog.find("#boundingUnits");
+    var $p12DeleteMethods = $dialog.find("#p12DeleteMethods");
+    var $patternConditionUnits = $dialog.find("#patternConditionUnits");
+    var $turnConditionUnits = $dialog.find("#turnConditionUnits");
+    var $hyperConditionUnits = $dialog.find("#hyperConditionUnits");
+    var $levelLocationHeaderInput = $dialog.find("#levelLocationHeaderInput");
+    var $levelLocationHeaderExample = $dialog.find("#levelLocationHeaderExample");
+    var $reviveLocationHeaderInput = $dialog.find("#reviveLocationHeaderInput");
+    var $reviveLocationHeaderExample = $dialog.find("#reviveLocationHeaderExample");
+    var $victoryLocationInput = $dialog.find("#victoryLocationInput");
+    var $lifeSettingsCheckBox = $dialog.find("#lifeSettingsCheckBox");
+    var $p12DeleteCheckBox = $dialog.find("#p12DeleteCheckBox");
+    var $defeatConditionCheckBox = $dialog.find("#defeatConditionCheckBox");
+    var $victoryConditionCheckBox = $dialog.find("#victoryConditionCheckBox");
+    var $levelStartConditionCheckBox = $dialog.find("#levelStartConditionCheckBox");
+    var $reviveConditionCheckBox = $dialog.find("#reviveConditionCheckBox");
+    var $hyperTriggerCheckBox = $dialog.find("#hyperTriggerCheckBox");
+    var $extractButton = $dialog.find("#extract");
+    var triggerSettings = {};
+
+    // 트리거 세팅 초기화
+    triggerSettings.mapName = $mapNameText.val();
+    triggerSettings.lifeType = $lifeTypes.val();
+    triggerSettings.lifeCount = parseInt($lifeCountInput.val());
+    triggerSettings.editorType = $editorTypes.val();
+    triggerSettings.extractionRange = parseInt($extractionRanges.val());
+    triggerSettings.computerPlayer = $computerPlayers.val();
+    triggerSettings.userForce = $userForces.val();
+    triggerSettings.boundingUnit = $boundingUnits.val();
+    triggerSettings.p12DeleteMethod = $p12DeleteMethods.val();
+    triggerSettings.patternConditionUnit = $patternConditionUnits.val();
+    triggerSettings.turnConditionUnit = $turnConditionUnits.val();
+    triggerSettings.hyperConditionUnit = $hyperConditionUnits.val();
+    triggerSettings.levelLocationHeader = $levelLocationHeaderInput.val();
+    triggerSettings.reviveLocationHeader = $reviveLocationHeaderInput.val();
+    triggerSettings.victoryLocation = $victoryLocationInput.val();
+    triggerSettings.includeLifeSettings = $lifeSettingsCheckBox.is(":checked");
+    triggerSettings.includeP12Delete = $p12DeleteCheckBox.is(":checked");
+    triggerSettings.includeDefeatCondition = $defeatConditionCheckBox.is(":checked");
+    triggerSettings.includeVictoryCondition = $victoryConditionCheckBox.is(":checked");
+    triggerSettings.includeLevelStartCondition = $levelStartConditionCheckBox.is(":checked");
+    triggerSettings.includeReviveCondition = $reviveConditionCheckBox.is(":checked");
+    triggerSettings.includeHyperTrigger = $hyperTriggerCheckBox.is(":checked");
+
+    console.log("Initial triggerSettings : ");
+    console.log(triggerSettings);
+
+    Project.triggerSettings = triggerSettings;
+
+    // 변경 이벤트 처리
+    $mapNameText.on("change", function() {
+        Log.debug('$mapNameText.on("change")');
+        let mapName = $(this).val();
+        triggerSettings.mapName = mapName;
+        Project.mapName = mapName;
+        Log.debug("Project.mapName : " + Project.mapName);
+        for (var i = 0; i < Project.patternList.length; i++) {
+            Project.patternList[i].mapName = mapName;
+            Log.debug("Project.patternList[" + i + "].mapName : " + Project.patternList[i].mapName);
+        }
+    });
+
+    $lifeTypes.on("change", function() {
+        Log.debug('$lifeTypes.on("change")');
+        let lifeType = $(this).val();
+        triggerSettings.lifeType = lifeType;
+        Log.debug("triggerSettings.lifeType : " + triggerSettings.lifeType);
+
+        if (lifeType === TRIGGER_LIFETYPE_LIFE) {
+            // 라이프제인 경우
+            $lifeCountInput.attr("disabled", false);
+        }
+        else {
+            // 무한 목숨인 경우
+            $lifeCountInput.attr("disabled", true);
+        }
+    });
+
+    $lifeCountInput.on("change", function() {
+        Log.debug('$lifeCountInput.on("change")');
+        let lifeCount = parseInt($(this).val());
+        triggerSettings.lifeCount = lifeCount;
+        Log.debug("triggerSettings.lifeCount : " + triggerSettings.lifeCount);
+    });
+
+    $editorTypes.on("change", function() {
+        Log.debug('$editorTypes.on("change")');
+        let editorType = $(this).val();
+        triggerSettings.editorType = editorType;
+        Log.debug("triggerSettings.editorType : " + triggerSettings.editorType);
+    });
+
+    $extractionRanges.on("change", function() {
+        Log.debug('$extractionRanges.on("change")');
+        let extractionRange = parseInt($(this).val());
+        triggerSettings.extractionRange = extractionRange;
+        Log.debug("triggerSettings.extractionRange : " + triggerSettings.extractionRange);
+
+        if (extractionRange === TRIGGER_EXTRANGE_ALLDATA) {
+            $lifeSettingsCheckBox.prop("checked", true);
+            $p12DeleteCheckBox.prop("checked", true);
+            $defeatConditionCheckBox.prop("checked", true);
+            $victoryConditionCheckBox.prop("checked", true);
+            $levelStartConditionCheckBox.prop("checked", true);
+            $reviveConditionCheckBox.prop("checked", true);
+            $hyperTriggerCheckBox.prop("checked", true);
+
+            triggerSettings.includeLifeSettings = true;
+            triggerSettings.includeP12Delete = true;
+            triggerSettings.includeDefeatCondition = true;
+            triggerSettings.includeVictoryCondition = true;
+            triggerSettings.includeLevelStartCondition = true;
+            triggerSettings.includeReviveCondition = true;
+            triggerSettings.includeHyperTrigger = true;
+        }
+        else if (extractionRange === TRIGGER_EXTRANGE_ALLPATTERNS || extractionRange === TRIGGER_EXTRANGE_CURRENTPATTERN) {
+            $lifeSettingsCheckBox.prop("checked", false);
+            $p12DeleteCheckBox.prop("checked", false);
+            $defeatConditionCheckBox.prop("checked", false);
+            $victoryConditionCheckBox.prop("checked", false);
+            $levelStartConditionCheckBox.prop("checked", true);
+            $reviveConditionCheckBox.prop("checked", true);
+            $hyperTriggerCheckBox.prop("checked", true);
+
+            triggerSettings.includeLifeSettings = false;
+            triggerSettings.includeP12Delete = false;
+            triggerSettings.includeDefeatCondition = false;
+            triggerSettings.includeVictoryCondition = false;
+            triggerSettings.includeLevelStartCondition = true;
+            triggerSettings.includeReviveCondition = true;
+            triggerSettings.includeHyperTrigger = true;
+        }
+    });
+
+    $computerPlayers.on("change", function() {
+        Log.debug('$computerPlayers.on("change")');
+        let computerPlayer = $(this).val();
+        triggerSettings.computerPlayer = computerPlayer;
+        Log.debug("triggerSettings.computerPlayer : " + triggerSettings.computerPlayer);
+    });
+
+    $userForces.on("change", function() {
+        Log.debug('$userForces.on("change")');
+        let userForce = $(this).val();
+        triggerSettings.userForce = userForce;
+        Log.debug("triggerSettings.userForce : " + triggerSettings.userForce);
+    });
+
+    $boundingUnits.on("change", function() {
+        Log.debug('$boundingUnits.on("change")');
+        let boundingUnit = $(this).val();
+        triggerSettings.boundingUnit = boundingUnit;
+        Log.debug("triggerSettings.boundingUnit : " + triggerSettings.boundingUnit);
+    });
+
+    $p12DeleteMethods.on("change", function() {
+        Log.debug('$p12DeleteMethods.on("change")');
+        let p12DeleteMethod = $(this).val();
+        triggerSettings.p12DeleteMethod = p12DeleteMethod;
+        Log.debug("triggerSettings.p12DeleteMethod : " + triggerSettings.p12DeleteMethod);
+    });
+
+    $patternConditionUnits.on("change", function() {
+        Log.debug('$patternConditionUnits.on("change")');
+        let patternConditionUnit = $(this).val();
+        triggerSettings.patternConditionUnit = patternConditionUnit;
+        Log.debug("triggerSettings.patternConditionUnit : " + triggerSettings.patternConditionUnit);
+
+        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit, hyperConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
+    });
+
+    $turnConditionUnits.on("change", function() {
+        Log.debug('$turnConditionUnits.on("change")');
+        let turnConditionUnit = $(this).val();
+        triggerSettings.turnConditionUnit = turnConditionUnit;
+        Log.debug("triggerSettings.turnConditionUnit : " + triggerSettings.turnConditionUnit);
+
+        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit, hyperConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
+    });
+
+    $hyperConditionUnits.on("change", function() {
+        Log.debug('$hyperConditionUnits.on("change")');
+        let hyperConditionUnit = $(this).val();
+        triggerSettings.hyperConditionUnit = hyperConditionUnit;
+        Log.debug("triggerSettings.hyperConditionUnit : " + triggerSettings.hyperConditionUnit);
+
+        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit, hyperConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
+    });
+
+    $levelLocationHeaderInput.on("change", function() {
+        Log.debug('$levelLocationHeaderInput.on("change")');
+        let levelLocationHeader = $(this).val();
+        triggerSettings.levelLocationHeader = levelLocationHeader;
+        Log.debug("triggerSettings.levelLocationHeader : " + triggerSettings.levelLocationHeader);
+
+        $levelLocationHeaderExample.text("예시 : " + levelLocationHeader + "1, " + levelLocationHeader + "2, " + levelLocationHeader + "3, ...");
+    });
+
+    $reviveLocationHeaderInput.on("change", function() {
+        Log.debug('$reviveLocationHeaderInput.on("change")');
+        let reviveLocationHeader = $(this).val();
+        triggerSettings.reviveLocationHeader = reviveLocationHeader;
+        Log.debug("triggerSettings.reviveLocationHeader : " + triggerSettings.reviveLocationHeader);
+        
+        $reviveLocationHeaderExample.text("예시 : " + reviveLocationHeader + "1, " + reviveLocationHeader + "2, " + reviveLocationHeader + "3, ...");
+    });
+
+    $victoryLocationInput.on("change", function() {
+        Log.debug('$victoryLocationInput.on("change")');
+        let victoryLocation = $(this).val();
+        triggerSettings.victoryLocation = victoryLocation;
+        Log.debug("triggerSettings.victoryLocation : " + triggerSettings.victoryLocation);
+    });
+
+    $lifeSettingsCheckBox.on("change", function() {
+        Log.debug('$lifeSettingsCheckBox.on("change")');
+        let includeLifeSettings = $(this).is(":checked");
+        triggerSettings.includeLifeSettings = includeLifeSettings;
+        Log.debug("triggerSettings.includeLifeSettings : " + triggerSettings.includeLifeSettings);
+    });
+
+    $p12DeleteCheckBox.on("change", function() {
+        Log.debug('$p12DeleteCheckBox.on("change")');
+        let includeP12Delete = $(this).is(":checked");
+        triggerSettings.includeP12Delete = includeP12Delete;
+        Log.debug("triggerSettings.includeP12Delete : " + triggerSettings.includeP12Delete);
+    });
+
+    $defeatConditionCheckBox.on("change", function() {
+        Log.debug('$defeatConditionCheckBox.on("change")');
+        let includeDefeatCondition = $(this).is(":checked");
+        triggerSettings.includeDefeatCondition = includeDefeatCondition;
+        Log.debug("triggerSettings.includeDefeatCondition : " + triggerSettings.includeDefeatCondition);
+    });
+
+    $victoryConditionCheckBox.on("change", function() {
+        Log.debug('$victoryConditionCheckBox.on("change")');
+        let includeVictoryCondition = $(this).is(":checked");
+        triggerSettings.includeVictoryCondition = includeVictoryCondition;
+        Log.debug("triggerSettings.includeVictoryCondition : " + triggerSettings.includeVictoryCondition);
+    });
+
+    $levelStartConditionCheckBox.on("change", function() {
+        Log.debug('$levelStartConditionCheckBox.on("change")');
+        let includeLevelStartCondition = $(this).is(":checked");
+        triggerSettings.includeLevelStartCondition = includeLevelStartCondition;
+        Log.debug("triggerSettings.includeLevelStartCondition : " + triggerSettings.includeLevelStartCondition);
+    });
+
+    $reviveConditionCheckBox.on("change", function() {
+        Log.debug('$reviveConditionCheckBox.on("change")');
+        let includeReviveCondition = $(this).is(":checked");
+        triggerSettings.includeReviveCondition = includeReviveCondition;
+        Log.debug("triggerSettings.includeReviveCondition : " + triggerSettings.includeReviveCondition);
+    });
+
+    $hyperTriggerCheckBox.on("change", function() {
+        Log.debug('$hyperTriggerCheckBox.on("change")');
+        let includeHyperTrigger = $(this).is(":checked");
+        triggerSettings.includeHyperTrigger = includeHyperTrigger;
+        Log.debug("triggerSettings.includeHyperTrigger : " + triggerSettings.includeHyperTrigger);
+    });
+
+    // 출력 이벤트 처리
+    $extractButton.on("click", function() {
+        if (triggerSettings.mapName === "" || !triggerSettings.mapName) {
+            Popup.alert("맵 이름을 입력해주세요.");
+            return;
+        }
+        let triggerText = HeaderElements.extractTrigger(triggerSettings);
+
+        var currentTime = new Date();
+        var year = currentTime.getFullYear();
+        var month = currentTime.getMonth() + 1;
+        var date = currentTime.getDate();
+        var today = year + "" + ((month < 10) ? "0" + month : month) + "" + ((date < 10) ? "0" + date : date);
+
+        let fileName = triggerSettings.mapName + "_" + triggerSettings.editorType + "_" + today + ".txt";
+        FileHandler.download(triggerText, fileName, "text/plain");
+        
+        $dialog.dialog("close");
+    });
+};
+
+HeaderElements.extractTrigger = function(triggerSettings) {
+    var patternList;
+    if (triggerSettings.extractionRange === TRIGGER_EXTRANGE_ALLDATA ||
+        triggerSettings.extractionRange === TRIGGER_EXTRANGE_ALLPATTERNS) {
+        patternList = Project.patternList;
+    }
+    else if (triggerSettings.extractionRange === TRIGGER_EXTRANGE_CURRENTPATTERN) {
+        patternList = new Array();
+        for (var i = 0; i < Project.patternList.length; i++) {
+            if (i === Project.currentPatternIndex) patternList.push(Project.currentPattern);
+            else patternList.push(null);
+        }
+    }
+
+    // var mapName = triggerSettings.mapName;
+    var lifeType = TRIGGER_LIFETYPE_LIFE;
+    var lifeCount = 100;
+    var editorType = triggerSettings.editorType;
+    var bombPlayer = triggerSettings.computerPlayer;
+    var userForce = triggerSettings.userForce;
+    var boundingUnit = triggerSettings.boundingUnit;
+    var p12DeleteMethod = triggerSettings.p12DeleteMethod;
+    var levelLocationHeader = triggerSettings.levelLocationHeader;
+    var reviveLocationHeader = triggerSettings.reviveLocationHeader;
+    var victoryLocation = triggerSettings.victoryLocation;
+    var patternConditionUnit = triggerSettings.patternConditionUnit;
+    var turnConditionUnit = triggerSettings.turnConditionUnit;
+    var hyperConditionUnit = triggerSettings.hyperConditionUnit;
+    var result, triggerText = "";
+
+    if (triggerSettings.includeLifeSettings) {
+        result = TriggerHandler.getLifeSettingsTrigger(editorType, userForce, lifeType, lifeCount);
+        if (result) triggerText += result;
+    }
+
+    if (triggerSettings.includeP12Delete) {
+        result = TriggerHandler.getP12DeleteTrigger(editorType, bombPlayer, p12DeleteMethod);
+        if (result) triggerText += result;
+    }
+
+    if (triggerSettings.includeDefeatCondition && triggerSettings.lifeType === TRIGGER_LIFETYPE_LIFE) {
+        result = TriggerHandler.getDefeatTrigger(editorType, userForce, boundingUnit);
+        if (result) triggerText += result;
+    }
+
+    if (triggerSettings.includeVictoryCondition) {
+        result = TriggerHandler.getVictoryTrigger(editorType, userForce, victoryLocation);
+        if (result) triggerText += result;
+    }
+
+    if (triggerSettings.includeLevelStartCondition) {
+        result = TriggerHandler.getLevelStartConditionTriggers(editorType, patternList, userForce, bombPlayer, levelLocationHeader, patternConditionUnit, turnConditionUnit);
+        if (result) triggerText += result;
+    }
+    
+    if (triggerSettings.includeReviveCondition) {
+        result = TriggerHandler.getReviveConditionTriggers(editorType, patternList, userForce, bombPlayer, reviveLocationHeader, patternConditionUnit, boundingUnit, lifeType);
+        if (result) triggerText += result;
+    }
+    
+    result = TriggerHandler.parsePatternList(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit);
+    if (result) triggerText += result;
+    
+    if (triggerSettings.includeHyperTrigger) {
+        result = TriggerHandler.getHyperTrigger(editorType, hyperConditionUnit);
+        if (result) triggerText += result;
+    }
+
+    return triggerText;
 };

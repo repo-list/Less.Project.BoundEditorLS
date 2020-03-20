@@ -3,5 +3,6 @@ var Page = {
     minHeight : 680,
     isFreshLoad : true,
     onWndResize : function() {},
-    refreshLayout : function(shouldRefreshInfoTabs) {}
+    refreshLayout : function(shouldRefreshInfoTabs) {},
+    onClick : function() {},
 };
