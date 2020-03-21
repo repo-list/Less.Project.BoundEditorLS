@@ -58,6 +58,8 @@ RightArticle.onTab1MouseDown = function() {
                 let isProcessDone = false;
                 let locationLenX, locationLenY;
 
+                
+
                 for (var i = 0; i < locationList.length; i++) {
                     // 현재 레이어가 아니면, 검사 자체를 스킵
                     if (locationList[i].layer !== RightArticle.currentLocationLayer) continue;
@@ -545,6 +547,24 @@ RightArticle.onKeyUp = function() {
                 break;
         }
     }
+    else if (event.keyCode === 88) { // 'X' KEY
+        // 현재턴 모든 로케이션 폭탄 삭제
+        switch (Project.currentPattern.currentMode) {
+            case PATTERN_MODE_BOMB:
+                RightArticle.ClearAllBomb(Project.currentPattern);
+                RightArticle.redrawBombSettings();
+                break;
+        }
+    }
+    else if (event.keyCode === 90) { // 'Z' KEY
+        // 현재턴 모든 로케이션 폭탄 추가
+        switch (Project.currentPattern.currentMode) {
+            case PATTERN_MODE_BOMB:
+                RightArticle.SetBombAllLocation(Project.currentPattern);
+                RightArticle.redrawBombSettings();
+                break;
+        }
+    }
 };
 
 RightArticle.redrawTerrainCanvas = function() {
@@ -976,3 +996,41 @@ RightArticle.refreshLocationListLayers = function(gridWidth, gridHeight) {
     // maxLayer 값 변경
     RightArticle.maxLocationLayer = maxLayer;
 };
+
+// 현재턴의 모든 로케이션에 폭탄을 설치한다.
+RightArticle.SetBombAllLocation = function(pattern) { 
+    let locationList = pattern.locationList;
+    let cellList = pattern.turnList[pattern.currentTurn - 1].cellList;
+    let cellType, cellUnit, cellOption;
+    let locationLenX, locationLenY;
+
+    // 기존 폭탄 Cell을 전부 삭제
+    RightArticle.ClearAllBomb(pattern);
+
+    // 모든 로케이션에 대한 폭탄 Cell을 추가한다.
+    for (var i = 0; i < locationList.length; i++) {
+        cellType = TURNCELLTYPE_BOMB;
+        locationLenX = locationList[i].lenX;
+        locationLenY = locationList[i].lenY;
+        if (locationLenX >= 3 && locationLenY >= 3) cellUnit = Project.currentPattern.bombUnit3;
+        else if (locationLenX >= 2 && locationLenY >= 2) cellUnit = Project.currentPattern.bombUnit2;
+        else cellUnit = Project.currentPattern.bombUnit1;
+        cellOption = TURNCELLOPTION_NONE;
+        cellList.push(new BoundTurnCell(locationList[i], cellType, cellUnit, cellOption));
+    }
+
+    Log.debug("SetBombAllLocation Current cellList length: " + cellList.length);
+}
+
+// 현재턴의 모든 로케이션에 폭탄을 제거한다.
+RightArticle.ClearAllBomb = function(pattern) {
+    let cellList = pattern.turnList[pattern.currentTurn - 1].cellList;
+
+    for (var i = cellList.length - 1; i >= 0; i--) {
+        if (cellList[i].type == TURNCELLTYPE_BOMB) {
+            cellList.splice(i, 1);
+        }
+    }
+
+    Log.debug("ClearAllBomb Current cellList length: " + cellList.length);
+}
