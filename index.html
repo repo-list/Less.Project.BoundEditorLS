@@ -217,6 +217,10 @@
                     </select>
                 </div>
                 <div>
+                    <span id="userForceName">* 유저 세력 이름 : </span>
+                    <input id="userForceNameInput" type="text" maxlength="15" value="Force 1" title="실제 맵에서 사용하는 세력 이름을 입력합니다." />
+                </div>
+                <div>
                     <span id="boundingUnit">* 폭피 유닛 :</span>
                     <select id="boundingUnits" title="폭피를 하는 유닛을 지정합니다.">
                         <option value="Zerg Zergling">Zerg Zergling (기본 저글링)</option>
@@ -278,6 +282,10 @@
                 <div class="short-interval">
                     <input id="victoryConditionCheckBox" type="checkbox" checked />
                     <label for="victoryConditionCheckBox">승리 조건을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="allianceSettingsCheckBox" type="checkbox" checked />
+                    <label for="allianceSettingsCheckBox">동맹 설정을 포함합니다.</label>
                 </div>
                 <div class="short-interval">
                     <input id="levelStartConditionCheckBox" type="checkbox" checked />

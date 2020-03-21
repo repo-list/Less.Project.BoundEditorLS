@@ -108,6 +108,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     var $extractionRanges = $dialog.find("#extractionRanges");
     var $computerPlayers = $dialog.find("#computerPlayers");
     var $userForces = $dialog.find("#userForces");
+    var $userForceNameInput = $dialog.find("#userForceNameInput");
     var $boundingUnits = $dialog.find("#boundingUnits");
     var $p12DeleteMethods = $dialog.find("#p12DeleteMethods");
     var $patternConditionUnits = $dialog.find("#patternConditionUnits");
@@ -122,6 +123,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     var $p12DeleteCheckBox = $dialog.find("#p12DeleteCheckBox");
     var $defeatConditionCheckBox = $dialog.find("#defeatConditionCheckBox");
     var $victoryConditionCheckBox = $dialog.find("#victoryConditionCheckBox");
+    var $allianceSettingsCheckBox = $dialog.find("#allianceSettingsCheckBox");
     var $levelStartConditionCheckBox = $dialog.find("#levelStartConditionCheckBox");
     var $reviveConditionCheckBox = $dialog.find("#reviveConditionCheckBox");
     var $hyperTriggerCheckBox = $dialog.find("#hyperTriggerCheckBox");
@@ -131,7 +133,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     // 프로젝트 설정 불러오기
     if (Project.mapName && Project.mapName !== "") $mapNameText.val(Project.mapName);
 
-    if (Project.triggerSettings) {
+    if (Project.triggerSettings && Project.triggerSettings.lifeType) { // 하나라도 항목이 있으면 값이 저장된 게 맞다는 뜻.
         triggerSettings = Project.triggerSettings;
 
         $lifeTypes.val(triggerSettings.lifeType);
@@ -141,6 +143,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         $extractionRanges.val(triggerSettings.extractionRange);
         $computerPlayers.val(triggerSettings.computerPlayer);
         $userForces.val(triggerSettings.userForce);
+        $userForceNameInput.val(triggerSettings.userForceName);
         $boundingUnits.val(triggerSettings.boundingUnit);
         $p12DeleteMethods.val(triggerSettings.p12DeleteMethod);
         $patternConditionUnits.val(triggerSettings.patternConditionUnit);
@@ -156,6 +159,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         if (!triggerSettings.includeP12Delete) $p12DeleteCheckBox.prop("checked", false);
         if (!triggerSettings.includeDefeatCondition) $defeatConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeVictoryCondition) $victoryConditionCheckBox.prop("checked", false);
+        if (!triggerSettings.includeAllianceSettings) $allianceSettingsCheckBox.prop("checked", false);
         if (!triggerSettings.includeLevelStartCondition) $levelStartConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeReviveCondition) $reviveConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeHyperTrigger) $hyperTriggerCheckBox.prop("checked", false);
@@ -169,6 +173,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.extractionRange = parseInt($extractionRanges.val());
         triggerSettings.computerPlayer = $computerPlayers.val();
         triggerSettings.userForce = $userForces.val();
+        triggerSettings.userForceName = $userForceNameInput.val();
         triggerSettings.boundingUnit = $boundingUnits.val();
         triggerSettings.p12DeleteMethod = $p12DeleteMethods.val();
         triggerSettings.patternConditionUnit = $patternConditionUnits.val();
@@ -181,6 +186,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.includeP12Delete = $p12DeleteCheckBox.is(":checked");
         triggerSettings.includeDefeatCondition = $defeatConditionCheckBox.is(":checked");
         triggerSettings.includeVictoryCondition = $victoryConditionCheckBox.is(":checked");
+        triggerSettings.includeAllianceSettings = $allianceSettingsCheckBox.is(":checked");
         triggerSettings.includeLevelStartCondition = $levelStartConditionCheckBox.is(":checked");
         triggerSettings.includeReviveCondition = $reviveConditionCheckBox.is(":checked");
         triggerSettings.includeHyperTrigger = $hyperTriggerCheckBox.is(":checked");
@@ -245,6 +251,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             $p12DeleteCheckBox.prop("checked", true);
             $defeatConditionCheckBox.prop("checked", true);
             $victoryConditionCheckBox.prop("checked", true);
+            $allianceSettingsCheckBox.prop("checked", true);
             $levelStartConditionCheckBox.prop("checked", true);
             $reviveConditionCheckBox.prop("checked", true);
             $hyperTriggerCheckBox.prop("checked", true);
@@ -253,6 +260,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             triggerSettings.includeP12Delete = true;
             triggerSettings.includeDefeatCondition = true;
             triggerSettings.includeVictoryCondition = true;
+            triggerSettings.includeAllianceSettings = true;
             triggerSettings.includeLevelStartCondition = true;
             triggerSettings.includeReviveCondition = true;
             triggerSettings.includeHyperTrigger = true;
@@ -262,6 +270,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             $p12DeleteCheckBox.prop("checked", false);
             $defeatConditionCheckBox.prop("checked", false);
             $victoryConditionCheckBox.prop("checked", false);
+            $allianceSettingsCheckBox.prop("checked", true);
             $levelStartConditionCheckBox.prop("checked", true);
             $reviveConditionCheckBox.prop("checked", true);
             $hyperTriggerCheckBox.prop("checked", true);
@@ -270,6 +279,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             triggerSettings.includeP12Delete = false;
             triggerSettings.includeDefeatCondition = false;
             triggerSettings.includeVictoryCondition = false;
+            triggerSettings.includeAllianceSettings = true;
             triggerSettings.includeLevelStartCondition = true;
             triggerSettings.includeReviveCondition = true;
             triggerSettings.includeHyperTrigger = true;
@@ -288,6 +298,13 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         let userForce = $(this).val();
         triggerSettings.userForce = userForce;
         Log.debug("triggerSettings.userForce : " + triggerSettings.userForce);
+    });
+
+    $userForceNameInput.on("change", function() {
+        Log.debug('$userForceNameInput.on("change")');
+        let userForceName = $(this).val();
+        triggerSettings.userForceName = userForceName;
+        Log.debug("triggerSettings.userForceName : " + triggerSettings.userForceName);
     });
 
     $boundingUnits.on("change", function() {
@@ -384,6 +401,13 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         Log.debug("triggerSettings.includeVictoryCondition : " + triggerSettings.includeVictoryCondition);
     });
 
+    $allianceSettingsCheckBox.on("change", function() {
+        Log.debug('$allianceSettingsCheckBox.on("change")');
+        let includeAllianceSettings = $(this).is(":checked");
+        triggerSettings.includeAllianceSettings = includeAllianceSettings;
+        Log.debug("triggerSettings.includeAllianceSettings : " + triggerSettings.includeAllianceSettings);
+    });
+
     $levelStartConditionCheckBox.on("change", function() {
         Log.debug('$levelStartConditionCheckBox.on("change")');
         let includeLevelStartCondition = $(this).is(":checked");
@@ -446,6 +470,7 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     var editorType = triggerSettings.editorType;
     var bombPlayer = triggerSettings.computerPlayer;
     var userForce = triggerSettings.userForce;
+    var userForceName = triggerSettings.userForceName;
     var boundingUnit = triggerSettings.boundingUnit;
     var p12DeleteMethod = triggerSettings.p12DeleteMethod;
     var levelLocationHeader = triggerSettings.levelLocationHeader;
@@ -457,7 +482,7 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     var result, triggerText = "";
 
     if (triggerSettings.includeLifeSettings) {
-        result = TriggerHandler.getLifeSettingsTrigger(editorType, userForce, lifeType, lifeCount);
+        result = TriggerHandler.getLifeSettingsTrigger(editorType, userForce, userForceName, lifeType, lifeCount);
         if (result) triggerText += result;
     }
 
@@ -467,22 +492,27 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     }
 
     if (triggerSettings.includeDefeatCondition && triggerSettings.lifeType === TRIGGER_LIFETYPE_LIFE) {
-        result = TriggerHandler.getDefeatTrigger(editorType, userForce, boundingUnit);
+        result = TriggerHandler.getDefeatTrigger(editorType, userForce, userForceName, boundingUnit);
         if (result) triggerText += result;
     }
 
     if (triggerSettings.includeVictoryCondition) {
-        result = TriggerHandler.getVictoryTrigger(editorType, userForce, victoryLocation);
+        result = TriggerHandler.getVictoryTrigger(editorType, userForce, userForceName, victoryLocation);
+        if (result) triggerText += result;
+    }
+
+    if (triggerSettings.includeAllianceSettings) {
+        result = TriggerHandler.getAllianceTrigger(editorType);
         if (result) triggerText += result;
     }
 
     if (triggerSettings.includeLevelStartCondition) {
-        result = TriggerHandler.getLevelStartConditionTriggers(editorType, patternList, userForce, bombPlayer, levelLocationHeader, patternConditionUnit, turnConditionUnit);
+        result = TriggerHandler.getLevelStartConditionTriggers(editorType, patternList, userForce, userForceName, bombPlayer, levelLocationHeader, patternConditionUnit, turnConditionUnit);
         if (result) triggerText += result;
     }
     
     if (triggerSettings.includeReviveCondition) {
-        result = TriggerHandler.getReviveConditionTriggers(editorType, patternList, userForce, bombPlayer, reviveLocationHeader, patternConditionUnit, boundingUnit, lifeType);
+        result = TriggerHandler.getReviveConditionTriggers(editorType, patternList, userForce, userForceName, bombPlayer, reviveLocationHeader, patternConditionUnit, boundingUnit, lifeType);
         if (result) triggerText += result;
     }
     

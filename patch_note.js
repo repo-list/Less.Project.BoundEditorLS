@@ -1,4 +1,5 @@
 var PatchNote = [
+    new PatchInfo("0.12.3", "트리거 추출 기능 개선"),
     new PatchInfo("0.12.2", "트리거 추출 관련 버그 수정"),
     new PatchInfo("0.12.1", "다이얼로그 사이즈 관련 문제 hotfix"),
     new PatchInfo("0.12.0", "트리거 추출 기능 추가 (ScmDraft2 - TrigEdit)"),

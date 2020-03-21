@@ -40,6 +40,7 @@ const TH_TEXT_DEFEAT_CONDITION = "패배 조건";
 const TH_TEXT_VICTORY_CONDITION = "승리 조건";
 const TH_TEXT_P12_KILL = "나간 유닛 삭제";
 const TH_TEXT_LIFE_SETTINGS = "목숨 설정";
+const TH_TEXT_ALLIANCE_SETTINGS = "동맹 설정";
 
 const TH_TRIGGERTYPE_BOMB = 1;
 const TH_TRIGGERTYPE_BLOCKCREATE = 2;
@@ -65,13 +66,13 @@ var TriggerHandler = { // 아래의 메서드 순서는, parsePattern을 제외�
     // editorType -> TH_EDITORTYPE_TRIGEDIT 참고
     parsePattern : function(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit) {}, // 실제 패턴 분석 작업 수행 후 string을 리턴하는 용도
     
-
-    getLifeSettingsTrigger : function(editorType, userForce, lifeType, lifeCount) {},
+    getLifeSettingsTrigger : function(editorType, userForce, userForceName, lifeType, lifeCount) {},
     getP12DeleteTrigger : function(editorType, bombPlayer, deleteMethod) {},
-    getDefeatTrigger : function(editorType, userForce, boundingUnit) {},
-    getVictoryTrigger : function(editorType, userForce, conditionLocationLabel) {},
-    getLevelStartConditionTriggers : function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {},
-    getReviveConditionTriggers : function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {},
+    getDefeatTrigger : function(editorType, userForce, userForceName, boundingUnit) {},
+    getVictoryTrigger : function(editorType, userForce, userForceName, conditionLocationLabel) {},
+    getAllianceTrigger : function(editorType) {},
+    getLevelStartConditionTriggers : function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {},
+    getReviveConditionTriggers : function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {},
     parsePatternList : function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit) {}, // 단순히 parsePattern을 여러 번 수행한 후 string을 리턴하는 용도
     getHyperTriggers : function(editorType, conditionUnit) {}
 };
@@ -134,12 +135,12 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
             let content = triggerList[index].contentObj; // 웨잇일 경우 int, 그렇지 않을 경우 cell
             switch (triggerList[index].type) {
                 case TH_TRIGGERTYPE_BOMB:
-                    triggerText += TrigEdit.CreateInvincibleUnit(bombPlayer, content.unit, content.location.label);
+                    triggerText += TrigEdit.CreateUnitWithProperties(bombPlayer, content.unit, 1, content.location.label, 3);
                     triggerText += TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, content.location.label);
                     actionCount += 2;
                     break;
                 case TH_TRIGGERTYPE_BLOCKCREATE:
-                    triggerText += TrigEdit.CreateInvincibleUnit(bombPlayer, content.unit, content.location.label);
+                    triggerText += TrigEdit.CreateUnitWithProperties(bombPlayer, content.unit, 1, content.location.label, 3);
                     actionCount++;
                     if (content.option === TURNCELLOPTION_UNITKILL) {
                         triggerText += TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, content.location.label);
@@ -188,13 +189,9 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
     return triggerText;
 };
 
-TriggerHandler.getLifeSettingsTrigger = function(editorType, userForce, lifeType, lifeCount) {
+TriggerHandler.getLifeSettingsTrigger = function(editorType, userForce, userForceName, lifeType, lifeCount) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
-
-    if (!isValidUserForce(userForce)) {
-        Log.error("Invalid User Force");
-        return undefined;
-    }
+    // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
 
     if (lifeType !== TH_LIFETYPE_LIFE && lifeType !== TH_LIFETYPE_DEATH) {
         Log.error("Invalid Life Type");
@@ -205,14 +202,14 @@ TriggerHandler.getLifeSettingsTrigger = function(editorType, userForce, lifeType
     if (lifeType === TH_LIFETYPE_DEATH) lifeCount = 0;
     var triggerText = "";
 
-    triggerText += TrigEdit.TriggerStart(userForce);
+    triggerText += TrigEdit.TriggerStart(userForceName);
     triggerText += TrigEdit.Conditions();
     triggerText += TrigEdit.Always();
     triggerText += TrigEdit.Actions();
     triggerText += TrigEdit.Comment(TH_TEXT_LIFE_SETTINGS);
     triggerText += TrigEdit.LeaderboardPoints(scoreText, TE_SCORETYPE_CUSTOM);
     triggerText += TrigEdit.LeaderboardComputerPlayers(TE_STATE_DISABLE);
-    triggerText += TrigEdit.SetScore(userForce, TE_MODIFY_SET_TO, lifeCount, TE_SCORETYPE_CUSTOM);
+    triggerText += TrigEdit.SetScore(userForceName, TE_MODIFY_SET_TO, lifeCount, TE_SCORETYPE_CUSTOM);
     triggerText += TrigEdit.TriggerEnd();
 
     return triggerText;
@@ -245,20 +242,16 @@ TriggerHandler.getP12DeleteTrigger = function(editorType, bombPlayer, deleteMeth
     return triggerText;
 };
 
-TriggerHandler.getDefeatTrigger = function(editorType, userForce, boundingUnit) {
+TriggerHandler.getDefeatTrigger = function(editorType, userForce, userForceName, boundingUnit) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
-    
-    if (!isValidUserForce(userForce)) {
-        Log.error("Invalid User Force");
-        return undefined;
-    }
+    // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
 
     var triggerText = "";
 
-    triggerText += TrigEdit.TriggerStart(userForce);
+    triggerText += TrigEdit.TriggerStart(userForceName);
     triggerText += TrigEdit.Conditions();
-    triggerText += TrigEdit.Command(userForce, boundingUnit, TE_QUANTITYMOD_EXACTLY, 0);
-    triggerText += TrigEdit.Score(userForce, TE_SCORETYPE_CUSTOM, TE_QUANTITYMOD_EXACTLY, 0);
+    triggerText += TrigEdit.Command(userForceName, boundingUnit, TE_QUANTITYMOD_EXACTLY, 0);
+    triggerText += TrigEdit.Score(userForceName, TE_SCORETYPE_CUSTOM, TE_QUANTITYMOD_EXACTLY, 0);
     triggerText += TrigEdit.Actions();
     triggerText += TrigEdit.Comment(TH_TEXT_DEFEAT_CONDITION);
     triggerText += TrigEdit.DisplayTextMessage("\\x006" + TH_TEXT_DEFEAT);
@@ -268,19 +261,15 @@ TriggerHandler.getDefeatTrigger = function(editorType, userForce, boundingUnit) 
     return triggerText;
 };
 
-TriggerHandler.getVictoryTrigger = function(editorType, userForce, conditionLocationLabel) {
+TriggerHandler.getVictoryTrigger = function(editorType, userForce, userForceName, conditionLocationLabel) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
-    
-    if (!isValidUserForce(userForce)) {
-        Log.error("Invalid User Force");
-        return undefined;
-    }
+    // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
 
     var triggerText = "";
 
-    triggerText += TrigEdit.TriggerStart(userForce);
+    triggerText += TrigEdit.TriggerStart(userForceName);
     triggerText += TrigEdit.Conditions();
-    triggerText += TrigEdit.Bring(userForce, TE_UNIT_MEN, conditionLocationLabel, TE_QUANTITYMOD_AT_LEAST, 1);
+    triggerText += TrigEdit.Bring(userForceName, TE_UNIT_MEN, conditionLocationLabel, TE_QUANTITYMOD_AT_LEAST, 1);
     triggerText += TrigEdit.Actions();
     triggerText += TrigEdit.Comment(TH_TEXT_VICTORY_CONDITION);
     triggerText += TrigEdit.DisplayTextMessage("\\x007" + TH_TEXT_VICTORY);
@@ -290,15 +279,27 @@ TriggerHandler.getVictoryTrigger = function(editorType, userForce, conditionLoca
     return triggerText;
 };
 
-TriggerHandler.getLevelStartConditionTriggers = function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {
+TriggerHandler.getAllianceTrigger = function(editorType) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     
-    if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
+    var triggerText = "";
+    
+    triggerText += TrigEdit.TriggerStart(TE_PLAYER_ALL);
+    triggerText += TrigEdit.Conditions();
+    triggerText += TrigEdit.Always();
+    triggerText += TrigEdit.Actions();
+    triggerText += TrigEdit.Comment(TH_TEXT_ALLIANCE_SETTINGS);
+    triggerText += TrigEdit.SetAllianceStatus(TE_PLAYER_ALL, TE_ALLIANCESTATUS_ALLY);
+    triggerText += TrigEdit.TriggerEnd();
 
-    if (!isValidUserForce(userForce)) {
-        Log.error("Invalid User Force");
-        return undefined;
-    }
+    return triggerText;
+};
+
+TriggerHandler.getLevelStartConditionTriggers = function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+    // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
+    
+    if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
 
     if (!isValidBombPlayer(bombPlayer)) {
         Log.error("Invalid Bomb Player");
@@ -310,9 +311,9 @@ TriggerHandler.getLevelStartConditionTriggers = function(editorType, patternList
         if (patternList[i] === null) continue;
         let level = i + 1;
 
-        triggerText += TrigEdit.TriggerStart(userForce);
+        triggerText += TrigEdit.TriggerStart(userForceName);
         triggerText += TrigEdit.Conditions();
-        triggerText += TrigEdit.Bring(userForce, TE_UNIT_MEN, conditionLocationLabelHeader + level, TE_QUANTITYMOD_AT_LEAST, 1);
+        triggerText += TrigEdit.Bring(userForceName, TE_UNIT_MEN, conditionLocationLabelHeader + level, TE_QUANTITYMOD_AT_LEAST, 1);
         triggerText += TrigEdit.Actions();
         triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + " " + TH_TEXT_START_CONDITION);
         triggerText += TrigEdit.SetDeaths(bombPlayer, patternConditionUnit, TE_MODIFY_SET_TO, level);
@@ -324,15 +325,11 @@ TriggerHandler.getLevelStartConditionTriggers = function(editorType, patternList
     return triggerText;
 };
 
-TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {
+TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+    // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
     
     if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
-
-    if (!isValidUserForce(userForce)) {
-        Log.error("Invalid User Force");
-        return undefined;
-    }
 
     if (!isValidBombPlayer(bombPlayer)) {
         Log.error("Invalid Bomb Player");
@@ -344,7 +341,7 @@ TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, us
         if (patternList[i] === null) continue;
         let level = i + 1;
 
-        triggerText += TrigEdit.TriggerStart(userForce);
+        triggerText += TrigEdit.TriggerStart(userForceName);
         triggerText += TrigEdit.Conditions();
         triggerText += TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level);
         triggerText += TrigEdit.Command(TE_PLAYER_CURRENT, boundingUnit, TE_QUANTITYMOD_EXACTLY, 0);

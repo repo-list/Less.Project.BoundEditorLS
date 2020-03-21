@@ -10,14 +10,18 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.12.2/ <br/>
+@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.12.3/ <br/>
 
-@ Version : 0.12.2 <br/>
+@ Version : 0.12.3 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.12.1 (2020-03-21, Latest) <br/>
+@ 0.12.3 (2020-03-21, Latest) <br/>
+
+- 트리거 추출 기능 개선 <br/><br/>
+
+@ 0.12.2 (2020-03-21) <br/>
 
 - 트리거 추출 관련 버그 수정 <br/><br/>
 

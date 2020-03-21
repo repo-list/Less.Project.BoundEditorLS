@@ -51,6 +51,10 @@ const TE_SCORETYPE_RAZINGS = "Razings";
 const TE_SCORETYPE_KILLSANDRAZINGS = "Kills and razings";
 const TE_SCORETYPE_CUSTOM = "Custom";
 
+const TE_ALLIANCESTATUS_ALLY = "Ally";
+const TE_ALLIANCESTATUS_ALLIEDVICTORY = "Allied Victory";
+const TE_ALLIANCESTATUS_ENEMY = "Enemy";
+
 var TrigEdit = {
     conditionLineCount : 0,
     actionLineCount : 0,
@@ -125,19 +129,13 @@ var TrigEdit = {
 
     CreateUnitWithProperties : function(player, unit, num, location, properties) {
         /* properties
-         * TE+와 달리 그냥 TE는 Properties에 대한 명확한 명시가 제대로 안되어 있음.
-         * 따라서 필요에 따라 직접 확인하거나 아래 명시된 수치를 사용할 것
+         * TE에서는 이 값을 쓰더라도, 맵메이커가 직접 해당 맵에서 무적 설정을 한 번 이상 건드리지 않는 한 적용되지 않음. 따라서 의미 없는 수치.
          * 3 - Invicible
          * 4 - Invicible & Hallucinated
          * 5 - Hallucinated
         */
         this.actionLineCount++;
-        return "\tCreate Unit with Properties(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\", " + properties + ");\n"; // 마지막 숫자 매개변수가 유닛의 상태이다.
-    },
-    
-    CreateInvincibleUnit : function(player, unit, location) {
-        /* 무적 상태 유닛을 1기 생산한다. */
-        return this.CreateUnitWithProperties(player, unit, 1, location, 1);
+        return "\tCreate Unit with Properties(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\", " + properties + ");\n";
     },
 
     Defeat : function() {
@@ -183,6 +181,11 @@ var TrigEdit = {
     RemoveUnitAtLocation : function(player, unit, num, location) {
         this.actionLineCount++;
         return "\tRemove Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\n";
+    },
+
+    SetAllianceStatus : function(player, status) {
+        this.actionLineCount++;
+        return "\tSet Alliance Status(\"" + player + "\", " + status + ");\n";
     },
 
     /*
