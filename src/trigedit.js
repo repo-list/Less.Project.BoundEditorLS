@@ -137,7 +137,7 @@ var TrigEdit = {
     
     CreateInvincibleUnit : function(player, unit, location) {
         /* 무적 상태 유닛을 1기 생산한다. */
-        return this.CreateUnitWithProperties(player, unit, 1, location, 3);
+        return this.CreateUnitWithProperties(player, unit, 1, location, 1);
     },
 
     Defeat : function() {

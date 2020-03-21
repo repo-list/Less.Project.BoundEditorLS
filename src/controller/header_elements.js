@@ -128,34 +128,68 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     var $extractButton = $dialog.find("#extract");
     var triggerSettings = {};
 
-    // 트리거 세팅 초기화
-    triggerSettings.mapName = $mapNameText.val();
-    triggerSettings.lifeType = $lifeTypes.val();
-    triggerSettings.lifeCount = parseInt($lifeCountInput.val());
-    triggerSettings.editorType = $editorTypes.val();
-    triggerSettings.extractionRange = parseInt($extractionRanges.val());
-    triggerSettings.computerPlayer = $computerPlayers.val();
-    triggerSettings.userForce = $userForces.val();
-    triggerSettings.boundingUnit = $boundingUnits.val();
-    triggerSettings.p12DeleteMethod = $p12DeleteMethods.val();
-    triggerSettings.patternConditionUnit = $patternConditionUnits.val();
-    triggerSettings.turnConditionUnit = $turnConditionUnits.val();
-    triggerSettings.hyperConditionUnit = $hyperConditionUnits.val();
-    triggerSettings.levelLocationHeader = $levelLocationHeaderInput.val();
-    triggerSettings.reviveLocationHeader = $reviveLocationHeaderInput.val();
-    triggerSettings.victoryLocation = $victoryLocationInput.val();
-    triggerSettings.includeLifeSettings = $lifeSettingsCheckBox.is(":checked");
-    triggerSettings.includeP12Delete = $p12DeleteCheckBox.is(":checked");
-    triggerSettings.includeDefeatCondition = $defeatConditionCheckBox.is(":checked");
-    triggerSettings.includeVictoryCondition = $victoryConditionCheckBox.is(":checked");
-    triggerSettings.includeLevelStartCondition = $levelStartConditionCheckBox.is(":checked");
-    triggerSettings.includeReviveCondition = $reviveConditionCheckBox.is(":checked");
-    triggerSettings.includeHyperTrigger = $hyperTriggerCheckBox.is(":checked");
+    // 프로젝트 설정 불러오기
+    if (Project.mapName && Project.mapName !== "") $mapNameText.val(Project.mapName);
+
+    if (Project.triggerSettings) {
+        triggerSettings = Project.triggerSettings;
+
+        $lifeTypes.val(triggerSettings.lifeType);
+        $lifeCountInput.val(triggerSettings.lifeCount);
+        if (triggerSettings.lifeType == TRIGGER_LIFETYPE_DEATH) $lifeCountInput.attr("disabled", true);
+        $editorTypes.val(triggerSettings.editorType);
+        $extractionRanges.val(triggerSettings.extractionRange);
+        $computerPlayers.val(triggerSettings.computerPlayer);
+        $userForces.val(triggerSettings.userForce);
+        $boundingUnits.val(triggerSettings.boundingUnit);
+        $p12DeleteMethods.val(triggerSettings.p12DeleteMethod);
+        $patternConditionUnits.val(triggerSettings.patternConditionUnit);
+        $turnConditionUnits.val(triggerSettings.turnConditionUnit);
+        $hyperConditionUnits.val(triggerSettings.hyperConditionUnit);
+        $levelLocationHeaderInput.val(triggerSettings.levelLocationHeader);
+        $levelLocationHeaderExample.text("예시 : " + triggerSettings.levelLocationHeader + "1, " + triggerSettings.levelLocationHeader + "2, " + triggerSettings.levelLocationHeader + "3, ...");
+        $reviveLocationHeaderInput.val(triggerSettings.reviveLocationHeader);
+        $reviveLocationHeaderExample.text("예시 : " + triggerSettings.reviveLocationHeader + "1, " + triggerSettings.reviveLocationHeader + "2, " + triggerSettings.reviveLocationHeader + "3, ...");
+        $victoryLocationInput.val(triggerSettings.victoryLocation);
+
+        if (!triggerSettings.includeLifeSettings) $lifeSettingsCheckBox.prop("checked", false);
+        if (!triggerSettings.includeP12Delete) $p12DeleteCheckBox.prop("checked", false);
+        if (!triggerSettings.includeDefeatCondition) $defeatConditionCheckBox.prop("checked", false);
+        if (!triggerSettings.includeVictoryCondition) $victoryConditionCheckBox.prop("checked", false);
+        if (!triggerSettings.includeLevelStartCondition) $levelStartConditionCheckBox.prop("checked", false);
+        if (!triggerSettings.includeReviveCondition) $reviveConditionCheckBox.prop("checked", false);
+        if (!triggerSettings.includeHyperTrigger) $hyperTriggerCheckBox.prop("checked", false);
+    }
+    else {
+        // 트리거 세팅 초기화
+        triggerSettings.mapName = $mapNameText.val();
+        triggerSettings.lifeType = $lifeTypes.val();
+        triggerSettings.lifeCount = parseInt($lifeCountInput.val());
+        triggerSettings.editorType = $editorTypes.val();
+        triggerSettings.extractionRange = parseInt($extractionRanges.val());
+        triggerSettings.computerPlayer = $computerPlayers.val();
+        triggerSettings.userForce = $userForces.val();
+        triggerSettings.boundingUnit = $boundingUnits.val();
+        triggerSettings.p12DeleteMethod = $p12DeleteMethods.val();
+        triggerSettings.patternConditionUnit = $patternConditionUnits.val();
+        triggerSettings.turnConditionUnit = $turnConditionUnits.val();
+        triggerSettings.hyperConditionUnit = $hyperConditionUnits.val();
+        triggerSettings.levelLocationHeader = $levelLocationHeaderInput.val();
+        triggerSettings.reviveLocationHeader = $reviveLocationHeaderInput.val();
+        triggerSettings.victoryLocation = $victoryLocationInput.val();
+        triggerSettings.includeLifeSettings = $lifeSettingsCheckBox.is(":checked");
+        triggerSettings.includeP12Delete = $p12DeleteCheckBox.is(":checked");
+        triggerSettings.includeDefeatCondition = $defeatConditionCheckBox.is(":checked");
+        triggerSettings.includeVictoryCondition = $victoryConditionCheckBox.is(":checked");
+        triggerSettings.includeLevelStartCondition = $levelStartConditionCheckBox.is(":checked");
+        triggerSettings.includeReviveCondition = $reviveConditionCheckBox.is(":checked");
+        triggerSettings.includeHyperTrigger = $hyperTriggerCheckBox.is(":checked");
+        
+        Project.triggerSettings = triggerSettings;
+    }
 
     console.log("Initial triggerSettings : ");
     console.log(triggerSettings);
-
-    Project.triggerSettings = triggerSettings;
 
     // 변경 이벤트 처리
     $mapNameText.on("change", function() {
@@ -407,8 +441,8 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     }
 
     // var mapName = triggerSettings.mapName;
-    var lifeType = TRIGGER_LIFETYPE_LIFE;
-    var lifeCount = 100;
+    var lifeType = triggerSettings.lifeType;
+    var lifeCount = triggerSettings.lifeCount;
     var editorType = triggerSettings.editorType;
     var bombPlayer = triggerSettings.computerPlayer;
     var userForce = triggerSettings.userForce;
@@ -456,7 +490,7 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     if (result) triggerText += result;
     
     if (triggerSettings.includeHyperTrigger) {
-        result = TriggerHandler.getHyperTrigger(editorType, hyperConditionUnit);
+        result = TriggerHandler.getHyperTriggers(editorType, hyperConditionUnit);
         if (result) triggerText += result;
     }
 

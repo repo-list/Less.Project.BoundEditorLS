@@ -73,7 +73,7 @@ var TriggerHandler = { // 아래의 메서드 순서는, parsePattern을 제외�
     getLevelStartConditionTriggers : function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {},
     getReviveConditionTriggers : function(editorType, patternList, userForce, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {},
     parsePatternList : function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit) {}, // 단순히 parsePattern을 여러 번 수행한 후 string을 리턴하는 용도
-    getHyperTrigger : function(editorType, conditionUnit) {}
+    getHyperTriggers : function(editorType, conditionUnit) {}
 };
 
 // 수정 사항 : level (스테이지), bombPlayer, patternConditionUnit, turnConditionUnit 추가
@@ -210,7 +210,7 @@ TriggerHandler.getLifeSettingsTrigger = function(editorType, userForce, lifeType
     triggerText += TrigEdit.Always();
     triggerText += TrigEdit.Actions();
     triggerText += TrigEdit.Comment(TH_TEXT_LIFE_SETTINGS);
-    triggerText += TrigEdit.LeaderboardPoints("\\x007Lives", TE_SCORETYPE_CUSTOM);
+    triggerText += TrigEdit.LeaderboardPoints(scoreText, TE_SCORETYPE_CUSTOM);
     triggerText += TrigEdit.LeaderboardComputerPlayers(TE_STATE_DISABLE);
     triggerText += TrigEdit.SetScore(userForce, TE_MODIFY_SET_TO, lifeCount, TE_SCORETYPE_CUSTOM);
     triggerText += TrigEdit.TriggerEnd();
@@ -347,7 +347,6 @@ TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, us
         triggerText += TrigEdit.TriggerStart(userForce);
         triggerText += TrigEdit.Conditions();
         triggerText += TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level);
-        triggerText += TrigEdit.Score(TE_PLAYER_CURRENT, TE_SCORETYPE_CUSTOM, TE_QUANTITYMOD_AT_LEAST, 1);
         triggerText += TrigEdit.Command(TE_PLAYER_CURRENT, boundingUnit, TE_QUANTITYMOD_EXACTLY, 0);
         triggerText += TrigEdit.Actions();
         triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + " " + TH_TEXT_UNIT_REVIVE);
@@ -386,22 +385,21 @@ TriggerHandler.parsePatternList = function(editorType, patternList, bombPlayer, 
     return (triggerText === "") ? null : triggerText;
 };
 
-TriggerHandler.getHyperTrigger = function(editorType, conditionUnit) {
+TriggerHandler.getHyperTriggers = function(editorType, conditionUnit) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     
     var triggerText = "";
     
-    triggerText += TrigEdit.TriggerStart(TE_PLAYER_ALL);
-    triggerText += TrigEdit.Conditions();
-    triggerText += TrigEdit.Deaths(TE_PLAYER_ALL, conditionUnit, TE_QUANTITYMOD_EXACTLY, 0);
-    triggerText += TrigEdit.Actions();
-    triggerText += TrigEdit.Comment(TH_TEXT_HYPER_TRIGGER);
-    triggerText += TrigEdit.SetDeaths(TE_PLAYER_CURRENT, conditionUnit, TE_MODIFY_SET_TO, 1);
-    triggerText += TrigEdit.Wait(0);
-    triggerText += TrigEdit.SetDeaths(TE_PLAYER_CURRENT, conditionUnit, TE_MODIFY_SET_TO, 0);
-    triggerText += TrigEdit.Wait(0);
-    triggerText += TrigEdit.PreserveTrigger();
-    triggerText += TrigEdit.TriggerEnd();
+    for (var i = 0; i < 4; i++) {
+        triggerText += TrigEdit.TriggerStart(TE_PLAYER_ALL);
+        triggerText += TrigEdit.Conditions();
+        triggerText += TrigEdit.Always();
+        triggerText += TrigEdit.Actions();
+        triggerText += TrigEdit.Comment(TH_TEXT_HYPER_TRIGGER);
+        for (var j = 0; j < 62; j++) triggerText += TrigEdit.Wait(0);
+        triggerText += TrigEdit.PreserveTrigger();
+        triggerText += TrigEdit.TriggerEnd();
+    }
 
     return triggerText;
 };

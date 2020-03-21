@@ -44,8 +44,8 @@ const UNIT_OTHER_BLOCKEXPLOSION2 = "Block Explosion 2x2";
 
 // Bound Units
 const UNIT_ZERG_ZERGLING = "Zerg Zergling";
-const UNIT_ZERG_DEVOURING_ONE = "Devouring One";
-const UNIT_ZERG_HUNTER_KILLER = "Hunter Killer";
+const UNIT_ZERG_DEVOURING_ONE = "Devouring One (Zergling)";
+const UNIT_ZERG_HUNTER_KILLER = "Hunter Killer (Hydralisk)";
 
 // Trigger Condition Units
 const UNIT_NEUTRAL_FLAG = "Flag";
