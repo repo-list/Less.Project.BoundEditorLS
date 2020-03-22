@@ -128,13 +128,9 @@
             }
             Project.mapName = undefined;
             document.title = SHORT_APP_NAME + " - " + Project.name;
-            Log.temp("SPOT 4");
             var pattern = createNewPattern();
-            Log.temp("SPOT 5");
             LeftSection.addNewPatternItem(pattern);
-            Log.temp("SPOT 6");
             LeftSection.selectPattern(0);
-            Log.temp("SPOT 7");
 
             /*** Layout ***/
             $("#left > section").css("width", LeftSection.width + "px");

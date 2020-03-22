@@ -295,12 +295,12 @@ var checkPatternAuthor = function(pattern) {
     }
 
     if (isPrivateProject !== true) {
-        if (!isFreshLoad) {
+        if (!isFreshLoad || projectAuthor === null) { // 페이지 첫 로드가 아니거나, 첫 로드는 맞는데 프로젝트 제작자 정보가 아예 없는 경우 알림 창 띄우기
             let tempAuthorName = (projectAuthor === null) ? DEFAULT_AUTHOR_NAME : projectAuthor;
             patternAuthor = Popup.prompt("패턴 제작자의 닉네임을 입력해주세요 : ", tempAuthorName);
             if (patternAuthor === null) patternAuthor = DEFAULT_AUTHOR_NAME;
         }
-        else {
+        else { // 그렇지 않을 경우 알림 창으로 묻지 않음.
             patternAuthor = (projectAuthor === null) ? DEFAULT_AUTHOR_NAME : projectAuthor;
         }
 

@@ -10,14 +10,19 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.13.0/ <br/>
+@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.13.1/ <br/>
 
-@ Version : 0.13.0 <br/>
+@ Version : 0.13.1 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.13.0 (2020-03-22, Latest) <br/>
+
+@ 0.13.1 (2020-03-22, Latest) <br/>
+
+- 패턴 제작자 질문하는 알림 창 관련 문제 수정 <br/><br/>
+
+@ 0.13.0 (2020-03-22) <br/>
 
 - 타일 이미지가 로드되지 않던 문제 수정 (JS 인터프리터의 스크립트 캐시 전과 후의 동작 문제로 인한 버그) <br/>
 - 트리거 추출 후 TrigEdit으로 복사했을 때, 줄바꿈 문자 문제로 컴파일 에러가 뜨던 현상 수정 <br/>
