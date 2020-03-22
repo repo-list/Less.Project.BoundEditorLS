@@ -104,6 +104,17 @@
     margin-left: 7px;
     width : 54px;
 }
+#header > input#projectType {
+    display: inline-block;
+    margin-left: 20px;
+    vertical-align: middle;
+}
+#header > label#projectTypeLabel {
+    display: inline-block;
+    margin-left: -3px;
+    color: white;
+    font-size: 14px;
+}
 #header > button#projectAuthor { right: 220px; }
 #header > button#patchNote { right: 120px; }
 #header > button#appInfo { right: 20px; }

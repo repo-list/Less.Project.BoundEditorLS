@@ -62,7 +62,7 @@ RightSection.deselectTiles = function() {
     Log.debug("Tile deselected.");
 };
 
-RightSection.onSCMapAPILoad = function() {
+RightSection.init = function() {
     RightSection.addTiles(); // 타일 선택 부분에 타일 추가
     
     var $tiles = $("#sectionTab1 div.tiles > div.tile");
@@ -244,7 +244,9 @@ RightSection.selectTile = function(tileName) {
             break;
         }
         else if (i == targetTiles.length - 1) {
-            Popup.alert("예기치 않은 오류 발생 (RightSection - selectTile). 타일 선택에 실패하였습니다.");
+            let title = "타일 선택";
+            let message = "예기치 않은 오류 발생 (RightSection - selectTile). 타일 선택에 실패하였습니다.";
+            Popup.alert(title, message);
             Log.error("Exception Occured :");
             Log.error("File name : right_section.js");
             Log.error("Function name : selectTile");
@@ -488,7 +490,10 @@ RightSection.refreshWaitRefData = function() {
 
 RightSection.onPlayButtonClick = function() {
     // TODO : 기능 구현
-    Popup.alert("시뮬레이션 기능은 현재 구현 중입니다.");
+    let title = "패턴 재생";
+    let message = "시뮬레이션 기능은 현재 구현 중입니다.";
+
+    Popup.alert(title, message);
 };
 
 RightSection.onControlButtonClick = function() {
@@ -642,13 +647,17 @@ RightSection.changeTurn = function(turnNumber) {
 RightSection.onCurrentTurnTextChange = function() {
     var currentTurnText = $("#sectionTab1 > #bomb > input#currentTurn").val();
     if (!currentTurnText.match(/^[0-9]+$/)) {
-        Popup.alert("올바른 숫자를 입력해주세요.");
+        let title = "현재 턴 입력";
+        let message = "올바른 숫자를 입력해주세요.";
+        Popup.alert(title, message);
         return;
     }
 
     var turnNumber = parseInt(currentTurnText);
     if (turnNumber < 1 || turnNumber > Project.currentPattern.turnList.length) {
-        Popup.alert("존재하지 않는 턴입니다. 올바른 값을 입력해주세요.");
+        let title = "현재 턴 입력";
+        let message = "존재하지 않는 턴입니다. 올바른 값을 입력해주세요.";
+        Popup.alert(title, message);
         return;
     }
 

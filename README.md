@@ -10,14 +10,22 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.12.3/ <br/>
+@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.13.0/ <br/>
 
-@ Version : 0.12.3 <br/>
+@ Version : 0.13.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
-@ 0.12.3 (2020-03-21, Latest) <br/>
+@ 0.13.0 (2020-03-22, Latest) <br/>
+
+- 타일 이미지가 로드되지 않던 문제 수정 (JS 인터프리터의 스크립트 캐시 전과 후의 동작 문제로 인한 버그) <br/>
+- 트리거 추출 후 TrigEdit으로 복사했을 때, 줄바꿈 문자 문제로 컴파일 에러가 뜨던 현상 수정 <br/>
+- 개인 프로젝트 여부 변경 기능 추가 <br/>
+- 패턴 제작자 및 설명 표시 + 수정 기능 추가 <br/>
+- 기타 자잘한 점들 몇 가지 수정 <br/><br/>
+
+@ 0.12.3 (2020-03-21) <br/>
 
 - 트리거 추출 기능 개선 <br/><br/>
 
@@ -35,11 +43,11 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ 0.11.0 (2020-03-18) <br/>
 
-- 턴 복사, 반전, 삭제 기능 추가 <br/><br/>
-- 프로젝트 제작자, 프로젝트 이름, 패턴 제작자, 패턴 이름 수정 기능 추가 <br/><br/>
-- 패턴 삭제 및 위치 변경 (드래그 & 드랍) 기능 추가 <br/><br/>
-- 요소들에 마우스 커서 올릴 시 설명 툴팁 팝업 <br/><br/>
-- 기타 기능 개선 및 잡다한 버그 수정 <br/><br/>
+- 턴 복사, 반전, 삭제 기능 추가 <br/>
+- 프로젝트 제작자, 프로젝트 이름, 패턴 제작자, 패턴 이름 수정 기능 추가 <br/>
+- 패턴 삭제 및 위치 변경 (드래그 & 드랍) 기능 추가 <br/>
+- 요소들에 마우스 커서 올릴 시 설명 툴팁 팝업 <br/>
+- 기타 기능 개선 및 잡다한 버그 수정 <br/>
 - 소스 코드 최적화 <br/><br/>
 
 @ 0.10.0 (2020-03-17) <br/>

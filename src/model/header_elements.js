@@ -13,5 +13,6 @@ var HeaderElements = {
     onClickProjectName : function() {},
     onClickExtractTrigger : function() {},
     addTrigExtDialogEventListeners : function() {},
-    extractTrigger : function() {}
+    extractTrigger : function() {},
+    onProjectTypeChange : function() {}
 };

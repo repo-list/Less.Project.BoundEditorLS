@@ -44,7 +44,8 @@ WebStorage.setProjectAuthor = function(projectAuthor) {
 WebStorage.isPrivateProject = function() {
     if (!isWebStorageAvailable) return;
     
-    var isPrivateProject = localStorage.getItem(LS_IS_PRIVATE_PROJECT) === "true";
+    var isPrivateValue = localStorage.getItem(LS_IS_PRIVATE_PROJECT); // 존재하지 않을 경우, 결과는 null임.
+    var isPrivateProject = (isPrivateValue === "true") ? true : (isPrivateValue === "false") ? false : undefined;
     Log.debug("Local Storage Get (" + LS_IS_PRIVATE_PROJECT + ", " + isPrivateProject + ")");
 
     return isPrivateProject;

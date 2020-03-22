@@ -64,7 +64,7 @@
     <script src="src/controller/footer_elements.js"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).on("scmapapiload", function() {
             /*** Global Variables Init ***/
             $tileWidthDiv = $("#sectionTab1 > #terrain > input#tileWidth");
             $tileHeightDiv = $("#sectionTab1 > #terrain > input#tileHeight");
@@ -89,12 +89,12 @@
             $(document).on("keydown", RightArticle.onKeyDown);
             $(document).on("keyup", RightArticle.onKeyUp);
             $(document).on("contextmenu", function() { event.preventDefault(); });
-            $(document).on("scmapapiload", RightSection.onSCMapAPILoad);
             $("#page").on("click", Page.onClick);
             $("#header > #mainMenuIcon").on("click", HeaderElements.onMainMenuIconClick);
             $("#header > button").on("click", HeaderElements.onButtonClick);
             $("#header > #mainMenu .menuItem").on("click", HeaderElements.onMainMenuItemClick);
             $("#header > #loadProjectFile").on("change", loadProject);
+            $("#header > input#projectType").on("change", HeaderElements.onProjectTypeChange);
             $("#left > nav li").on("click", LeftNav.changeOrClosePanel);
             $("#left > section ul.sortable").sortable({ handle: "button", cancel: "", update: LeftSection.onSortComplete });
             $("#right > nav li").on("click", RightNav.changeTab);
@@ -122,13 +122,19 @@
                 Project.author = WebStorage.getProjectAuthor();
                 Project.isPrivateProject = WebStorage.isPrivateProject();
             }
-            if (!Project.author) Project.author = undefined;
-            if (!Project.isPrivateProject) Project.isPrivateProject = undefined;
+            else {
+                Project.author = undefined;
+                Project.isPrivateProject = undefined;
+            }
             Project.mapName = undefined;
             document.title = SHORT_APP_NAME + " - " + Project.name;
+            Log.temp("SPOT 4");
             var pattern = createNewPattern();
+            Log.temp("SPOT 5");
             LeftSection.addNewPatternItem(pattern);
+            Log.temp("SPOT 6");
             LeftSection.selectPattern(0);
+            Log.temp("SPOT 7");
 
             /*** Layout ***/
             $("#left > section").css("width", LeftSection.width + "px");
@@ -145,16 +151,20 @@
             $terrainTilesDivs.css("height", (RightSection.canvasTileHeight * 3) + "px");
             FooterElements.refreshWndSize();
             Page.refreshLayout(true);
+            RightSection.init();
+            $("#page").css("visibility", "visible");
         });
     </script>
 </head>
 <body>
-    <div id="page">
+    <div id="page" style="visibility: hidden;">
         <header id="header">
             <div id="mainMenuIcon" title="메인 메뉴"><img src="res/image/icon/menu.png" draggable="false"></div>
             <button id="projectName" class="input" title="프로젝트 이름">나의 프로젝트</button>
             <button id="loadProject" title="프로젝트 열기">열기</button>
             <button id="saveProject" title="프로젝트 저장">저장</button>
+            <input id="projectType" type="checkbox" />
+            <label id="projectTypeLabel" for="projectType" title="개인 프로젝트 여부를 선택합니다. 공동 프로젝트일 경우, 패턴마다 제작자가 다르게 설정될 수 있습니다.">개인 프로젝트</label>
             <button id="projectAuthor" class="input" title="프로젝트 제작자 닉네임">닉네임을 입력하세요</button>
             <button id="patchNote" title="패치 노트">패치 노트</button>
             <button id="appInfo" title="앱 정보">앱 정보</button>
@@ -247,12 +257,6 @@
                         <option value="Cave">Cave</option>
                     </select>
                 </div>
-                <div>
-                    <span id="hyperConditionUnit">* 터보트리거 조건 유닛 :</span>
-                    <select id="hyperConditionUnits" title="터보 트리거에서 데스값으로 사용될 조건 유닛을 설정합니다.">
-                        <option value="Cantina">Cantina</option>
-                    </select>
-                </div>
                 <div id="stageLocation">
                     <span id="levelLocationHeader">* 스테이지 시작 로케이션 헤더 :</span>
                     <input id="levelLocationHeaderInput" type="text" maxLength="12" value="Stage" />
@@ -341,6 +345,10 @@
                     <button id="savePattern" title="패턴 저장">저장</button>
                     <button id="deletePattern" title="패턴 삭제">삭제</button>
                     <button id="sharePattern" title="패턴 공유">공유</button>
+                    <span id="patternAuthor">* 패턴 제작자 :</span>
+                    <button id="patternAuthorButton" class="input" title="패턴 제작자 닉네임">패턴 제작자</button>
+                    <span id="patternDescription">* 패턴 설명 :</span>
+                    <button id="patternDescriptionButton" class="input" title="패턴에 대한 설명">패턴 설명을 입력하세요</button>
                     <input id="loadPatternFile" type="file" accept=".bpn" />
                 </div>
                 <div id="headerTab2">

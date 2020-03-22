@@ -193,15 +193,7 @@ var createNewPattern = function() {
     boundTurn.wait = DEFAULT_TURN_WAIT;
     pattern.turnList.push(boundTurn);
 
-    if (Page.isFreshLoad) {
-        Page.isFreshLoad = false;
-        setTimeout(function() {
-            checkPatternAuthor(pattern);
-        }, DEFAULT_INITIAL_AUTHORPROMPT_DELAY);
-    }
-    else {
-        checkPatternAuthor(pattern);
-    }
+    checkPatternAuthor(pattern);
 
     return pattern;
 };
@@ -292,31 +284,54 @@ var deletePattern = function(patternIndex) {
 }
 
 var checkPatternAuthor = function(pattern) {
-    if (Project.isPrivateProject !== true || Project.author === undefined) {
-        pattern.author = Popup.prompt("패턴 제작자의 닉네임을 입력해주세요 : ", DEFAULT_AUTHOR_NAME);
-        if (pattern.author === null) pattern.author = DEFAULT_AUTHOR_NAME;
-        
-        if (Project.isPrivateProject) Project.author = pattern.author;
-        else if (Project.isPrivateProject === undefined) {
-            var confirmResult = Popup.confirm("현재 프로젝트가 본인의 개인 프로젝트입니까?\n" +
+    var projectAuthor = Project.author;
+    var isPrivateProject = Project.isPrivateProject;
+    var patternAuthor = pattern.author;
+
+    var isFreshLoad;
+    if (Page.isFreshLoad) {
+        isFreshLoad = true;
+        Page.isFreshLoad = false;
+    }
+
+    if (isPrivateProject !== true) {
+        if (!isFreshLoad) {
+            let tempAuthorName = (projectAuthor === null) ? DEFAULT_AUTHOR_NAME : projectAuthor;
+            patternAuthor = Popup.prompt("패턴 제작자의 닉네임을 입력해주세요 : ", tempAuthorName);
+            if (patternAuthor === null) patternAuthor = DEFAULT_AUTHOR_NAME;
+        }
+        else {
+            patternAuthor = (projectAuthor === null) ? DEFAULT_AUTHOR_NAME : projectAuthor;
+        }
+
+        if (isPrivateProject === undefined) {
+            let confirmResult = Popup.confirm("현재 프로젝트가 본인의 개인 프로젝트입니까?\n" +
                                         "확인 선택 시, 앞으로 모든 패턴에 동일한 제작자 이름이 적용됩니다.\n" +
                                         "취소 선택 시, 패턴을 저장할 때마다 제작자를 반복해서 묻습니다.");
             if (confirmResult === true) {
-                updateProjectAuthor(pattern.author);
-                Project.isPrivateProject = true;
-                Log.debug("Project.isPrivateProject : " + Project.isPrivateProject);
+                projectAuthor = patternAuthor;
+                isPrivateProject = true;
             }
             else {
-                Project.isPrivateProject = false;
-                Log.debug("Project.isPrivateProject 2 : " + Project.isPrivateProject);
+                projectAuthor = DEFAULT_AUTHOR_NAME;
+                isPrivateProject = false;
             }
-            WebStorage.setPrivateProject(Project.isPrivateProject);
         }
     }
-    else {
-        pattern.author = Project.author;
-        updateProjectAuthor(pattern.author);
+    else if (patternAuthor === undefined) patternAuthor = projectAuthor;
+
+    if (projectAuthor === undefined) { // 이전 버전의 영향으로 인해 isPrivateProject가 true이면서 projectAuthor가 undefined가 되는 블랙홀(;;;) 현상이 발생 가능. 그럴 때 기본값으로 설정.
+        projectAuthor = patternAuthor = DEFAULT_AUTHOR_NAME;
     }
+
+    pattern.author = patternAuthor;
+
+    // 2. 프로젝트 제작자 처리
+    updateProjectAuthor(projectAuthor);
+
+    // 3. 개인 프로젝트 여부 처리
+    updateProjectPrivacy(isPrivateProject);
+    
 };
 
 var updateProjectAuthor = function(author) {
@@ -348,4 +363,49 @@ var updatePatternLabel = function(patternIndex, label) {
     Project.patternList[patternIndex].label = label;
     
     Log.debug("Pattern label changed to : " + label);
+};
+
+var updateProjectPrivacy = function(isPrivate) {
+    if (isPrivate) {
+        let hasConflicts = false;
+        for (var i = 0; i < Project.patternList.length; i++) {
+            if (Project.patternList[i].author !== Project.author) {
+                hasConflicts = true;
+                break;
+            }
+        }
+        if (hasConflicts) {
+            let confirmResult = Popup.confirm("개인 패턴 중에 프로젝트 제작자와 다른 제작자 이름이 있습니다. 덮어쓰는 데 동의하십니까?");
+
+            if (confirmResult === true) {
+                for (var i = 0; i < Project.patternList.length; i++) {
+                    if (Project.patternList[i].author !== Project.author) {
+                        updatePatternAuthor(i, Project.author);
+                    }
+                }
+            }
+            else return;
+        }
+    }
+
+    Project.isPrivateProject = isPrivate;
+    WebStorage.setPrivateProject(isPrivate);
+    $("#header > input#projectType").prop("checked", isPrivate);
+
+    Log.debug("Project privacy changed to : " + isPrivate);
+};
+
+var updatePatternAuthor = function(patternIndex, author) {
+    var prevAuthor = Project.patternList[patternIndex].author;
+    Project.patternList[patternIndex].author = author;
+    $("#right > header #patternAuthorButton").html(author);
+
+    Log.debug("Pattern[" + patternIndex + "] author changed from (" + prevAuthor + ") to (" + author + ")");
+};
+
+var updatePatternDescription = function(patternIndex, description) {
+    Project.patternList[patternIndex].description = description;
+    $("#right > header #patternDescriptionButton").html(description);
+    
+    Log.debug("Pattern description changed to : " + description);
 };

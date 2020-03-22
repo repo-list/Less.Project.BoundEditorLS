@@ -382,7 +382,7 @@ TriggerHandler.parsePatternList = function(editorType, patternList, bombPlayer, 
     return (triggerText === "") ? null : triggerText;
 };
 
-TriggerHandler.getHyperTriggers = function(editorType, conditionUnit) {
+TriggerHandler.getHyperTriggers = function(editorType) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     
     var triggerText = "";

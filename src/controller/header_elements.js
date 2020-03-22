@@ -113,7 +113,6 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     var $p12DeleteMethods = $dialog.find("#p12DeleteMethods");
     var $patternConditionUnits = $dialog.find("#patternConditionUnits");
     var $turnConditionUnits = $dialog.find("#turnConditionUnits");
-    var $hyperConditionUnits = $dialog.find("#hyperConditionUnits");
     var $levelLocationHeaderInput = $dialog.find("#levelLocationHeaderInput");
     var $levelLocationHeaderExample = $dialog.find("#levelLocationHeaderExample");
     var $reviveLocationHeaderInput = $dialog.find("#reviveLocationHeaderInput");
@@ -148,7 +147,6 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         $p12DeleteMethods.val(triggerSettings.p12DeleteMethod);
         $patternConditionUnits.val(triggerSettings.patternConditionUnit);
         $turnConditionUnits.val(triggerSettings.turnConditionUnit);
-        $hyperConditionUnits.val(triggerSettings.hyperConditionUnit);
         $levelLocationHeaderInput.val(triggerSettings.levelLocationHeader);
         $levelLocationHeaderExample.text("예시 : " + triggerSettings.levelLocationHeader + "1, " + triggerSettings.levelLocationHeader + "2, " + triggerSettings.levelLocationHeader + "3, ...");
         $reviveLocationHeaderInput.val(triggerSettings.reviveLocationHeader);
@@ -178,7 +176,6 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.p12DeleteMethod = $p12DeleteMethods.val();
         triggerSettings.patternConditionUnit = $patternConditionUnits.val();
         triggerSettings.turnConditionUnit = $turnConditionUnits.val();
-        triggerSettings.hyperConditionUnit = $hyperConditionUnits.val();
         triggerSettings.levelLocationHeader = $levelLocationHeaderInput.val();
         triggerSettings.reviveLocationHeader = $reviveLocationHeaderInput.val();
         triggerSettings.victoryLocation = $victoryLocationInput.val();
@@ -327,7 +324,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.patternConditionUnit = patternConditionUnit;
         Log.debug("triggerSettings.patternConditionUnit : " + triggerSettings.patternConditionUnit);
 
-        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit, hyperConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
+        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
     });
 
     $turnConditionUnits.on("change", function() {
@@ -336,16 +333,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.turnConditionUnit = turnConditionUnit;
         Log.debug("triggerSettings.turnConditionUnit : " + triggerSettings.turnConditionUnit);
 
-        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit, hyperConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
-    });
-
-    $hyperConditionUnits.on("change", function() {
-        Log.debug('$hyperConditionUnits.on("change")');
-        let hyperConditionUnit = $(this).val();
-        triggerSettings.hyperConditionUnit = hyperConditionUnit;
-        Log.debug("triggerSettings.hyperConditionUnit : " + triggerSettings.hyperConditionUnit);
-
-        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit, hyperConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
+        // NOTE : 만약 나중에 patternConditionUnit, turnConditionUnit에 중복된 선택지를 넣을 경우, 중복 선택시 다른 걸 강제로 변경하는 코드를 작성해야 함.
     });
 
     $levelLocationHeaderInput.on("change", function() {
@@ -432,7 +420,9 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     // 출력 이벤트 처리
     $extractButton.on("click", function() {
         if (triggerSettings.mapName === "" || !triggerSettings.mapName) {
-            Popup.alert("맵 이름을 입력해주세요.");
+            let title = "트리거 출력";
+            let message = "맵 이름을 입력해주세요.";
+            Popup.alert(title, message);
             return;
         }
         let triggerText = HeaderElements.extractTrigger(triggerSettings);
@@ -478,7 +468,6 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     var victoryLocation = triggerSettings.victoryLocation;
     var patternConditionUnit = triggerSettings.patternConditionUnit;
     var turnConditionUnit = triggerSettings.turnConditionUnit;
-    var hyperConditionUnit = triggerSettings.hyperConditionUnit;
     var result, triggerText = "";
 
     if (triggerSettings.includeLifeSettings) {
@@ -520,9 +509,13 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     if (result) triggerText += result;
     
     if (triggerSettings.includeHyperTrigger) {
-        result = TriggerHandler.getHyperTriggers(editorType, hyperConditionUnit);
+        result = TriggerHandler.getHyperTriggers(editorType);
         if (result) triggerText += result;
     }
 
     return triggerText;
+};
+
+HeaderElements.onProjectTypeChange = function() {
+    updateProjectPrivacy($(this).is(":checked"));
 };

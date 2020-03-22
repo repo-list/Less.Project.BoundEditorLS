@@ -9,7 +9,7 @@ var RightSection = {
     onTilesetChange : function() {},
     onTileClick : function() {},
     deselectTiles : function() {},
-    onSCMapAPILoad : function() {},
+    init : function() {},
     selectMode : function(modeName) {},
     selectTileset : function(tilesetName, isUserSelection) {},
     selectTile : function(tileName) {},

@@ -7,5 +7,7 @@ var RightHeader = {
     onSavePatternClick : function() {},
     onDeletePatternClick : function() {},
     onSharePatternClick : function() {},
+    onPatternAuthorButtonClick : function() {},
+    onPatternDescriptionButtonClick : function() {},
     onWorkingClick : function() {}
 };

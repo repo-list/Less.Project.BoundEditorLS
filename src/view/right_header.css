@@ -35,6 +35,11 @@
     letter-spacing: 0.2px;
     min-width: 40px;
 }
+#right > header span {
+    display: inline-block;
+    color: white;
+    font-size: 14px;
+}
 
 #right > header button:hover { opacity: 0.75; }
 #right > header button#patternLabel { margin-left: 15px; }
@@ -43,5 +48,7 @@
 #right > header button#savePattern { width: 54px; }
 #right > header button#deletePattern { width: 54px; }
 #right > header button#sharePattern { width: 54px; }
+#right > header span#patternAuthor { margin-left: 20px; }
+#right > header span#patternDescription { margin-left: 20px; }
 #right > header button#working { width: 100px; margin-left: 15px; }
 #right > header input#loadPatternFile { display: none; }

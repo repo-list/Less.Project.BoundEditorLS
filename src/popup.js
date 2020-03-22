@@ -5,7 +5,12 @@ var Popup = {
 };
 
 Popup.alert = function(title, message) {
-    alert("[" + title + "]\n" + message);
+    var result = "";
+
+    if (title !== null) result += "[" + title + "]\n";
+    result += message;
+
+    alert(result);
 };
 
 Popup.prompt = function(message, defaultValue) {

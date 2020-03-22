@@ -64,67 +64,67 @@ var TrigEdit = {
         this.conditionLineCount = 0;
         this.actionLineCount = 0;
         // '{' 를 열기 떄문에 사용 후 TriggerEnd()로 끝나야함
-        return "Trigger(\"" + player + "\"){\n";
+        return "Trigger(\"" + player + "\"){\r\n";
     },
     
     TriggerEnd : function() {
-        return "}\n\n//-----------------------------------------------------------------//\n\n";
+        return "}\r\n\r\n//-----------------------------------------------------------------//\r\n\r\n";
     },
     
     /*** Label ***/
     Conditions : function() {
-        return "Conditions:\n";
+        return "Conditions:\r\n";
     },
     
     Actions : function() {
-        return "\nActions:\n";
+        return "\r\nActions:\r\n";
     },
     
     /*** Conditions ***/
     Accumulate : function(player, quantitymod, quantitynum, resource) {
         this.conditionLineCount++;
-        return "\tAccumulate(\"" + player + "\", " + quantitymod + ", " + quantitynum + ", " + resource + ");\n";
+        return "\tAccumulate(\"" + player + "\", " + quantitymod + ", " + quantitynum + ", " + resource + ");\r\n";
     },
 
     Always : function() {
         this.conditionLineCount++;
-        return "\tAlways();\n";
+        return "\tAlways();\r\n";
     },
 
     Bring : function(player, unit, location, quantitymod, quantitynum) {
         this.conditionLineCount++;
-        return "\tBring(\"" + player + "\", \"" + unit + "\", \"" + location + "\", " + quantitymod + ", " + quantitynum + ");\n";
+        return "\tBring(\"" + player + "\", \"" + unit + "\", \"" + location + "\", " + quantitymod + ", " + quantitynum + ");\r\n";
     },
 
     Command : function(player, unit, quantitymod, quantitynum) {
         this.conditionLineCount++;
-        return "\tCommand(\"" + player + "\", \"" + unit + "\", " + quantitymod + ", " + quantitynum + ");\n";
+        return "\tCommand(\"" + player + "\", \"" + unit + "\", " + quantitymod + ", " + quantitynum + ");\r\n";
     },
 
     Deaths : function(player, unit, quantitymod, quantitynum) {
         this.conditionLineCount++;
-        return "\tDeaths(\"" + player + "\", \"" + unit + "\", " + quantitymod + ", " + quantitynum + ");\n";
+        return "\tDeaths(\"" + player + "\", \"" + unit + "\", " + quantitymod + ", " + quantitynum + ");\r\n";
     },
 
     Score : function(player, scoreType, quantitymod, quantitynum) {
         this.conditionLineCount++;
-        return "\tScore(\"" + player + "\", " + scoreType + ", " + quantitymod + ", " + quantitynum + ");\n";
+        return "\tScore(\"" + player + "\", " + scoreType + ", " + quantitymod + ", " + quantitynum + ");\r\n";
     },
 
     Switch : function(num, status) {
         this.conditionLineCount++;
-        return "\tSwitch(\"Switch" + num + "\", " + status + ");\n";
+        return "\tSwitch(\"Switch" + num + "\", " + status + ");\r\n";
     },
     
     /*** Actions ***/
     Comment : function(text) {
         this.actionLineCount++;
-        return "\tComment(\"" + text + "\");\n";
+        return "\tComment(\"" + text + "\");\r\n";
     },
 
     CreateUnit : function(player, unit, num, location) {
         this.actionLineCount++;
-        return "\tCreate Unit(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\n";
+        return "\tCreate Unit(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\r\n";
     },
 
     CreateUnitWithProperties : function(player, unit, num, location, properties) {
@@ -135,88 +135,88 @@ var TrigEdit = {
          * 5 - Hallucinated
         */
         this.actionLineCount++;
-        return "\tCreate Unit with Properties(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\", " + properties + ");\n";
+        return "\tCreate Unit with Properties(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\", " + properties + ");\r\n";
     },
 
     Defeat : function() {
         this.actionLineCount++;
-        return "\tDefeat();\n";
+        return "\tDefeat();\r\n";
     },
 
     DisplayTextMessage : function(message) {
         this.actionLineCount++;
-        return "\tDisplay Text Message(" + TE_DISPLAYTEXT_ALWAYS + ", \"" + message +  "\");\n";
+        return "\tDisplay Text Message(" + TE_DISPLAYTEXT_ALWAYS + ", \"" + message +  "\");\r\n";
     },
 
     KillUnit : function(player, unit) {
         this.actionLineCount++;
-        return "\tKill Unit(\"" + player + "\", \"" + unit + "\");\n";
+        return "\tKill Unit(\"" + player + "\", \"" + unit + "\");\r\n";
     },
 
     KillUnitAtLocation : function(player, unit, num, location) {
         this.actionLineCount++;
-        return "\tKill Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\n";
+        return "\tKill Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\r\n";
     },
 
     LeaderboardComputerPlayers : function(state) {
         this.actionLineCount++;
-        return "\tLeaderboard Computer Players(" + state + ");\n";
+        return "\tLeaderboard Computer Players(" + state + ");\r\n";
     },
 
     LeaderboardPoints : function(label, scoreType) {
         this.actionLineCount++;
-        return "\tLeader Board Points(\"" + label + "\", " + scoreType + ");\n";
+        return "\tLeader Board Points(\"" + label + "\", " + scoreType + ");\r\n";
     },
     
     PreserveTrigger : function() {
         this.actionLineCount++;
-        return "\tPreserve Trigger();\n";
+        return "\tPreserve Trigger();\r\n";
     },
 
     RemoveUnit : function(player, unit) {
         this.actionLineCount++;
-        return "\tRemove Unit(\"" + player + "\", \"" + unit + "\");\n";
+        return "\tRemove Unit(\"" + player + "\", \"" + unit + "\");\r\n";
     },
     
     RemoveUnitAtLocation : function(player, unit, num, location) {
         this.actionLineCount++;
-        return "\tRemove Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\n";
+        return "\tRemove Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\r\n";
     },
 
     SetAllianceStatus : function(player, status) {
         this.actionLineCount++;
-        return "\tSet Alliance Status(\"" + player + "\", " + status + ");\n";
+        return "\tSet Alliance Status(\"" + player + "\", " + status + ");\r\n";
     },
 
     /*
     SetInvincibility : function(player, unit, location, state) {
         this.actionLineCount++;
-        return "\tSet Invincibility(\"" + player + "\", \"" + unit + "\", \"" + location + "\", " + state + ");\n";
+        return "\tSet Invincibility(\"" + player + "\", \"" + unit + "\", \"" + location + "\", " + state + ");\r\n";
     },
     */
 
     SetScore : function(player, modify, num, scoreType) {
         this.actionLineCount++;
-        return "\tSet Score(\"" + player + "\", " + modify + ", " + num + ", " + scoreType + ");\n";
+        return "\tSet Score(\"" + player + "\", " + modify + ", " + num + ", " + scoreType + ");\r\n";
     },
 
     SetDeaths : function(player, unit, modify, num) {
         this.actionLineCount++;
-        return "\tSet Deaths(\"" + player + "\", \"" + unit + "\", " + modify + ", " + num + ");\n";
+        return "\tSet Deaths(\"" + player + "\", \"" + unit + "\", " + modify + ", " + num + ");\r\n";
     },
 
     SetResources : function(player, modify, num, resource) {
         this.actionLineCount++;
-        return "\tSet Resources(\"" + player + "\", " + modify + ", " + num + ", " + resource + ");\n";
+        return "\tSet Resources(\"" + player + "\", " + modify + ", " + num + ", " + resource + ");\r\n";
     },
 
     Victory : function() {
         this.actionLineCount++;
-        return "\tVictory();\n";
+        return "\tVictory();\r\n";
     },
     
     Wait : function(duration) {
         this.actionLineCount++;
-        return "\tWait(" + duration + ");\n";
+        return "\tWait(" + duration + ");\r\n";
     }
 }

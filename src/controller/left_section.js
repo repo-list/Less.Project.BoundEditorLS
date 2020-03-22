@@ -86,9 +86,24 @@ LeftSection.selectPattern = function(patternIndex) {
     RightArticle.redrawLocationList();
     RightSection.selectMode(pattern.currentMode); // BombCanvas는 selectMode 내부에서 다시 그리므로, 여기서는 해줄 필요가 없음.
 
-    // 패턴 레이블 변경
-    var $patternLabel = $("#right > header button#patternLabel");
-    $patternLabel.html(pattern.label);
+    // 패턴 레이블, 제작자, 설명 변경
+    if (!pattern.label || pattern.label === "") {
+        let $patternLabel = $("#right > header button#patternLabel");
+        $patternLabel.html("패턴 이름");
+    }
+    else updatePatternLabel(patternIndex, pattern.label);
+
+    if (!pattern.author || pattern.author === "") {
+        let $patternAuthorButton = $("#right > header button#patternAuthorButton");
+        $patternAuthorButton.html("패턴 제작자");
+    }
+    else updatePatternAuthor(patternIndex, pattern.author);
+
+    if (!pattern.description || pattern.description === "") {
+        var $patternDescriptionButton = $("#right > header button#patternDescriptionButton");
+        $patternDescriptionButton.html("패턴 설명을 입력하세요");
+    }
+    else updatePatternDescription(patternIndex, pattern.description);
 
     // 스크롤바 내리기
     var $infoTab1 = $("#left > section > #infoTab1");

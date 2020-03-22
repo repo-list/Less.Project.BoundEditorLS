@@ -2,10 +2,14 @@
  * Bound Editor LS Project File, Bound Editor LS Pattern File 1.1버전 변경 사항 :
  * - Project.patterns -> Project.patternList로 이름 변경
  * - Project 파일에는 triggerSettings가 포함될 수 있음.
+ * - 패턴 파일의 형식은 바뀌지 않았는데, 실수로 1.1로 올려버림. 1.0과 1.1의 구조는 완전히 동일함.
+ * 
+ * Bound Editor LS Project File 1.2버전 변경 사항
+ * - triggerSettings에 hyperConditionUnit이 제외됨.
  */
 
 const PROJECTFILE_TYPE = "Bound Editor LS Project File";
-const PROJECTFILE_VERSION = "1.1";
+const PROJECTFILE_VERSION = "1.2";
 const PROJECTFILE_MIMETYPE = "application/json";
 const PROJECTFILE_EXTENSION = ".bpj";
 
@@ -158,14 +162,14 @@ FileHandler.loadProjectFromFileSystem = function(event, callback) {
                 if (projectFile.project.name === undefined ||
                     projectFile.project.author === undefined ||
                     projectFile.project.isPrivateProject === undefined ||
-                    (projectFile.fileVersion === "1.1" && projectFile.project.patternList === undefined) ||
+                    (parseFloat(projectFile.fileVersion) >= 1.1 && projectFile.project.patternList === undefined) ||
                     (projectFile.fileVersion === "1.0" && projectFile.project.patterns === undefined) ||
                     projectFile.project.currentPattern === undefined) {
                     Log.error("FileHandler.loadProjectFromFileSystem : projectFile 항목 누락 오류");
                     content = null;
                 }
                 else {
-                    var patternList = (projectFile.fileVersion === "1.1") ? projectFile.project.patternList : projectFile.project.patterns;
+                    var patternList = (parseFloat(projectFile.fileVersion) >= 1.1) ? projectFile.project.patternList : projectFile.project.patterns;
                     for (var i = 0; i < patternList.length; i++) {
                         patternList[i] = FileHandler.convertToPatternObject(patternList[i]);
                         if (patternList[i] === null) {
@@ -178,7 +182,11 @@ FileHandler.loadProjectFromFileSystem = function(event, callback) {
                         projectFile.project.patternList = projectFile.project.patterns;
                         projectFile.project.patterns = undefined;
                     }
+                    if (projectFile.project.triggerSettings.hyperConditionUnit) { // 프로젝트 파일 버전이 1.1일 때 사용되던 값.  1.2부터는 사용되지 않음.
+                        projectFile.project.triggerSettings.hyperConditionUnit = undefined;
+                    }
                     projectFile.project.currentPattern = projectFile.project.patternList[projectFile.project.currentPatternIndex];
+
                     content = projectFile.project;
                 }
             }
@@ -207,7 +215,7 @@ FileHandler.loadPatternFromFileSystem = function(event, callback) {
                 Log.error("FileHandler.loadPatternFromFileSystem : patternFile.fileType 오류");
                 content = null;
             }
-            else if (patternFile.fileVersion === undefined || patternFile.fileVersion !== PATTERNFILE_VERSION) {
+            else if (patternFile.fileVersion === undefined || !(patternFile.fileVersion === "1.0" || patternFile.fileVersion === "1.1")) {
                 Log.error("FileHandler.loadPatternFromFileSystem : patternFile.fileVersion 오류");
                 content = null;
             }
