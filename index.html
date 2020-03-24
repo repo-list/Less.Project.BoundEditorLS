@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
 
     <!-- Dependencies -->
-    <link rel="stylesheet" href="lib/jquery-ui.min.css">
+    <link rel="stylesheet" href="lib/jquery-ui.min.css" />
     <script src="lib/jquery-3.3.1.min.js"></script>
     <script src="lib/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="lib/reset.css">
+    <link rel="stylesheet" href="lib/reset.css" />
     <script src="lib/scmap_api/scmap_api.js"></script>
 
     <!-- Application -->
@@ -28,18 +28,20 @@
     <script src="src/web_storage.js"></script>
     <script src="src/trigedit.js"></script>
     <script src="src/trigger_handler.js"></script>
+    <link rel="stylesheet" href="src/simulator.css" />
+    <script src="src/simulator.js"></script>
 
     <!-- View -->
-    <link rel="stylesheet" href="src/view/html.css">
-    <link rel="stylesheet" href="src/view/page.css">
-    <link rel="stylesheet" href="src/view/header_elements.css">
-    <link rel="stylesheet" href="src/view/left_nav.css">
-    <link rel="stylesheet" href="src/view/left_section.css">
-    <link rel="stylesheet" href="src/view/right_nav.css">
-    <link rel="stylesheet" href="src/view/right_header.css">
-    <link rel="stylesheet" href="src/view/right_article.css">
-    <link rel="stylesheet" href="src/view/right_section.css">
-    <link rel="stylesheet" href="src/view/footer_elements.css">
+    <link rel="stylesheet" href="src/view/html.css" />
+    <link rel="stylesheet" href="src/view/page.css" />
+    <link rel="stylesheet" href="src/view/header_elements.css" />
+    <link rel="stylesheet" href="src/view/left_nav.css" />
+    <link rel="stylesheet" href="src/view/left_section.css" />
+    <link rel="stylesheet" href="src/view/right_nav.css" />
+    <link rel="stylesheet" href="src/view/right_header.css" />
+    <link rel="stylesheet" href="src/view/right_article.css" />
+    <link rel="stylesheet" href="src/view/right_section.css" />
+    <link rel="stylesheet" href="src/view/footer_elements.css" />
 
     <!-- Model -->
     <script src="src/model/page.js"></script>
@@ -85,6 +87,7 @@
             blockContext.globalAlpha = DEFAULT_BLOCKCONTEXT_ALPHA;
 
             /*** Event Listeners ***/
+            $(window).on("beforeunload", function() { return "기존 작업이 있다면, 먼저 저장을 해주세요. 정말 나가시겠습니까?"; });
             $(window).on("resize", Page.onWndResize);
             $(document).on("keydown", RightArticle.onKeyDown);
             $(document).on("keyup", RightArticle.onKeyUp);
@@ -155,7 +158,7 @@
 <body>
     <div id="page" style="visibility: hidden;">
         <header id="header">
-            <div id="mainMenuIcon" title="메인 메뉴"><img src="res/image/icon/menu.png" draggable="false"></div>
+            <div id="mainMenuIcon" title="메인 메뉴"><img src="res/icon/menu.png" draggable="false"></div>
             <button id="projectName" class="input" title="프로젝트 이름">나의 프로젝트</button>
             <button id="loadProject" title="프로젝트 열기">열기</button>
             <button id="saveProject" title="프로젝트 저장">저장</button>
@@ -308,10 +311,10 @@
             <nav>
                 <ul>
                     <li id="patternInfo" class="selected" title="패턴 목록 탭">
-                        <img src="res/image/icon/pattern.png" draggable="false">
+                        <img src="res/icon/pattern.png" draggable="false">
                     </li>
                     <li id="waitInfo" title="웨잇 정보 탭">
-                        <img src="res/image/icon/figure.png" draggable="false">
+                        <img src="res/icon/figure.png" draggable="false">
                     </li>
                 </ul>
             </nav>
@@ -362,14 +365,15 @@
                     <canvas id="selection"></canvas>
                 </div>
                 <div id="articleTab2"></div>
+                <div id="bound-simulator" style="display: none;"></div>
             </article>
             <section>
                 <div id="sectionTab1">
                     <div id="mode">
                         <span id="creationMode">* 모드 선택 :</span>
                         <button id="terrainMode" class="mode" title="지형 모드 : 맵에서 유닛이 이동하는 타일을 설치합니다.">지형</button>
-                        <button id="locationMode"class="mode" title="로케이션 모드 : 폭탄 및 장애물이 설치될 곳들의 위치를 생성합니다.">로케이션</button>
-                        <button id="bombMode"class="mode" title="폭탄 설정 모드 : 폭탄 및 장애물을 설치하고 시뮬레이션을 확인합니다.">폭탄</button>
+                        <button id="locationMode" class="mode" title="로케이션 모드 : 폭탄 및 장애물이 설치될 곳들의 위치를 생성합니다.">로케이션</button>
+                        <button id="bombMode" class="mode" title="폭탄 설정 모드 : 폭탄 및 장애물을 설치하고 시뮬레이션을 확인합니다.">폭탄</button>
                     </div>
 
                     <div id="terrain">

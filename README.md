@@ -10,15 +10,20 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.13.1/ <br/>
+@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.14.0/ <br/>
 
-@ Version : 0.13.1 <br/>
+@ Version : 0.14.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
 
-@ 0.13.1 (2020-03-22, Latest) <br/>
+@ 0.14.0 (2020-03-24, Latest) <br/>
+
+- 시뮬레이션 기능 추가 (현재는 폭탄 - 스커지, 오버로드, 배틀크루저만 가능 / 장애물 - Remove 방식만 가능) <br/>
+- 창 닫기 및 새로고침 시 종료 확인 질문 표시 <br/><br/>
+
+@ 0.13.1 (2020-03-22) <br/>
 
 - 패턴 제작자 질문하는 알림 창 관련 문제 수정 <br/><br/>
 

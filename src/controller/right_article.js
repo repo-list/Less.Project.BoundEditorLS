@@ -876,12 +876,12 @@ RightArticle.redrawBombSettings = function() {
 
 RightArticle.drawBlockUnit = function(canvasContext, gridWidth, gridHeight, location, unit, isCenterAligned) {
     if (!isCenterAligned) {
-        for (var i = 0; i < Resource.image.units.length; i++) {
-            if (Resource.image.units[i].name === unit) {
-                canvasContext.drawImage(Resource.image.units[0].image, location.getLeft(gridWidth), location.getTop(gridHeight));
+        for (var i = 0; i < Resource.unit.statics.length; i++) {
+            if (Resource.unit.statics[i].name === unit) {
+                canvasContext.drawImage(Resource.unit.statics[0].image, location.getLeft(gridWidth), location.getTop(gridHeight));
                 break;
             }
-            else if (i === Resource.image.units.length - 1) {
+            else if (i === Resource.unit.statics.length - 1) {
                 Log.error("drawBlockUnit - !isCenterAligned : 그리기 실패 (" + unit + ")");
             }
         }
@@ -890,15 +890,15 @@ RightArticle.drawBlockUnit = function(canvasContext, gridWidth, gridHeight, loca
         var locationCenterX = parseInt((location.getRight(gridWidth) + location.getLeft(gridWidth)) / 2);
         var locationCenterY = parseInt((location.getBottom(gridHeight) + location.getTop(gridHeight)) / 2);
 
-        for (var i = 0; i < Resource.image.units.length; i++) {
-            if (Resource.image.units[i].name === unit) {
-                let image = Resource.image.units[i].image;
+        for (var i = 0; i < Resource.unit.statics.length; i++) {
+            if (Resource.unit.statics[i].name === unit) {
+                let image = Resource.unit.statics[i].image;
                 let imageWidth = image.width;
                 let imageHeight = image.height;
                 canvasContext.drawImage(image, locationCenterX - parseInt(imageWidth / 2), locationCenterY - parseInt(imageHeight / 2));
                 break;
             }
-            else if (i === Resource.image.units.length - 1) {
+            else if (i === Resource.unit.statics.length - 1) {
                 Log.error("drawBlockUnit - isCenterAligned : 그리기 실패 (" + unit + ")");
             }
         }

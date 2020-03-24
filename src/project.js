@@ -171,6 +171,10 @@ var Project = {
     triggerSettings : __objValue
 };
 
+// the Project Session
+var ProjectSession = {
+    boundSimulator : null
+};
 
 var createNewPattern = function() {
     var patternLabel = DEFAULT_PATTERN_LABEL_HEADER + (Project.patternList.length + 1);

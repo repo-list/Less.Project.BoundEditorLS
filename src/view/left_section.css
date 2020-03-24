@@ -14,9 +14,9 @@
 #left > section > .infoTab {
 	position: relative;
 	overflow-y: scroll;
-	-ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+	-ms-overflow-style: none; /* Hide scrollbars for IE and Edge */
 }
-#left > section > .infoTab::-webkit-scrollbar { display: none; }
+#left > section > .infoTab::-webkit-scrollbar { display: none; } /* Hide scrollbars for other browsers */
 #left > section > #infoTab1 li { margin-bottom: 15px; }
 #left > section > #infoTab1 li:first-of-type { margin-top: 15px; }
 #left > section > #infoTab1 li:last-of-type { margin-bottom: 40px; }

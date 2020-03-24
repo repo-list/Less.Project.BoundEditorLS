@@ -489,11 +489,29 @@ RightSection.refreshWaitRefData = function() {
 };
 
 RightSection.onPlayButtonClick = function() {
-    // TODO : 기능 구현
-    let title = "패턴 재생";
-    let message = "시뮬레이션 기능은 현재 구현 중입니다.";
+    if (Project.currentPattern.bombUnit1 !== UNIT_ZERG_SCOURGE ||
+        Project.currentPattern.bombUnit2 !== UNIT_ZERG_OVERLORD ||
+        Project.currentPattern.bombUnit3 !== UNIT_TERRAN_BATTLECRUISER) {
+        let title = "시뮬레이션 실행";
+        let message = "현재 시뮬레이션 기능은 폭탄 유닛을 '스커지', '오버로드', '배틀크루저'로 선택했을 때만 가능합니다.";
+        Popup.alert(title, message);
+        return;
+    }
 
-    Popup.alert(title, message);
+    if (ProjectSession.boundSimulator === null) {
+        var left = BS_DEFAULT_LEFT;
+        var top = BS_DEFAULT_TOP;
+        var width = BS_DEFAULT_WIDTH;
+        var height = BS_DEFAULT_HEIGHT;
+        var columns = RightArticle.canvasColumns;
+        var rows = RightArticle.canvasRows;
+        var quality = BS_QUALITY_HIGH;
+
+        ProjectSession.boundSimulator = new BoundSimulator("#bound-simulator", left, top, width, height, columns, rows, quality);
+    }
+
+    var pattern = Project.currentPattern;
+    ProjectSession.boundSimulator.start(pattern);
 };
 
 RightSection.onControlButtonClick = function() {

@@ -8,6 +8,11 @@ const RACE_ZERG = "Zerg";
 const RACE_TERRAN = "Terran";
 const RACE_PROTOSS = "Protoss";
 
+// Type
+const UNIT_TYPE_UNKNOWN = -1;
+const UNIT_TYPE_GROUND = 1;
+const UNIT_TYPE_AIR = 2;
+
 // Bomb Units
 const UNIT_ZERG_SCOURGE = "Zerg Scourge";
 const UNIT_ZERG_OVERLORD = "Zerg Overlord";
@@ -57,169 +62,201 @@ var Units = [
     {
         name : UNIT_ZERG_SCOURGE,
         size : 1,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_ZERG_OVERLORD,
         size : 2,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_ZERG_DEVOURER,
         size : 2,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_ZERG_MUTALISK,
         size : 2,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_ZERG_ULTRALISK,
         size : 3,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_GROUND
     },
 
     {
         name : UNIT_TERRAN_SCV,
         size : 1,
-        race : RACE_TERRAN
+        race : RACE_TERRAN,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_TERRAN_DROPSHIP,
         size : 2,
-        race : RACE_TERRAN
+        race : RACE_TERRAN,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_TERRAN_WRAITH,
         size : 2,
-        race : RACE_TERRAN
+        race : RACE_TERRAN,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_TERRAN_BATTLECRUISER,
         size : 3,
-        race : RACE_TERRAN
+        race : RACE_TERRAN,
+        type : UNIT_TYPE_AIR
     },
     
     {
         name : UNIT_PROTOSS_OBSERVER,
         size : 1,
-        race : RACE_PROTOSS
+        race : RACE_PROTOSS,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_PROTOSS_PROBE,
         size : 1,
-        race : RACE_PROTOSS
+        race : RACE_PROTOSS,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_PROTOSS_CORSAIR,
         size : 2,
-        race : RACE_PROTOSS
+        race : RACE_PROTOSS,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_PROTOSS_ARBITER,
         size : 2,
-        race : RACE_PROTOSS
+        race : RACE_PROTOSS,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_PROTOSS_SCOUT,
         size : 2,
-        race : RACE_PROTOSS
+        race : RACE_PROTOSS,
+        type : UNIT_TYPE_AIR
     },
     {
         name : UNIT_PROTOSS_ARCHON,
         size : 2,
-        race : RACE_PROTOSS
+        race : RACE_PROTOSS,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_PROTOSS_DARKARCHON,
         size : 2,
-        race : RACE_PROTOSS
+        race : RACE_PROTOSS,
+        type : UNIT_TYPE_GROUND
     },
 
     // Block Units
     {
         name : UNIT_TERRAN_MACHINESHOP,
         size : 2,
-        race : RACE_TERRAN
+        race : RACE_TERRAN,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_TERRAN_MACHINESHOP_UNCLEAR,
         size : 2,
-        race : RACE_TERRAN
+        race : RACE_TERRAN,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_PSIEMITTER,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_PSIEMITTER_UNCLEAR,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_KHALISCRYSTAL,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_KHALISCRYSTAL_UNCLEAR,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_URAJCRYSTAL,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_URAJCRYSTAL_UNCLEAR,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_KHAYDARINCRYSTAL,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_KHAYDARINCRYSTAL_UNCLEAR,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
 
     // Bound Units
     {
         name : UNIT_ZERG_ZERGLING,
         size : 1,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_ZERG_DEVOURING_ONE,
         size : 1,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_ZERG_HUNTER_KILLER,
         size : 1,
-        race : RACE_ZERG
+        race : RACE_ZERG,
+        type : UNIT_TYPE_GROUND
     },
 
     // Trigger Condition Units
     {
         name : UNIT_NEUTRAL_FLAG,
         size : 1,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_GROUND
     },
     {
         name : UNIT_NEUTRAL_CAVE,
         size : UNITSIZE_UNKNOWN,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_UNKNOWN
     },
     {
         name : UNIT_NEUTRAL_CANTINA,
         size : UNITSIZE_UNKNOWN,
-        race : RACE_NONE
+        race : RACE_NONE,
+        type : UNIT_TYPE_UNKNOWN
     }
 ];
