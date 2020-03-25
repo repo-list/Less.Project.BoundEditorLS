@@ -337,6 +337,8 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
         if (document.fullscreenElement === null) {
             self.normalize();
             self.hide();
+            self.groundUnitList.length = 0; // emptying array
+            self.airUnitList.length = 0; // emptying array
             self.isBeingUsed = false;
             clearInterval(self.processor);
         }

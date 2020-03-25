@@ -497,6 +497,12 @@ RightSection.onPlayButtonClick = function() {
         Popup.alert(title, message);
         return;
     }
+    if (Project.currentPattern.blockOption2 === BLOCKOPTION2_BLOCKKILL) {
+        let title = "시뮬레이션 실행";
+        let message = "현재 시뮬레이션 기능은 \"삭제 시 장애물\"을 Remove(제거) 방식으로 선택했을 때만 가능합니다.";
+        Popup.alert(title, message);
+        return;
+    }
 
     if (ProjectSession.boundSimulator === null) {
         var left = BS_DEFAULT_LEFT;
