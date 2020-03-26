@@ -61,6 +61,7 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
 
     this.isMaximized = false;
     this.isBeingUsed = false;
+	this.isEventRegistered = false;
 
     this.processor = null;
     this.currentFrame = null;
@@ -308,12 +309,14 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
             this.airUnitContext = this.airUnitCanvas.getContext("2d");
         }
 
-        this.isBeingUsed = true;
-        this.moveTo(this.left, this.top);
+		if (!this.isEventRegistered) {
+			this.isEventRegistered = true;
+			$(document).on("fullscreenchange", this.onFullscreenChange);
+			$(document).on("webkitfullscreenchange", this.onFullscreenChange);
+			// $(document).on("MSFullscreenChange", this.onFullscreenChange); // 안 먹힘 TT_TT
+		}
 
-        $(document).on("fullscreenchange", this.onFullscreenChange);
-        $(document).on("webkitfullscreenchange", this.onFullscreenChange);
-        // $(document).on("MSFullscreenChange", this.onFullscreenChange); // 안 먹힘 TT_TT
+        this.moveTo(this.left, this.top);
     };
 
     this.recalcGridSize = function() {
@@ -358,6 +361,22 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
             self.isBeingUsed = false;
             clearInterval(self.processor);
         }
+		else if (window.navigator.userAgent.indexOf("Edge") > -1) { // MS Edge인 경우, document.fullscreenElement는 무조건 undefined임.
+			if (!self.isBeingUsed) {
+				self.isBeingUsed = true;
+			}
+			else {
+				self.normalize();
+				self.hide();
+				self.groundUnitList.length = 0; // emptying array
+				self.airUnitList.length = 0; // emptying array
+				self.isBeingUsed = false;
+				clearInterval(self.processor);
+			}
+		}
+		else {
+			self.isBeingUsed = true;
+		}
     };
 
     this.createUnitAtLocation = function(unit, location, isBomb) {
