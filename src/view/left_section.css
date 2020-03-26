@@ -15,6 +15,7 @@
 	position: relative;
 	overflow-y: scroll;
 	-ms-overflow-style: none; /* Hide scrollbars for IE and Edge */
+	scrollbar-width: none; /* Hide scrollbars for Firefox */
 }
 #left > section > .infoTab::-webkit-scrollbar { display: none; } /* Hide scrollbars for other browsers */
 #left > section > #infoTab1 li { margin-bottom: 15px; }

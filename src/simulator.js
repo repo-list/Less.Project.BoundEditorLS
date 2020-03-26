@@ -14,16 +14,23 @@ const BS_QUALITY_HIGH = 2;
 const BS_HQIMAGE_RESOLUTION_WIDTH = 1440;
 const BS_HQIMAGE_RESOLUTION_HEIGHT = 1080;
 
-var BSUnit = function(name, type, size, image, location, isBomb, sprite = null, killSound = null) { // sprite는 선택
+var BSUnit = function(name, type, size, image, location, isBomb, sprite, killSound) { // sprite, killSound는 선택. 파라미터에 대입 연산자는 IE에서 인식하지 못 함.
     this.name = name;
     this.type = type;
     this.size = size;
     this.image = image;
     this.location = location;
     this.isBomb = isBomb;
-    this.sprite = sprite;
-    this.killSound = killSound;
+    this.sprite = null;
+    this.killSound = null;
     this.state = 0;
+
+    this.init = function() {
+        if (sprite !== undefined) this.sprite = sprite;
+        if (killSound !== undefined) this.killSound = killSound;
+    };
+
+    this.init();
 };
 
 var BoundSimulator = function(selector, left, top, width, height, columns, rows, quality) {
@@ -134,7 +141,12 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
 
     this.maximize = function() {
         this.isMaximized = true;
-        this.$element.get(0).requestFullscreen();
+
+        var topmostElement = this.$element.get(0);
+        if (topmostElement.requestFullscreen) topmostElement.requestFullscreen();
+        else if (topmostElement.webkitRequestFullscreen) topmostElement.webkitRequestFullscreen();
+        // else if (topmostElement.msRequestFullscreen) topmostElement.msRequestFullscreen(); // MS full screen 요청은 MSFullscreenChange, onmsfullscreenchange 이벤트 둘 다 캐치를 못 함.
+
         this.resize();
         this.redrawAllLayers();
     };
@@ -219,7 +231,7 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
             this.drawUnit(this.groundUnitContext, groundUnit, unitIndex);
         }
 
-        Log.debug("Simulator :: Ground Unit Layer Redrawn");
+        // Log.debug("Simulator :: Ground Unit Layer Redrawn");
     };
 
     this.redrawAirUnitLayer = function() {
@@ -231,7 +243,7 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
             this.drawUnit(this.airUnitContext, airUnit, unitIndex);
         }
 
-        Log.debug("Simulator :: Air Unit Layer Redrawn");
+        // Log.debug("Simulator :: Air Unit Layer Redrawn");
     };
 
     this.playUnitSounds = function() {
@@ -251,8 +263,10 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
         else if (!sound.paused && sound.currentTime * 1000 <= 252) sound.volume = 0.85;
         else sound.volume = 1.0;
 
-        sound.currentTime = 0;
-        sound.play();
+        if (!isNaN(sound.duration)) {
+            sound.currentTime = 0;
+            sound.play();
+        }
     };
 
     this.clearLayer = function(canvasElement, canvasContext) {
@@ -298,6 +312,8 @@ var BoundSimulator = function(selector, left, top, width, height, columns, rows,
         this.moveTo(this.left, this.top);
 
         $(document).on("fullscreenchange", this.onFullscreenChange);
+        $(document).on("webkitfullscreenchange", this.onFullscreenChange);
+        // $(document).on("MSFullscreenChange", this.onFullscreenChange); // 안 먹힘 TT_TT
     };
 
     this.recalcGridSize = function() {

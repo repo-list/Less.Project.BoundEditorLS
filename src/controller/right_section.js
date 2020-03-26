@@ -489,6 +489,13 @@ RightSection.refreshWaitRefData = function() {
 };
 
 RightSection.onPlayButtonClick = function() {
+    var userAgent = window.navigator.userAgent;
+    if (userAgent.indexOf("MSIE ") > -1 || navigator.userAgent.match(/Trident.*rv\:11\./)) {
+        let title = "시뮬레이션 실행";
+        let message = "현재 인터넷 익스플로러에서는 시뮬레이션 기능이 지원되지 않습니다.";
+        Popup.alert(title, message);
+        return;
+    }
     if (Project.currentPattern.bombUnit1 !== UNIT_ZERG_SCOURGE ||
         Project.currentPattern.bombUnit2 !== UNIT_ZERG_OVERLORD ||
         Project.currentPattern.bombUnit3 !== UNIT_TERRAN_BATTLECRUISER) {

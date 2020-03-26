@@ -10,6 +10,7 @@
     height: 100%; /* 세로 길이를 최상단 엘리먼트와 똑같게 맞추고, JS에서 가로 길이 : 세로 길이를 4:3으로 조절 */
     overflow: scroll;
 	-ms-overflow-style: none; /* Hide scrollbars for IE and Edge */
+	scrollbar-width: none; /* Hide scrollbars for Firefox */
 }
 .bs-screen-wrapper::-webkit-scrollbar { display: none; } /* Hide scrollbars for other browsers */
 

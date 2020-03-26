@@ -10,15 +10,19 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.14.1/ <br/>
+@ Live Link : https://bound.devcos.site/BoundEditorLS/releases/v0.15.0/ <br/>
 
-@ Version : 0.14.1 <br/>
+@ Version : 0.15.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
 
-@ 0.14.1 (2020-03-25, Latest) <br/>
+@ 0.15.0 (2020-03-26, Latest) <br/>
+
+- 브라우저 호환성 업데이트 - 1차 <br/><br/>
+
+@ 0.14.1 (2020-03-25) <br/>
 
 - 로케이션 위치 이동 시에 좌표 변경 저장이 안 되던 문제 수정 <br/>
 - 장애물 설치하고 시뮬레이션 실행한 후 종료했을 때 장애물이 그대로 남아 있는 문제 수정 <br/><br/>

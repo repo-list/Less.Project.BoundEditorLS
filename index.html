@@ -6,7 +6,8 @@
 
     <!-- Dependencies -->
     <link rel="stylesheet" href="lib/jquery-ui.min.css" />
-    <script src="lib/jquery-3.3.1.min.js"></script>
+    <!-- <script src="lib/jquery-3.3.1.min.js"></script> --> <!-- Not working in IE.... IE!!!! haha I love IE!!!!!!!!! -->
+    <script src="lib/jquery-1.12.4.min.js"></script>
     <script src="lib/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="lib/reset.css" />
     <script src="lib/scmap_api/scmap_api.js"></script>
@@ -121,7 +122,7 @@
 
             /*** Project Init ***/
             Project.name = DEFAULT_PROJECT_NAME;
-            if (isWebStorageAvailable) {
+            if (WebStorage.isAvailable) {
                 Project.author = WebStorage.getProjectAuthor();
                 Project.isPrivateProject = WebStorage.isPrivateProject();
             }
@@ -204,7 +205,7 @@
                     </select>
                 </div>
                 <div>
-                    <span id="computerPlayer">* 컴퓨터 플레이어 :</label>
+                    <span id="computerPlayer">* 컴퓨터 플레이어 :</span>
                     <select id="computerPlayers" title="폭탄 설정 및 맵 제어 기능을 하는 컴퓨터 플레이어를 지정합니다.">
                         <option value="Player 1">플레이어 1</option>
                         <option value="Player 2">플레이어 2</option>

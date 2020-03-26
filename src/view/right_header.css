@@ -12,7 +12,7 @@
 }
 
 #right > header button {
-    position: initial;
+    position: static;
     display: inline-block;
     height: 24px;
     margin-top: 5px;

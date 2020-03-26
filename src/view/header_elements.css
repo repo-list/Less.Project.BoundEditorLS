@@ -43,7 +43,7 @@
     height: 0px;
 }
 #header > div#mainMenu.open {
-    display: initial;
+    display: block;
     height: 80px;
     animation-name: mainMenuOpen;
     animation-duration: 0.15s;
@@ -89,17 +89,17 @@
 #header > button:hover { opacity: 0.75; }
 
 #header > button#projectName {
-    position: initial;
+    position: static;
     margin-left: 80px;
 }
 #header > button#loadProject {
-    position: initial;
+    position: static;
     display: inline-block;
     margin-left: 7px;
     width : 54px;
 }
 #header > button#saveProject {
-    position: initial;
+    position: static;
     display: inline-block;
     margin-left: 7px;
     width : 54px;
@@ -147,5 +147,5 @@
 }
 #extractTriggerDialog #stageLocation > * { display: block; margin-bottom: 4px; }
 #extractTriggerDialog #reviveLocation > * { display: block; margin-bottom: 4px; }
-#extractTriggerDialog #levelLocationHeaderExample { font-weight: initial; }
-#extractTriggerDialog #reviveLocationHeaderExample { font-weight: initial; }
+#extractTriggerDialog #levelLocationHeaderExample { font-weight: normal; }
+#extractTriggerDialog #reviveLocationHeaderExample { font-weight: normal; }

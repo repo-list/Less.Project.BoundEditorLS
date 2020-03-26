@@ -9,51 +9,64 @@ const LS_HEADER = SERVER + "-" + DEVELOPER + "-" + PROJECT_NAME + "-" + "Local" 
 const LS_PROJECT_AUTHOR = LS_HEADER + "ProjectAuthor";
 const LS_IS_PRIVATE_PROJECT = LS_HEADER + "IsPrivateProject";
 
-/* Check Storage Availability */
-var isWebStorageAvailable;
-
-if (!Storage) {
-    isWebStorageAvailable = false;
-    Log.warn("Storage unsupported!");
-}
-else {
-    isWebStorageAvailable = true;
-}
-
 var WebStorage = {
+    isAvailable : true,
     getProjectAuthor : function() {},
     isPrivateProject : function() {}
 };
 
+/* Check Storage Availability */
+if (!Storage) {
+    WebStorage.isAvailable = false;
+    Log.warn("Storage unsupported!");
+}
+
+/* Storage Methods */
 WebStorage.getProjectAuthor = function() {
-    if (!isWebStorageAvailable) return;
-    
-    var projectAuthor = localStorage.getItem(LS_PROJECT_AUTHOR);
-    Log.debug("Local Storage Get (" + LS_PROJECT_AUTHOR + ", " + projectAuthor + ")");
+    var projectAuthor = null;
+
+    if (localStorage) {
+        var projectAuthor = localStorage.getItem(LS_PROJECT_AUTHOR);
+        Log.debug("Local Storage Get (" + LS_PROJECT_AUTHOR + ", " + projectAuthor + ")");
+    }
+    else {
+        Log.debug("Local Storage Not Available (WebStorage.getProjectAuthor)");
+    }
 
     return projectAuthor;
 };
 
 WebStorage.setProjectAuthor = function(projectAuthor) {
-    if (!isWebStorageAvailable) return;
-    
-    localStorage.setItem(LS_PROJECT_AUTHOR, projectAuthor);
-    Log.debug("Local Storage Set (" + LS_PROJECT_AUTHOR + ", " + projectAuthor + ")");
+    if (localStorage) {
+        localStorage.setItem(LS_PROJECT_AUTHOR, projectAuthor);
+        Log.debug("Local Storage Set (" + LS_PROJECT_AUTHOR + ", " + projectAuthor + ")");
+    }
+    else {
+        Log.debug("Local Storage Not Available (WebStorage.setProjectAuthor)");
+    }
 };
 
 WebStorage.isPrivateProject = function() {
-    if (!isWebStorageAvailable) return;
-    
-    var isPrivateValue = localStorage.getItem(LS_IS_PRIVATE_PROJECT); // 존재하지 않을 경우, 결과는 null임.
-    var isPrivateProject = (isPrivateValue === "true") ? true : (isPrivateValue === "false") ? false : undefined;
-    Log.debug("Local Storage Get (" + LS_IS_PRIVATE_PROJECT + ", " + isPrivateProject + ")");
+    var isPrivateProject = undefined;
+
+    if (localStorage) {
+        let isPrivateValue = localStorage.getItem(LS_IS_PRIVATE_PROJECT); // 존재하지 않을 경우, 결과는 null임.
+        isPrivateProject = (isPrivateValue === "true") ? true : (isPrivateValue === "false") ? false : undefined;
+        Log.debug("Local Storage Get (" + LS_IS_PRIVATE_PROJECT + ", " + isPrivateProject + ")");
+    }
+    else {
+        Log.debug("Local Storage Not Available (WebStorage.isPrivateProject)");
+    }
 
     return isPrivateProject;
 };
 
 WebStorage.setPrivateProject = function(isPrivateProject) {
-    if (!isWebStorageAvailable) return;
-    
-    localStorage.setItem(LS_IS_PRIVATE_PROJECT, isPrivateProject);
-    Log.debug("Local Storage Set (" + LS_IS_PRIVATE_PROJECT + ", " + isPrivateProject + ")");
+    if (localStorage) {
+        localStorage.setItem(LS_IS_PRIVATE_PROJECT, isPrivateProject);
+        Log.debug("Local Storage Set (" + LS_IS_PRIVATE_PROJECT + ", " + isPrivateProject + ")");
+    }
+    else {
+        Log.debug("Local Storage Not Available (WebStorage.setPrivateProject)");
+    }
 };
