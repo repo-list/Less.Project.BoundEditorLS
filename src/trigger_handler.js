@@ -128,8 +128,8 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
         triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + "-" + (currentLoop + 1));
 
         let actionCount = 1; // Comment 1개
-        while (actionCount <= ACTIONCOUNT_LIMIT - 2 - 2) { // 64 - (Set Deaths & PreserveTrigger) - (while문 한 번 당 올라갈 수 있는 최대 actionCount값)
-            if (triggerList.length === 0) break;
+        while (actionCount <= ACTIONCOUNT_LIMIT - 2 - 2 - 24) { // 64 - (Set Deaths & PreserveTrigger) - (while문 한 번 당 올라갈 수 있는 최대 actionCount값)
+            if (triggerList.length === 0) break; // TODO : -24는 임시 값, 수정 시작 전에 제거 해야 함.
 
             let index = 0; // 인덱스는 무조건 0 고정. 가장 첫 번째 요소를 검사하고, 사용을 완료하면 배열에서 제거. 해당 행위를 반복.
             let content = triggerList[index].contentObj; // 웨잇일 경우 int, 그렇지 않을 경우 cell
