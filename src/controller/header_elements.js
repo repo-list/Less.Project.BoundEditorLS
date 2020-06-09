@@ -25,7 +25,7 @@ HeaderElements.onClickPatchNote = function() {
 
     for (var i = 0; i < PatchNote.length; i++) {
         if (i > 0) message += "\n";
-        message += "v" + PatchNote[i].version + " : " + PatchNote[i].detail;
+        message += "v" + PatchNote[i].version + " :\n" + PatchNote[i].detail;
     }
 
     Popup.alert(title, message);
@@ -110,6 +110,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     var $userForces = $dialog.find("#userForces");
     var $userForceNameInput = $dialog.find("#userForceNameInput");
     var $boundingUnits = $dialog.find("#boundingUnits");
+    var $boundingUnitInvincibleSettings = $dialog.find("#boundingUnitInvincibleSettings");
     var $p12DeleteMethods = $dialog.find("#p12DeleteMethods");
     var $patternConditionUnits = $dialog.find("#patternConditionUnits");
     var $turnConditionUnits = $dialog.find("#turnConditionUnits");
@@ -123,6 +124,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     var $defeatConditionCheckBox = $dialog.find("#defeatConditionCheckBox");
     var $victoryConditionCheckBox = $dialog.find("#victoryConditionCheckBox");
     var $allianceSettingsCheckBox = $dialog.find("#allianceSettingsCheckBox");
+    var $shareVisionSettingsCheckBox = $dialog.find("#shareVisionSettingsCheckBox");
     var $levelStartConditionCheckBox = $dialog.find("#levelStartConditionCheckBox");
     var $reviveConditionCheckBox = $dialog.find("#reviveConditionCheckBox");
     var $hyperTriggerCheckBox = $dialog.find("#hyperTriggerCheckBox");
@@ -144,6 +146,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         $userForces.val(triggerSettings.userForce);
         $userForceNameInput.val(triggerSettings.userForceName);
         $boundingUnits.val(triggerSettings.boundingUnit);
+        $boundingUnitInvincibleSettings.val(triggerSettings.boundingUnitInvincibleSettings);
         $p12DeleteMethods.val(triggerSettings.p12DeleteMethod);
         $patternConditionUnits.val(triggerSettings.patternConditionUnit);
         $turnConditionUnits.val(triggerSettings.turnConditionUnit);
@@ -158,6 +161,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         if (!triggerSettings.includeDefeatCondition) $defeatConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeVictoryCondition) $victoryConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeAllianceSettings) $allianceSettingsCheckBox.prop("checked", false);
+        if (!triggerSettings.includeShareVisionSettings) $shareVisionSettingsCheckBox.prop("checked", false);
         if (!triggerSettings.includeLevelStartCondition) $levelStartConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeReviveCondition) $reviveConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeHyperTrigger) $hyperTriggerCheckBox.prop("checked", false);
@@ -173,6 +177,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.userForce = $userForces.val();
         triggerSettings.userForceName = $userForceNameInput.val();
         triggerSettings.boundingUnit = $boundingUnits.val();
+        triggerSettings.boundingUnitInvincibleSettings = $boundingUnitInvincibleSettings.val();
         triggerSettings.p12DeleteMethod = $p12DeleteMethods.val();
         triggerSettings.patternConditionUnit = $patternConditionUnits.val();
         triggerSettings.turnConditionUnit = $turnConditionUnits.val();
@@ -184,6 +189,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.includeDefeatCondition = $defeatConditionCheckBox.is(":checked");
         triggerSettings.includeVictoryCondition = $victoryConditionCheckBox.is(":checked");
         triggerSettings.includeAllianceSettings = $allianceSettingsCheckBox.is(":checked");
+        triggerSettings.includeShareVisionSettings = $shareVisionSettingsCheckBox.is(":checked");
         triggerSettings.includeLevelStartCondition = $levelStartConditionCheckBox.is(":checked");
         triggerSettings.includeReviveCondition = $reviveConditionCheckBox.is(":checked");
         triggerSettings.includeHyperTrigger = $hyperTriggerCheckBox.is(":checked");
@@ -249,6 +255,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             $defeatConditionCheckBox.prop("checked", true);
             $victoryConditionCheckBox.prop("checked", true);
             $allianceSettingsCheckBox.prop("checked", true);
+            $shareVisionSettingsCheckBox.prop("checked", true);
             $levelStartConditionCheckBox.prop("checked", true);
             $reviveConditionCheckBox.prop("checked", true);
             $hyperTriggerCheckBox.prop("checked", true);
@@ -258,6 +265,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             triggerSettings.includeDefeatCondition = true;
             triggerSettings.includeVictoryCondition = true;
             triggerSettings.includeAllianceSettings = true;
+            triggerSettings.includeShareVisionSettings = true;
             triggerSettings.includeLevelStartCondition = true;
             triggerSettings.includeReviveCondition = true;
             triggerSettings.includeHyperTrigger = true;
@@ -268,6 +276,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             $defeatConditionCheckBox.prop("checked", false);
             $victoryConditionCheckBox.prop("checked", false);
             $allianceSettingsCheckBox.prop("checked", true);
+            $shareVisionSettingsCheckBox.prop("checked", true);
             $levelStartConditionCheckBox.prop("checked", true);
             $reviveConditionCheckBox.prop("checked", true);
             $hyperTriggerCheckBox.prop("checked", true);
@@ -277,6 +286,7 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
             triggerSettings.includeDefeatCondition = false;
             triggerSettings.includeVictoryCondition = false;
             triggerSettings.includeAllianceSettings = true;
+            triggerSettings.includeShareVisionSettings = true;
             triggerSettings.includeLevelStartCondition = true;
             triggerSettings.includeReviveCondition = true;
             triggerSettings.includeHyperTrigger = true;
@@ -309,6 +319,13 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         let boundingUnit = $(this).val();
         triggerSettings.boundingUnit = boundingUnit;
         Log.debug("triggerSettings.boundingUnit : " + triggerSettings.boundingUnit);
+    });
+
+    $boundingUnitInvincibleSettings.on("change", function() {
+        Log.debug('$boundingUnitInvincibleSettings.on("change")');
+        let boundingUnitInvincibleSettings = $(this).val();
+        triggerSettings.boundingUnitInvincibleSettings = boundingUnitInvincibleSettings;
+        Log.debug("triggerSettings.boundingUnitInvincibleSettings : " + triggerSettings.boundingUnitInvincibleSettings);
     });
 
     $p12DeleteMethods.on("change", function() {
@@ -396,6 +413,13 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         Log.debug("triggerSettings.includeAllianceSettings : " + triggerSettings.includeAllianceSettings);
     });
 
+    $shareVisionSettingsCheckBox.on("change", function() {
+        Log.debug('$shareVisionSettingsCheckBox.on("change")');
+        let includeShareVisionSettings = $(this).is(":checked");
+        triggerSettings.includeShareVisionSettings = includeShareVisionSettings;
+        Log.debug("triggerSettings.includeShareVisionSettings : " + triggerSettings.includeShareVisionSettings);
+    });
+
     $levelStartConditionCheckBox.on("change", function() {
         Log.debug('$levelStartConditionCheckBox.on("change")');
         let includeLevelStartCondition = $(this).is(":checked");
@@ -462,6 +486,7 @@ HeaderElements.extractTrigger = function(triggerSettings) {
     var userForce = triggerSettings.userForce;
     var userForceName = triggerSettings.userForceName;
     var boundingUnit = triggerSettings.boundingUnit;
+    var boundingUnitInvincibleSettings = triggerSettings.boundingUnitInvincibleSettings;
     var p12DeleteMethod = triggerSettings.p12DeleteMethod;
     var levelLocationHeader = triggerSettings.levelLocationHeader;
     var reviveLocationHeader = triggerSettings.reviveLocationHeader;
@@ -495,13 +520,18 @@ HeaderElements.extractTrigger = function(triggerSettings) {
         if (result) triggerText += result;
     }
 
+    if (triggerSettings.includeShareVisionSettings) {
+        result = TriggerHandler.getShareVisionTrigger(editorType, userForce, userForceName, bombPlayer);
+        if (result) triggerText += result;
+    }
+
     if (triggerSettings.includeLevelStartCondition) {
         result = TriggerHandler.getLevelStartConditionTriggers(editorType, patternList, userForce, userForceName, bombPlayer, levelLocationHeader, patternConditionUnit, turnConditionUnit);
         if (result) triggerText += result;
     }
     
     if (triggerSettings.includeReviveCondition) {
-        result = TriggerHandler.getReviveConditionTriggers(editorType, patternList, userForce, userForceName, bombPlayer, reviveLocationHeader, patternConditionUnit, boundingUnit, lifeType);
+        result = TriggerHandler.getReviveConditionTriggers(editorType, patternList, userForce, userForceName, bombPlayer, reviveLocationHeader, patternConditionUnit, boundingUnit, lifeType, boundingUnitInvincibleSettings);
         if (result) triggerText += result;
     }
     

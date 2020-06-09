@@ -10,15 +10,29 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : http://bound.devcos.xyz/BoundEditorLS/releases/v0.15.1/ <br/>
+@ Live Link : http://bound.devcos.xyz/BoundEditorLS/releases/v0.16.0/ <br/>
 
-@ Version : 0.15.1 <br/>
+@ Version : 0.16.0 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
 
-@ 0.15.1 (2020-03-26, Latest) <br/>
+@ 0.16.0 (2020-06-09, Latest) <br/>
+
+- 폭탄 설정 모드 - 3x3 폭탄 유닛 옵션 추가 <br/>
+- 트리거 출력 기능 - 액션부 최대 행 개수 조절 (이제 트리거박스당 여백이 최소 10줄입니다) <br/>
+- 트리거 출력 기능 - 폭탄 트리거박스를 턴별로 출력되도록 변경 (단, 액션부 최대 행 개수를 넘어가는 경우는 논외) <br/>
+- 트리거 출력 기능 - 컴퓨터 플레이어의 시야 공유 설정 포함 <br/>
+- 트리거 출력 기능 - 주석(Comment)을 영어로 변경 (Scm드래프트 최신버전의 한글 깨짐 문제로 인한 결정) <br/>
+- 트리거 출력 기능 - 스테이지 조건 유닛 및 턴 조건 유닛의 옵션 개수 추가 <br/>
+- 트리거 출력 기능 - 리바이브 유닛의 무적 여부 설정 기능 추가 <br/>
+- 버그 수정 - 라이프를 다 써도 저글링이 부활되던 문제 <br/>
+- 버그 수정 - 다음 스테이지 진입 시 이전 스테이지의 장애물 유닛이 남아 있던 문제 <br/>
+- 버그 수정 (테스트 필요) - 다음 스테이지 진입 시 스커지 또는 장애물 유닛 중복 생성 문제 <br/>
+- 기타 - 로케이션 레이블 헤더 0 붙이기 기능의 기본값을 체크 해제 상태로 변경 <br/><br/>
+
+@ 0.15.1 (2020-03-26) <br/>
 
 - 브라우저 호환성 업데이트 - 2차 <br/><br/>
 

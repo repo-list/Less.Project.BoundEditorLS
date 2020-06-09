@@ -27,20 +27,22 @@
  *    - TriggerHandler 객체 추가. 기존 함수(getPatternTETriggerText)를 TriggerHandler 객체로 넣고, parsePattern으로 이름 변경.
  *    - 분석 실패 시 return undefined; 처리
  *    - 그 외 전반적으로 코드 수정 및 여러 메서드 추가.
+ * 
+ *   이후 업데이트는 README 문서 참조.
 */
 
-const TH_TEXT_LEVEL_KOREAN = "스테이지";
-const TH_TEXT_LEVEL_ENGLISH = "Stage";
-const TH_TEXT_START_CONDITION = "시작 조건";
-const TH_TEXT_UNIT_REVIVE = "유닛 부활";
+const TH_TEXT_LEVEL = "Stage"; // 기존 : TH_TEXT_LEVEL_KOREAN과 TH_TEXT_LEVEL_ENGLISH로 나눠서 쓰이는 위치에 따라 다르게 적용
+const TH_TEXT_START_CONDITION = "Start Condition"; // 기존 : "시작 조건"
+const TH_TEXT_UNIT_REVIVE = "Unit Revive"; // 기존 : "유닛 부활"
 const TH_TEXT_DEFEAT = "Game Over";
 const TH_TEXT_VICTORY = "Victory";
-const TH_TEXT_HYPER_TRIGGER = "터보 트리거";
-const TH_TEXT_DEFEAT_CONDITION = "패배 조건";
-const TH_TEXT_VICTORY_CONDITION = "승리 조건";
-const TH_TEXT_P12_KILL = "나간 유닛 삭제";
-const TH_TEXT_LIFE_SETTINGS = "목숨 설정";
-const TH_TEXT_ALLIANCE_SETTINGS = "동맹 설정";
+const TH_TEXT_HYPER_TRIGGER = "Hyper Triggers"; // 기존 : "터보 트리거"
+const TH_TEXT_DEFEAT_CONDITION = "Defeat Condition"; // 기존 : "패배 조건"
+const TH_TEXT_VICTORY_CONDITION = "Victory Condition"; // 기존 : "승리 조건"
+const TH_TEXT_P12_KILL = "Unit Leftovers Delete"; // 기존 : "나간 유닛 삭제"
+const TH_TEXT_LIFE_SETTINGS = "Life Settings"; // 기존 : "목숨 설정"
+const TH_TEXT_ALLIANCE_SETTINGS = "Alliance Settings"; // 기존 : "동맹 설정"
+const TH_TEXT_SHAREVISION_SETTINGS = "Share Vision Settings"; // 기존 : "시야공유 설정"
 
 const TH_TRIGGERTYPE_BOMB = 1;
 const TH_TRIGGERTYPE_BLOCKCREATE = 2;
@@ -55,7 +57,11 @@ const TH_LIFETYPE_DEATH = "Death";
 
 const TH_EDITORTYPE_TRIGEDIT = "TrigEdit";
 
-const ACTIONCOUNT_LIMIT = 64;
+const TH_ACTIONCOUNT_LIMIT = 64;
+const TH_ACTIONCOUNT_MARGIN = 10; // 액션부에 행 추가 시 남겨둘 최소 라인 수 (200609 기준 : 10을 입력하면 10 또는 11줄이 남음)
+
+const TH_INVSETTINGS_INVINCIBLE = "Invincible";
+const TH_INVSETTINGS_NOT_INVINCIBLE = "Vulnerable";
 
 var THTrigger = function(type, contentObj) {
     this.type = type;
@@ -71,8 +77,9 @@ var TriggerHandler = { // 아래의 메서드 순서는, parsePattern을 제외�
     getDefeatTrigger : function(editorType, userForce, userForceName, boundingUnit) {},
     getVictoryTrigger : function(editorType, userForce, userForceName, conditionLocationLabel) {},
     getAllianceTrigger : function(editorType) {},
+    getShareVisionTrigger : function(editorType, userForce, userForceName, bombPlayer) {},
     getLevelStartConditionTriggers : function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {},
-    getReviveConditionTriggers : function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {},
+    getReviveConditionTriggers : function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType, boundingUnitInvincibleSettings) {},
     parsePatternList : function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit) {}, // 단순히 parsePattern을 여러 번 수행한 후 string을 리턴하는 용도
     getHyperTriggers : function(editorType, conditionUnit) {}
 };
@@ -125,11 +132,12 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
         triggerText += TrigEdit.Deaths(bombPlayer, turnConditionUnit, TE_QUANTITYMOD_EXACTLY, currentLoop);
 
         triggerText += TrigEdit.Actions();
-        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + "-" + (currentLoop + 1));
+        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + "-" + (currentLoop + 1));
 
         let actionCount = 1; // Comment 1개
-        while (actionCount <= ACTIONCOUNT_LIMIT - 2 - 2 - 24) { // 64 - (Set Deaths & PreserveTrigger) - (while문 한 번 당 올라갈 수 있는 최대 actionCount값)
-            if (triggerList.length === 0) break; // TODO : -24는 임시 값, 수정 시작 전에 제거 해야 함.
+        let waitActionAdded = false;
+        while (actionCount <= TH_ACTIONCOUNT_LIMIT - 2 - 2 - TH_ACTIONCOUNT_MARGIN) { // 64 - (Set Deaths & PreserveTrigger) - (while문 한 번 당 올라갈 수 있는 최대 actionCount값) - (margin값)
+            if (triggerList.length === 0) break;
 
             let index = 0; // 인덱스는 무조건 0 고정. 가장 첫 번째 요소를 검사하고, 사용을 완료하면 배열에서 제거. 해당 행위를 반복.
             let content = triggerList[index].contentObj; // 웨잇일 경우 int, 그렇지 않을 경우 cell
@@ -163,6 +171,7 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
                 case TH_TRIGGERTYPE_WAIT:
                     triggerText += TrigEdit.Wait(content);
                     actionCount++;
+                    waitActionAdded = true;
                     break;
                 default:
                     Log.error("Invalid THTrigger Type");
@@ -170,6 +179,7 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
             }
 
             triggerList.splice(index, 1); // triggerList 배열에서 'index' 인덱스부터 총 1개의 요소를 배열에서 제거
+            if (waitActionAdded) break;
         }
 
         if (triggerList.length > 0) {
@@ -295,6 +305,25 @@ TriggerHandler.getAllianceTrigger = function(editorType) {
     return triggerText;
 };
 
+TriggerHandler.getShareVisionTrigger = function(editorType, userForce, userForceName, bombPlayer) {
+    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+    // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
+
+    var bombPlayerNumber = parseInt(bombPlayer.substring(bombPlayer.length - 1));
+    
+    var triggerText = "";
+    
+    triggerText += TrigEdit.TriggerStart(userForceName);
+    triggerText += TrigEdit.Conditions();
+    triggerText += TrigEdit.Always();
+    triggerText += TrigEdit.Actions();
+    triggerText += TrigEdit.Comment(TH_TEXT_SHAREVISION_SETTINGS);
+    triggerText += TrigEdit.RunAIScript("+Vi" + (bombPlayerNumber - 1));
+    triggerText += TrigEdit.TriggerEnd();
+
+    return triggerText;
+};
+
 TriggerHandler.getLevelStartConditionTriggers = function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
@@ -311,22 +340,47 @@ TriggerHandler.getLevelStartConditionTriggers = function(editorType, patternList
         if (patternList[i] === null) continue;
         let level = i + 1;
 
+        let tempCellList = [];
+
+        // 2탄 진입시부터 이전 스테이지의 장애물 유닛 제거 트리거 적용
+        if (i >= 1) {
+            let turnList = patternList[i - 1].turnList;
+            for (var j = 0; j < turnList.length; j++) {
+                let cellList = turnList[j].cellList;
+                for (var k = 0; k < cellList.length; k++) {
+                    if (cellList[k].type === TURNCELLTYPE_BLOCKCREATE) {
+                        let available = true;
+                        for (var l = 0; l < tempCellList.length; l++) {
+                            if (tempCellList[l].location === cellList[k].location) {
+                                available = false;
+                                break;
+                            }
+                        }
+                        if (available) tempCellList.push(cellList[k]);
+                    }
+                }
+            }
+        }
+
+        // 메인 파트
         triggerText += TrigEdit.TriggerStart(userForceName);
         triggerText += TrigEdit.Conditions();
         triggerText += TrigEdit.Bring(userForceName, TE_UNIT_MEN, conditionLocationLabelHeader + level, TE_QUANTITYMOD_AT_LEAST, 1);
         triggerText += TrigEdit.Actions();
-        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + " " + TH_TEXT_START_CONDITION);
+        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " " + TH_TEXT_START_CONDITION);
         triggerText += TrigEdit.SetDeaths(bombPlayer, patternConditionUnit, TE_MODIFY_SET_TO, level);
         triggerText += TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_SET_TO, 0);
-        triggerText += TrigEdit.DisplayTextMessage("\\x007" + TH_TEXT_LEVEL_ENGLISH + level);
+        for (var j = 0; j < tempCellList.length; j++) { // 장애물 유닛이 생성되는 로케이션의 총 개수가 60개를 넘어가면 문제가 발생할 수 있음.
+            triggerText += TrigEdit.RemoveUnitAtLocation(TE_PLAYER_ALL, tempCellList[j].unit, TE_ALL, tempCellList[j].location.label);
+        }
+        triggerText += TrigEdit.DisplayTextMessage("\\x007" + TH_TEXT_LEVEL + level);
         triggerText += TrigEdit.TriggerEnd();
     }
 
     return triggerText;
 };
 
-TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType) {
-    // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
+TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType, boundingUnitInvincibleSettings) {
     // NOTE : userForce는 현재는 쓰이지 않지만, 나중에 쓰일 수도 있으므로 그대로 둘 것.
     
     if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
@@ -345,9 +399,15 @@ TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, us
         triggerText += TrigEdit.Conditions();
         triggerText += TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level);
         triggerText += TrigEdit.Command(TE_PLAYER_CURRENT, boundingUnit, TE_QUANTITYMOD_EXACTLY, 0);
+        if (lifeType === TH_LIFETYPE_LIFE) triggerText += TrigEdit.Score(TE_PLAYER_CURRENT, TE_SCORETYPE_CUSTOM, TE_QUANTITYMOD_AT_LEAST, 1);
+
         triggerText += TrigEdit.Actions();
-        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL_KOREAN + " " + level + " " + TH_TEXT_UNIT_REVIVE);
+        triggerText += TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " " + TH_TEXT_UNIT_REVIVE);
         triggerText += TrigEdit.CreateUnit(TE_PLAYER_CURRENT, boundingUnit, 1, conditionLocationLabelHeader + level);
+        if (editorType === TH_EDITORTYPE_TRIGEDIT && boundingUnitInvincibleSettings === TH_INVSETTINGS_INVINCIBLE) {
+            // TrigEdit에서 리바이브 유닛을 무적으로 처리하는 경우
+            triggerText += TrigEdit.SetInvincibility(TE_PLAYER_CURRENT, boundingUnit, conditionLocationLabelHeader + level, TE_STATE_ENABLE);
+        }
         if (lifeType === TH_LIFETYPE_LIFE) {
             // 라이프제인 경우
             triggerText += TrigEdit.SetScore(TE_PLAYER_CURRENT, TE_MODIFY_SUBTRACT, 1, TE_SCORETYPE_CUSTOM);

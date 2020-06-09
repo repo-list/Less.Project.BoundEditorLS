@@ -56,6 +56,9 @@ const UNIT_ZERG_HUNTER_KILLER = "Hunter Killer (Hydralisk)";
 const UNIT_NEUTRAL_FLAG = "Flag";
 const UNIT_NEUTRAL_CAVE = "Cave";
 const UNIT_NEUTRAL_CANTINA = "Cantina";
+const UNIT_NEUTRAL_JUMPGATE = "Jump Gate";
+const UNIT_NEUTRAL_RUINS = "Ruins";
+const UNIT_NEUTRAL_MININGPLATFORM = "Mining Platform";
 
 var Units = [
     // Bomb Units
@@ -255,6 +258,24 @@ var Units = [
     },
     {
         name : UNIT_NEUTRAL_CANTINA,
+        size : UNITSIZE_UNKNOWN,
+        race : RACE_NONE,
+        type : UNIT_TYPE_UNKNOWN
+    },
+    {
+        name : UNIT_NEUTRAL_JUMPGATE,
+        size : UNITSIZE_UNKNOWN,
+        race : RACE_NONE,
+        type : UNIT_TYPE_UNKNOWN
+    },
+    {
+        name : UNIT_NEUTRAL_RUINS,
+        size : UNITSIZE_UNKNOWN,
+        race : RACE_NONE,
+        type : UNIT_TYPE_UNKNOWN
+    },
+    {
+        name : UNIT_NEUTRAL_MININGPLATFORM,
         size : UNITSIZE_UNKNOWN,
         race : RACE_NONE,
         type : UNIT_TYPE_UNKNOWN

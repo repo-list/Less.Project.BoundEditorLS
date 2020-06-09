@@ -183,17 +183,20 @@ var TrigEdit = {
         return "\tRemove Unit At Location(\"" + player + "\", \"" + unit + "\", " + num + ", \"" + location + "\");\r\n";
     },
 
+    RunAIScript : function(script) {
+        this.actionLineCount++;
+        return "\tRun AI Script(\"" + script + "\");\r\n";
+    },
+
     SetAllianceStatus : function(player, status) {
         this.actionLineCount++;
         return "\tSet Alliance Status(\"" + player + "\", " + status + ");\r\n";
     },
 
-    /*
     SetInvincibility : function(player, unit, location, state) {
         this.actionLineCount++;
         return "\tSet Invincibility(\"" + player + "\", \"" + unit + "\", \"" + location + "\", " + state + ");\r\n";
     },
-    */
 
     SetScore : function(player, modify, num, scoreType) {
         this.actionLineCount++;

@@ -239,6 +239,13 @@
                     </select>
                 </div>
                 <div>
+                    <span id="boundingUnitInvincible">* 폭피 유닛 무적 여부 :</span>
+                    <select id="boundingUnitInvincibleSettings" title="폭피를 하는 유닛이 리바이브될 때 무적 상태로 할지 여부를 지정합니다.">
+                        <option value="Vulnerable">무적이 아님</option>
+                        <option value="Invincible">무적</option>
+                    </select>
+                </div>
+                <div>
                     <span id="p12DeleteMethod">* 나간 유닛 삭제 방식 :</span>
                     <select id="p12DeleteMethods" title="나간 유닛을 삭제하는 방식을 지정합니다.">
                         <option value="Kill">Kill (킬)</option>
@@ -249,12 +256,16 @@
                     <span id="patternConditionUnit">* 스테이지 조건 유닛 :</span>
                     <select id="patternConditionUnits" title="폭탄 트리거에서 데스값으로 사용될 스테이지 조건 유닛을 설정합니다.">
                         <option value="Flag">Flag</option>
+                        <option value="Cantina">Cantina</option>
+                        <option value="Jump Gate">Jump Gate</option>
                     </select>
                 </div>
                 <div>
                     <span id="turnConditionUnit">* 턴 조건 유닛 :</span>
                     <select id="turnConditionUnits" title="폭탄 트리거에서 데스값으로 사용될 턴 조건 유닛을 설정합니다.">
                         <option value="Cave">Cave</option>
+                        <option value="Ruins">Ruins</option>
+                        <option value="Mining Platform">Mining Platform</option>
                     </select>
                 </div>
                 <div id="stageLocation">
@@ -290,6 +301,10 @@
                 <div class="short-interval">
                     <input id="allianceSettingsCheckBox" type="checkbox" checked />
                     <label for="allianceSettingsCheckBox">동맹 설정을 포함합니다.</label>
+                </div>
+                <div class="short-interval">
+                    <input id="shareVisionSettingsCheckBox" type="checkbox" checked />
+                    <label for="shareVisionSettingsCheckBox">시야 공유 설정을 포함합니다.</label>
                 </div>
                 <div class="short-interval">
                     <input id="levelStartConditionCheckBox" type="checkbox" checked />
@@ -442,6 +457,10 @@
                         <select id="bombUnits3" title="현재 패턴 전체에서 3x3 크기의 로케이션에 사용할 폭탄 유닛을 지정합니다.">
                             <option value="Terran Battlecruiser">Terran Battlecruiser (배틀크루저)</option>
                             <option value="Zerg Ultralisk">Zerg Ultralisk (울트라리스크)</option>
+                            <option value="Protoss Arbiter">Protoss Arbiter (아비터)</option>
+                            <option value="Terran Dropship">Terran Dropship (드랍쉽)</option>
+                            <option value="Protoss Dark Archon">Protoss Dark Archon (다크아칸)</option>
+                            <option value="Zerg Overlord">Zerg Overlord (오버로드)</option>
                         </select>
 
                         <span id="blockUnit">* 장애물 유닛 선택 :</span>
