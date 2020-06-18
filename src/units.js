@@ -60,6 +60,9 @@ const UNIT_NEUTRAL_JUMPGATE = "Jump Gate";
 const UNIT_NEUTRAL_RUINS = "Ruins";
 const UNIT_NEUTRAL_MININGPLATFORM = "Mining Platform";
 
+// Teleport Effect Units
+const UNIT_NEUTRAL_KAKARU = "Kakaru";
+
 var Units = [
     // Bomb Units
     {
@@ -279,5 +282,13 @@ var Units = [
         size : UNITSIZE_UNKNOWN,
         race : RACE_NONE,
         type : UNIT_TYPE_UNKNOWN
+    },
+
+    // Teleport Effect Units
+    {
+        name : UNIT_NEUTRAL_KAKARU,
+        size : 2,
+        race : RACE_NONE,
+        type : UNIT_TYPE_AIR
     }
 ];

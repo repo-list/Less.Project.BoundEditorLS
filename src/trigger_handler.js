@@ -143,12 +143,12 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
             let content = triggerList[index].contentObj; // 웨잇일 경우 int, 그렇지 않을 경우 cell
             switch (triggerList[index].type) {
                 case TH_TRIGGERTYPE_BOMB:
-                    triggerText += TrigEdit.CreateUnitWithProperties(bombPlayer, content.unit, 1, content.location.label, 3);
+                    triggerText += TrigEdit.CreateUnit(bombPlayer, content.unit, 1, content.location.label);
                     triggerText += TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, content.location.label);
                     actionCount += 2;
                     break;
                 case TH_TRIGGERTYPE_BLOCKCREATE:
-                    triggerText += TrigEdit.CreateUnitWithProperties(bombPlayer, content.unit, 1, content.location.label, 3);
+                    triggerText += TrigEdit.CreateUnit(bombPlayer, content.unit, 1, content.location.label);
                     actionCount++;
                     if (content.option === TURNCELLOPTION_UNITKILL) {
                         triggerText += TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, content.location.label);

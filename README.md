@@ -10,15 +10,19 @@ A map editor for the game StarCraft to make easy and fast to create a kind of UM
 
 @ ProductName : Less.Project.BoundEditorLS <br/>
 
-@ Live Link : http://bound.devcos.xyz/BoundEditorLS/releases/v0.16.0/ <br/>
+@ Live Link : http://bound.devcos.xyz/BoundEditorLS/releases/v0.16.1/ <br/>
 
-@ Version : 0.16.0 <br/>
+@ Version : 0.16.1 <br/>
 
 @ License : Currently Undecided (현재 미정) <br/><br/>
 
 # Version History
 
-@ 0.16.0 (2020-06-09, Latest) <br/>
+@ 0.16.1 (2020-06-18, Latest) <br/>
+
+- 기타 - 로케이션 레이블 헤더 0 붙이기 기능의 기본값을 체크 상태로 변경 (원래대로 복구시킨 것) <br/><br/>
+
+@ 0.16.0 (2020-06-09) <br/>
 
 - 폭탄 설정 모드 - 3x3 폭탄 유닛 옵션 추가 <br/>
 - 트리거 출력 기능 - 액션부 최대 행 개수 조절 (이제 트리거박스당 여백이 최소 10줄입니다) <br/>
