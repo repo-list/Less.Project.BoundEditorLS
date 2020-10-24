@@ -106,6 +106,7 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
     if (useDeathTimer) {
         // Death 타이머버전 - 현재 무조건 Cocoon 사용
         var triggerTextList = [];
+        var commentIndexes = [];
         var nextTimer = 0;
 
         turnList.forEach(function(turn, patternID) {
@@ -136,7 +137,7 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
                 }
             });
 
-            // 액션 62개씩 묶어 트리거 작성
+            // 액션 62개씩 묶어 트리거 작성 - Comment와 PreserveTrigger
             var remainingActionCount = actions.length;
             var curIndex = 0; // index on actions
             while (remainingActionCount !== 0) {
@@ -148,7 +149,10 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
                 triggerTextList.push(TrigEdit.Deaths(bombPlayer, turnConditionUnit, TE_QUANTITYMOD_EXACTLY, nextTimer));
 
                 triggerTextList.push(TrigEdit.Actions());
-                triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " +" + nextTimer));
+
+                // 코멘트 추가. 추후 커멘트로 가로챌 것
+                commentIndexes.push(triggerTextList.length);
+                triggerTextList.push(nextTimer);
 
                 for (var i = curIndex; i < curIndex + packedActionCnt; i++)
                     triggerTextList.push(actions[i]);
@@ -161,6 +165,13 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
             }
 
             nextTimer += Math.floor(turn.wait / 42);
+        });
+
+        // Comment 작성
+        const totalTime = nextTimer;
+        commentIndexes.forEach(function(idx) {
+            const timer = triggerTextList[idx];
+            triggerTextList[idx] = TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " [" + timer + "/" + totalTime + "]");
         });
 
         // 데스 타이머 관리
@@ -176,7 +187,7 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
         triggerTextList.push(TrigEdit.TriggerStart(bombPlayer));
         triggerTextList.push(TrigEdit.Conditions());
         triggerTextList.push(TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level));
-        triggerTextList.push(TrigEdit.Deaths(bombPlayer, turnConditionUnit, TE_QUANTITYMOD_AT_LEAST, nextTimer));
+        triggerTextList.push(TrigEdit.Deaths(bombPlayer, turnConditionUnit, TE_QUANTITYMOD_AT_LEAST, totalTime));
         triggerTextList.push(TrigEdit.Actions());
         triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " loop"));
         triggerTextList.push(TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_SET_TO, 0));
@@ -194,7 +205,7 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
         triggerTextList.push(TrigEdit.PreserveTrigger());
         triggerTextList.push(TrigEdit.TriggerEnd());
 
-        return triggerTextList.join('');
+        return triggerTextList.join("");
     }
 
     // 2차원으로 얽혀 있는 배열의 다양한 유형의 값들을 하나의 타입(=클래스)으로 묶은 다음 1차원으로 나열
