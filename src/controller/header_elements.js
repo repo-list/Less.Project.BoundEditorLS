@@ -448,6 +448,14 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     $deathTimerCheckBox.on("change", function() {
         Log.debug('$deathTimerCheckBox.on("change")');
         let useDeathTimer = $(this).is(":checked");
+        if (useDeathTimer) {
+            // DeathTimer는 하이퍼트리거 대신 EUD터보트리거를 사용해야 합니다.
+            $hyperTriggerCheckBox.prop("checked", false);
+            $hyperTriggerCheckBox.prop("disabled", true);
+            triggerSettings.includeHyperTrigger = false;
+        } else {
+            $hyperTriggerCheckBox.prop("disabled", false);
+        }
         triggerSettings.useDeathTimer = useDeathTimer;
         Log.debug("triggerSettings.useDeathTimer : " + triggerSettings.useDeathTimer);
     });
