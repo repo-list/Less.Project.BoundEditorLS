@@ -164,8 +164,12 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
                 curIndex += packedActionCnt;
             }
 
-            nextTimer += Math.floor(turn.wait / 42);
+            // wait 트리거 기준과 작동이 똑같도록
+            nextTimer += Math.floor((turn.wait || 42) / 42) + 1;
         });
+
+        // wait 트리거 기준과 작동이 똑같도록 마지막 턴 84ms 추가
+        nextTimer += 2;
 
         // Comment 작성
         const totalTime = nextTimer;
