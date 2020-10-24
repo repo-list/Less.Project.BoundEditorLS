@@ -37,6 +37,7 @@ const TH_TEXT_UNIT_REVIVE = "Unit Revive"; // 기존 : "유닛 부활"
 const TH_TEXT_DEFEAT = "Game Over";
 const TH_TEXT_VICTORY = "Victory";
 const TH_TEXT_HYPER_TRIGGER = "Hyper Triggers"; // 기존 : "터보 트리거"
+const TH_TEXT_EUD_TURBO = "Eud Turbo";
 const TH_TEXT_DEFEAT_CONDITION = "Defeat Condition"; // 기존 : "패배 조건"
 const TH_TEXT_VICTORY_CONDITION = "Victory Condition"; // 기존 : "승리 조건"
 const TH_TEXT_P12_KILL = "Unit Leftovers Delete"; // 기존 : "나간 유닛 삭제"
@@ -195,17 +196,6 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
         triggerTextList.push(TrigEdit.Actions());
         triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " loop"));
         triggerTextList.push(TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_SET_TO, 0));
-        triggerTextList.push(TrigEdit.PreserveTrigger());
-        triggerTextList.push(TrigEdit.TriggerEnd());
-
-        // EUD 터보 트리거
-        // @TODO level 조건부와 함께 있다. 추후 광역으로 추가하는 걸 고려
-        triggerTextList.push(TrigEdit.TriggerStart(bombPlayer));
-        triggerTextList.push(TrigEdit.Conditions());
-        triggerTextList.push(TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level));
-        triggerTextList.push(TrigEdit.Actions());
-        triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " eudturbo"));
-        triggerTextList.push(TrigEdit.EUDTurbo());
         triggerTextList.push(TrigEdit.PreserveTrigger());
         triggerTextList.push(TrigEdit.TriggerEnd());
 
@@ -569,6 +559,21 @@ TriggerHandler.getHyperTriggers = function(editorType) {
 
     return triggerText;
 };
+
+TriggerHandler.getEUDTurbo = function(editorType) {
+    const triggerTextList = [];
+
+    triggerTextList.push(TrigEdit.TriggerStart(TE_PLAYER_ALL));
+    triggerTextList.push(TrigEdit.Conditions());
+    triggerTextList.push(TrigEdit.Always());
+    triggerTextList.push(TrigEdit.Actions());
+    triggerTextList.push(TrigEdit.Comment(TH_TEXT_EUD_TURBO));
+    triggerTextList.push(TrigEdit.EUDTurbo());
+    triggerTextList.push(TrigEdit.PreserveTrigger());
+    triggerTextList.push(TrigEdit.TriggerEnd());
+
+    return triggerTextList.join("");
+}
 
 var isValidBombPlayer = function(bombPlayer) {
     // 폭탄 트리거용 플레이어 체크
