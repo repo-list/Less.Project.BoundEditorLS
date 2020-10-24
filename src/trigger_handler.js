@@ -80,14 +80,14 @@ var TriggerHandler = { // 아래의 메서드 순서는, parsePattern을 제외�
     getShareVisionTrigger : function(editorType, userForce, userForceName, bombPlayer) {},
     getLevelStartConditionTriggers : function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, turnConditionUnit) {},
     getReviveConditionTriggers : function(editorType, patternList, userForce, userForceName, bombPlayer, conditionLocationLabelHeader, patternConditionUnit, boundingUnit, lifeType, boundingUnitInvincibleSettings) {},
-    parsePatternList : function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit) {}, // 단순히 parsePattern을 여러 번 수행한 후 string을 리턴하는 용도
+    parsePatternList : function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit, useDeathTimer) {}, // 단순히 parsePattern을 여러 번 수행한 후 string을 리턴하는 용도
     getHyperTriggers : function(editorType, conditionUnit) {}
 };
 
 // 수정 사항 : level (스테이지), bombPlayer, patternConditionUnit, turnConditionUnit 추가
 // Switch -> Deaths로 변경
 // 분석 실패 시, return undefined 처리
-TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit) {
+TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit, useDeathTimer) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
 
     if (!pattern) return null; // 패턴 존재 X
@@ -101,6 +101,100 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
     if (!isValidBombPlayer(bombPlayer)) {
         Log.error("Invalid Bomb Player");
         return undefined;
+    }
+
+    if (useDeathTimer) {
+        // Death 타이머버전 - 현재 무조건 Cocoon 사용
+        var triggerTextList = [];
+        var nextTimer = 0;
+
+        turnList.forEach(function(turn, patternID) {
+            var actions = [];
+
+            // 액션 추가
+            turn.cellList.forEach(function(cell) {
+                switch (cell.type) {
+                    case TURNCELLTYPE_BOMB:
+                        actions.push(TrigEdit.CreateUnit(bombPlayer, cell.unit, 1, cell.location.label));
+                        actions.push(TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, cell.location.label));
+                        break;
+                    case TURNCELLTYPE_BLOCKCREATE:
+                        actions.push(TrigEdit.CreateUnit(bombPlayer, cell.unit, 1, cell.location.label));
+                        if (cell.option === TURNCELLOPTION_UNITKILL) {
+                            actions.push(TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, cell.location.label));
+                        } else if (cell.option === TURNCELLOPTION_UNITREMOVE) {
+                            actions.push(TrigEdit.RemoveUnitAtLocation(TE_PLAYER_ALL, TE_UNIT_MEN, TE_ALL, cell.location.label));
+                        }
+                        break;
+                    case TURNCELLTYPE_BLOCKDELETE:
+                        if (cell.option === TURNCELLOPTION_BLOCKKILL) {
+                            actions.push(TrigEdit.KillUnitAtLocation(TE_PLAYER_ALL, cell.unit, TE_ALL, cell.location.label));
+                        } else if (cell.option === TURNCELLOPTION_BLOCKREMOVE) {
+                            actions.push(TrigEdit.RemoveUnitAtLocation(TE_PLAYER_ALL, cell.unit, TE_ALL, cell.location.label));
+                        }
+                        break;
+                }
+            });
+
+            // 액션 62개씩 묶어 트리거 작성
+            var remainingActionCount = actions.length;
+            var curIndex = 0; // index on actions
+            while (remainingActionCount !== 0) {
+                const packedActionCnt = (remainingActionCount >= 62) ? 62 : remainingActionCount;
+
+                triggerTextList.push(TrigEdit.TriggerStart(bombPlayer));
+                triggerTextList.push(TrigEdit.Conditions());
+                triggerTextList.push(TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level));
+                triggerTextList.push(TrigEdit.Deaths(bombPlayer, turnConditionUnit, TE_QUANTITYMOD_EXACTLY, nextTimer));
+
+                triggerTextList.push(TrigEdit.Actions());
+                triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " +" + nextTimer));
+
+                for (var i = curIndex; i < curIndex + packedActionCnt; i++)
+                    triggerTextList.push(actions[i]);
+
+                triggerTextList.push(TrigEdit.PreserveTrigger());
+                triggerTextList.push(TrigEdit.TriggerEnd());
+
+                remainingActionCount -= packedActionCnt;
+                curIndex += packedActionCnt;
+            }
+
+            nextTimer += Math.floor(turn.wait / 42);
+        });
+
+        // 데스 타이머 관리
+        triggerTextList.push(TrigEdit.TriggerStart(bombPlayer));
+        triggerTextList.push(TrigEdit.Conditions());
+        triggerTextList.push(TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level));
+        triggerTextList.push(TrigEdit.Actions());
+        triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " loop"));
+        triggerTextList.push(TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_ADD, 1));
+        triggerTextList.push(TrigEdit.PreserveTrigger());
+        triggerTextList.push(TrigEdit.TriggerEnd());
+
+        triggerTextList.push(TrigEdit.TriggerStart(bombPlayer));
+        triggerTextList.push(TrigEdit.Conditions());
+        triggerTextList.push(TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level));
+        triggerTextList.push(TrigEdit.Deaths(bombPlayer, turnConditionUnit, TE_QUANTITYMOD_AT_LEAST, nextTimer));
+        triggerTextList.push(TrigEdit.Actions());
+        triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " loop"));
+        triggerTextList.push(TrigEdit.SetDeaths(bombPlayer, turnConditionUnit, TE_MODIFY_SET_TO, 0));
+        triggerTextList.push(TrigEdit.PreserveTrigger());
+        triggerTextList.push(TrigEdit.TriggerEnd());
+
+        // EUD 터보 트리거
+        // @TODO level 조건부와 함께 있다. 추후 광역으로 추가하는 걸 고려
+        triggerTextList.push(TrigEdit.TriggerStart(bombPlayer));
+        triggerTextList.push(TrigEdit.Conditions());
+        triggerTextList.push(TrigEdit.Deaths(bombPlayer, patternConditionUnit, TE_QUANTITYMOD_EXACTLY, level));
+        triggerTextList.push(TrigEdit.Actions());
+        triggerTextList.push(TrigEdit.Comment(TH_TEXT_LEVEL + " " + level + " eudturbo"));
+        triggerTextList.push(TrigEdit.EUDTurbo());
+        triggerTextList.push(TrigEdit.PreserveTrigger());
+        triggerTextList.push(TrigEdit.TriggerEnd());
+
+        return triggerTextList.join('');
     }
 
     // 2차원으로 얽혀 있는 배열의 다양한 유형의 값들을 하나의 타입(=클래스)으로 묶은 다음 1차원으로 나열
@@ -192,7 +286,7 @@ TriggerHandler.parsePattern = function(editorType, pattern, level, bombPlayer, p
         triggerText += TrigEdit.TriggerEnd();
         currentLoop++;
     }
-    
+
     Log.debug(":: Trigger Extraction Request ::");
     // Log.debug(triggerText);
 
@@ -424,7 +518,7 @@ TriggerHandler.getReviveConditionTriggers = function(editorType, patternList, us
     return triggerText;
 };
 
-TriggerHandler.parsePatternList = function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit) {
+TriggerHandler.parsePatternList = function(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit, useDeathTimer) {
     // TODO : editorType (에디터 유형)이 추가될 경우, 그에 따른 처리를 추가해야 함.
     
     if (!patternList || patternList.length === 0) return null; // 패턴이 존재하지 않음.
@@ -434,7 +528,7 @@ TriggerHandler.parsePatternList = function(editorType, patternList, bombPlayer, 
     for (var i = 0; i < patternList.length; i++) {
         let pattern = patternList[i];
         let level = i + 1;
-        let result = TriggerHandler.parsePattern(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit);
+        let result = TriggerHandler.parsePattern(editorType, pattern, level, bombPlayer, patternConditionUnit, turnConditionUnit, useDeathTimer);
         if (!result) continue;
         else triggerText += result;
     }

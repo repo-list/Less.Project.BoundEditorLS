@@ -221,5 +221,10 @@ var TrigEdit = {
     Wait : function(duration) {
         this.actionLineCount++;
         return "\tWait(" + duration + ");\r\n";
+    },
+
+    EUDTurbo : function() {
+        this.actionLineCount++;
+        return "\tMemoryAddr(0x6509A0, Set To, 0);\r\n";
     }
 }
