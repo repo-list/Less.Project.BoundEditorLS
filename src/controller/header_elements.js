@@ -128,6 +128,9 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     var $levelStartConditionCheckBox = $dialog.find("#levelStartConditionCheckBox");
     var $reviveConditionCheckBox = $dialog.find("#reviveConditionCheckBox");
     var $hyperTriggerCheckBox = $dialog.find("#hyperTriggerCheckBox");
+    var $eudTurboCheckBox = $dialog.find("#eudTurboCheckBox");
+    var $deathTimerCheckBox = $dialog.find("#deathTimerCheckBox");
+
     var $extractButton = $dialog.find("#extract");
     var triggerSettings = {};
 
@@ -165,6 +168,8 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         if (!triggerSettings.includeLevelStartCondition) $levelStartConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeReviveCondition) $reviveConditionCheckBox.prop("checked", false);
         if (!triggerSettings.includeHyperTrigger) $hyperTriggerCheckBox.prop("checked", false);
+        if (triggerSettings.includeEUDTurbo) $eudTurboCheckBox.prop("checked", true);
+        if (triggerSettings.useDeathTimer) $deathTimerCheckBox.prop("checked", true);
     }
     else {
         // 트리거 세팅 초기화
@@ -193,6 +198,8 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
         triggerSettings.includeLevelStartCondition = $levelStartConditionCheckBox.is(":checked");
         triggerSettings.includeReviveCondition = $reviveConditionCheckBox.is(":checked");
         triggerSettings.includeHyperTrigger = $hyperTriggerCheckBox.is(":checked");
+        triggerSettings.includeEUDTurbo = $eudTurboCheckBox.is(":checked");
+        triggerSettings.useDeathTimer = $deathTimerCheckBox.is(":checked");
         
         Project.triggerSettings = triggerSettings;
     }
@@ -437,8 +444,38 @@ HeaderElements.addTrigExtDialogEventListeners = function() {
     $hyperTriggerCheckBox.on("change", function() {
         Log.debug('$hyperTriggerCheckBox.on("change")');
         let includeHyperTrigger = $(this).is(":checked");
+        if (includeHyperTrigger) {
+            $eudTurboCheckBox.prop("checked", false);
+            triggerSettings.includeEUDTurbo = false;
+        }
         triggerSettings.includeHyperTrigger = includeHyperTrigger;
         Log.debug("triggerSettings.includeHyperTrigger : " + triggerSettings.includeHyperTrigger);
+    });
+
+    $eudTurboCheckBox.on("change", function() {
+        Log.debug('$eudTurboCheckBox.on("change")');
+        let includeEUDTurbo = $(this).is(":checked");
+        if (includeEUDTurbo) {
+            $hyperTriggerCheckBox.prop("checked", false);
+            triggerSettings.includeHyperTrigger = false;
+        }
+        triggerSettings.includeEUDTurbo = includeEUDTurbo;
+        Log.debug("triggerSettings.includeEUDTurbo : " + triggerSettings.includeEUDTurbo);
+    });
+
+    $deathTimerCheckBox.on("change", function() {
+        Log.debug('$deathTimerCheckBox.on("change")');
+        let useDeathTimer = $(this).is(":checked");
+        if (useDeathTimer) {
+            // DeathTimer는 하이퍼트리거 대신 EUD터보트리거를 사용해야 합니다.
+            $hyperTriggerCheckBox.prop("checked", false);
+            $hyperTriggerCheckBox.prop("disabled", true);
+            triggerSettings.includeHyperTrigger = false;
+        } else {
+            $hyperTriggerCheckBox.prop("disabled", false);
+        }
+        triggerSettings.useDeathTimer = useDeathTimer;
+        Log.debug("triggerSettings.useDeathTimer : " + triggerSettings.useDeathTimer);
     });
 
     // 출력 이벤트 처리
@@ -535,11 +572,16 @@ HeaderElements.extractTrigger = function(triggerSettings) {
         if (result) triggerText += result;
     }
     
-    result = TriggerHandler.parsePatternList(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit);
+    result = TriggerHandler.parsePatternList(editorType, patternList, bombPlayer, patternConditionUnit, turnConditionUnit, triggerSettings.useDeathTimer);
     if (result) triggerText += result;
     
     if (triggerSettings.includeHyperTrigger) {
         result = TriggerHandler.getHyperTriggers(editorType);
+        if (result) triggerText += result;
+    }
+
+    if (triggerSettings.includeEUDTurbo) {
+        result = TriggerHandler.getEUDTurbo(editorType);
         if (result) triggerText += result;
     }
 
